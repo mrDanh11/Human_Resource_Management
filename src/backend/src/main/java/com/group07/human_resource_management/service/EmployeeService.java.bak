@@ -1,0 +1,92 @@
+package com.group07.human_resource_management.service;
+
+import com.group07.human_resource_management.dto.EmployeeDTO;
+import com.group07.human_resource_management.model.Employee;
+import com.group07.human_resource_management.repository.EmployeeRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class EmployeeService {
+    
+    private final EmployeeRepository employeeRepository;
+    
+    public List<EmployeeDTO> getAllEmployees() {
+        return employeeRepository.findAll()
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+    
+    public Optional<EmployeeDTO> getEmployeeById(Long id) {
+        return employeeRepository.findById(id)
+                .map(this::convertToDTO);
+    }
+    
+    public EmployeeDTO createEmployee(EmployeeDTO employeeDTO) {
+        if (employeeRepository.existsByEmail(employeeDTO.getEmail())) {
+            throw new RuntimeException("Employee with email " + employeeDTO.getEmail() + " already exists");
+        }
+        
+        Employee employee = convertToEntity(employeeDTO);
+        Employee savedEmployee = employeeRepository.save(employee);
+        return convertToDTO(savedEmployee);
+    }
+    
+    public EmployeeDTO updateEmployee(Long id, EmployeeDTO employeeDTO) {
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Employee not found with id: " + id));
+        
+        employee.setFirstName(employeeDTO.getFirstName());
+        employee.setLastName(employeeDTO.getLastName());
+        employee.setEmail(employeeDTO.getEmail());
+        employee.setPhoneNumber(employeeDTO.getPhoneNumber());
+        employee.setDepartment(employeeDTO.getDepartment());
+        employee.setPosition(employeeDTO.getPosition());
+        
+        Employee updatedEmployee = employeeRepository.save(employee);
+        return convertToDTO(updatedEmployee);
+    }
+    
+    public void deleteEmployee(Long id) {
+        if (!employeeRepository.existsById(id)) {
+            throw new RuntimeException("Employee not found with id: " + id);
+        }
+        employeeRepository.deleteById(id);
+    }
+    
+    public List<EmployeeDTO> getEmployeesByDepartment(String department) {
+        return employeeRepository.findByDepartment(department)
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+    
+    private EmployeeDTO convertToDTO(Employee employee) {
+        return new EmployeeDTO(
+                employee.getId(),
+                employee.getFirstName(),
+                employee.getLastName(),
+                employee.getEmail(),
+                employee.getPhoneNumber(),
+                employee.getDepartment(),
+                employee.getPosition()
+        );
+    }
+    
+    private Employee convertToEntity(EmployeeDTO employeeDTO) {
+        Employee employee = new Employee();
+        employee.setFirstName(employeeDTO.getFirstName());
+        employee.setLastName(employeeDTO.getLastName());
+        employee.setEmail(employeeDTO.getEmail());
+        employee.setPhoneNumber(employeeDTO.getPhoneNumber());
+        employee.setDepartment(employeeDTO.getDepartment());
+        employee.setPosition(employeeDTO.getPosition());
+        return employee;
+    }
+}
