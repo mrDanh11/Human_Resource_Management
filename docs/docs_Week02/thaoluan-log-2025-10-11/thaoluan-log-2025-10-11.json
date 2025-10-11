@@ -1,0 +1,1406 @@
+{
+  "participants": [
+    {
+      "name": "Quân Hồ Ngọc Trung"
+    },
+    {
+      "name": "Tu Truong"
+    },
+    {
+      "name": "Nguyễn Chí Danh"
+    },
+    {
+      "name": "Lê Viết Hưng"
+    },
+    {
+      "name": "Phạm Trần Trung Hậu"
+    }
+  ],
+  "messages": [
+    {
+      "sender_name": "Quân Hồ Ngọc Trung",
+      "timestamp_ms": 1760001848239,
+      "files": [
+        {
+          "uri": "your_facebook_activity/messages/inbox/nhom7csc12005phattrienudhttthiendai_1135237997966739/files/1406339950910308.docx",
+          "creation_timestamp": 1760001808
+        }
+      ],
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Quân Hồ Ngọc Trung",
+      "timestamp_ms": 1760001847770,
+      "files": [
+        {
+          "uri": "your_facebook_activity/messages/inbox/nhom7csc12005phattrienudhttthiendai_1135237997966739/files/1798270004130642.docx",
+          "creation_timestamp": 1760001808
+        }
+      ],
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Quân Hồ Ngọc Trung",
+      "timestamp_ms": 1760001847388,
+      "content": "Quân gửi biên bản mn xem thử có cần thêm j ko á",
+      "reactions": [
+        {
+          "reaction": "❤",
+          "actor": "Nguyễn Chí Danh"
+        }
+      ],
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759913248242,
+      "content": "oke ô",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Nguyễn Chí Danh",
+      "timestamp_ms": 1759912657351,
+      "content": "mình nên đặc tả chức năng trước rồi làm db sau nhe",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Nguyễn Chí Danh",
+      "timestamp_ms": 1759912613408,
+      "content": "này là task làm đồ án á nha, tui chia làm dần để sau nộp báo cáo làn 1 á",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Phạm Trần Trung Hậu",
+      "timestamp_ms": 1759902135465,
+      "content": "Theo tui hiểu là vị. Với nó cũng phục vụ cho buổi học cái sprint planning trong buổi sau:((",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Phạm Trần Trung Hậu",
+      "timestamp_ms": 1759902104635,
+      "content": "Môn này hong có nên phải làm srs",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Phạm Trần Trung Hậu",
+      "timestamp_ms": 1759902093086,
+      "content": "Theo cái qui trình phát triển pm thì phải có đặc tả đồ á ông:((",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Phạm Trần Trung Hậu",
+      "timestamp_ms": 1759902068979,
+      "content": "Tui đoán CD muốn mình focus vô cái này để làm đồ án luôn dựa vô những cái thầy đã sửa :((",
+      "reactions": [
+        {
+          "reaction": "❤",
+          "actor": "Lê Viết Hưng"
+        }
+      ],
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759902046717,
+      "content": "Nếu vậy mình nên đi từ bước thiết kế db trước",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Phạm Trần Trung Hậu",
+      "timestamp_ms": 1759901944488,
+      "files": [
+        {
+          "uri": "your_facebook_activity/messages/inbox/nhom7csc12005phattrienudhttthiendai_1135237997966739/files/1426853048411354.pdf",
+          "creation_timestamp": 1759901943
+        }
+      ],
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Phạm Trần Trung Hậu",
+      "timestamp_ms": 1759901924188,
+      "content": "Theo tui hiểu thì phần này là làm theo đồ án thực hành á ông",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759901199864,
+      "content": "t chưa hiểu phần này lắm",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759901195742,
+      "photos": [
+        {
+          "uri": "your_facebook_activity/messages/inbox/nhom7csc12005phattrienudhttthiendai_1135237997966739/photos/823524903388477.png",
+          "creation_timestamp": 1759901194
+        }
+      ],
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759901166477,
+      "content": "t gửi tên github",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759901153237,
+      "content": "HungRed1303",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759900764398,
+      "content": "tui chưa hiểu lắm",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759900751245,
+      "content": "ủa cái mà qli dự án oke nhma còn phần thiết kế",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759850084621,
+      "content": "oke ông",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Nguyễn Chí Danh",
+      "timestamp_ms": 1759847949767,
+      "content": "khả năng task có thiếu xót hoặc sao đó, có gì mn xem rồi thảo luận nha",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Nguyễn Chí Danh",
+      "timestamp_ms": 1759847863434,
+      "content": "mọi người lên coi task gòi làm nhe",
+      "reactions": [
+        {
+          "reaction": "❤",
+          "actor": "Quân Hồ Ngọc Trung"
+        },
+        {
+          "reaction": "❤",
+          "actor": "Tu Truong"
+        }
+      ],
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Nguyễn Chí Danh",
+      "timestamp_ms": 1759847843964,
+      "content": "Danh đã ghim một tin nhắn.",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Nguyễn Chí Danh",
+      "timestamp_ms": 1759847841138,
+      "content": "https://docs.google.com/document/d/1ue3G1Rz7rVRWCiL0whRsARFBQMKLg998q2Enqo1jVDU/edit?tab=t.0",
+      "share": {
+        "link": "https://docs.google.com/document/d/1ue3G1Rz7rVRWCiL0whRsARFBQMKLg998q2Enqo1jVDU/edit?tab=t.0",
+        "share_text": "TASK WEEK01 Candidate: Đăng ký tài khoản, nộp CV, theo dõi trạng thái ứng tuyển (view) HR: Đăng tin tuyển dụng, quản lý hồ sơ, gửi email mời phỏng vấn Admin: Xem báo cáo về số lượng ứng viên, tỷ lệ tuyển thành công Quản lý User Common: xem d..."
+      },
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Nguyễn Chí Danh",
+      "timestamp_ms": 1759847838521,
+      "content": "chắc github với gg docs ha",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759834470799,
+      "content": "hay github với mấy cái hay dùng thôi",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759834461344,
+      "content": "không",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759834454800,
+      "content": "mn muốn dùng gitlab",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759834439710,
+      "content": "oke ô",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Nguyễn Chí Danh",
+      "timestamp_ms": 1759834299999,
+      "content": "Mn xem trước bt week2 tối tui chia task sau nhe",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Nguyễn Chí Danh",
+      "timestamp_ms": 1759834264855,
+      "content": "Tui đặt bộ này nhé mn",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Nguyễn Chí Danh",
+      "timestamp_ms": 1759834255860,
+      "photos": [
+        {
+          "uri": "your_facebook_activity/messages/inbox/nhom7csc12005phattrienudhttthiendai_1135237997966739/photos/795814379721253.jpg",
+          "creation_timestamp": 1759834255
+        }
+      ],
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759544270699,
+      "content": "mn sửa gì sửa đi he 
+k thì cop nd đưa tui gen lại cx được",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759544109827,
+      "content": "https://gamma.app/docs/Agile-la-gi-nvnkrj1k6s8kf6g",
+      "share": {
+        "link": "https://gamma.app/docs/Agile-la-gi-nvnkrj1k6s8kf6g",
+        "share_text": "Agile là một triết lý/phương pháp luận phát triển phần mềm và quản lý dự án dựa trên tính linh hoạt, cộng tác, và cải tiến liên tục. Agile ra đời như phản ứng lại các mô hình truyền thống cứng nhắc (như Waterfall). Mục tiêu: Tạo ra..."
+      },
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759544065099,
+      "content": "được á",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Phạm Trần Trung Hậu",
+      "timestamp_ms": 1759544055766,
+      "content": "này edit nd được hong?",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759543949266,
+      "content": "mn muốn sửa gì k",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759543916908,
+      "content": "https://gamma.app/docs/Agile-la-gi-nvnkrj1k6s8kf6g",
+      "share": {
+        "link": "https://gamma.app/docs/Agile-la-gi-nvnkrj1k6s8kf6g",
+        "share_text": "Agile là một triết lý/phương pháp luận phát triển phần mềm và quản lý dự án dựa trên tính linh hoạt, cộng tác, và cải tiến liên tục. Agile ra đời như phản ứng lại các mô hình truyền thống cứng nhắc (như Waterfall). Mục tiêu: Tạo ra..."
+      },
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Nguyễn Chí Danh",
+      "timestamp_ms": 1759543856971,
+      "content": "ông tạo slide như nãy luon đi nha @Lê Viết Hưng",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759542834487,
+      "content": "tạo file doc đi ô @Nguyễn Chí Danh",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759542747612,
+      "content": "https://gamma.app/",
+      "share": {
+        "link": "https://gamma.app/",
+        "share_text": "Gamma is your free-to-use AI design partner for creating effortless presentations, websites, and more. No coding or design skills required."
+      },
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Phạm Trần Trung Hậu",
+      "timestamp_ms": 1759542188929,
+      "content": "https://www.canva.com/design/DAG0yUTRW_w/Qs3T8ketNx3uT_8BxgT79Q/edit?utm_content=DAG0yUTRW_w&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton",
+      "share": {
+        "link": "https://www.canva.com/design/DAG0yUTRW_w/Qs3T8ketNx3uT_8BxgT79Q/edit?utm_content=DAG0yUTRW_w&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton"
+      },
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759502114128,
+      "content": "Hưng đã bày tỏ cảm xúc ❤ về tin nhắn của bạn ",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Tu Truong",
+      "timestamp_ms": 1759500688029,
+      "content": "Tu đã bày tỏ cảm xúc ❤ về tin nhắn của bạn ",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Nguyễn Chí Danh",
+      "timestamp_ms": 1759500471295,
+      "content": "Danh đã bày tỏ cảm xúc ❤ về tin nhắn của bạn ",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Quân Hồ Ngọc Trung",
+      "timestamp_ms": 1759500431326,
+      "photos": [
+        {
+          "uri": "your_facebook_activity/messages/inbox/nhom7csc12005phattrienudhttthiendai_1135237997966739/photos/783078387949502.png",
+          "creation_timestamp": 1759500427
+        }
+      ],
+      "reactions": [
+        {
+          "reaction": "❤",
+          "actor": "Tu Truong"
+        },
+        {
+          "reaction": "❤",
+          "actor": "Nguyễn Chí Danh"
+        },
+        {
+          "reaction": "❤",
+          "actor": "Lê Viết Hưng"
+        }
+      ],
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Quân Hồ Ngọc Trung",
+      "timestamp_ms": 1759500430952,
+      "content": "tui nộp r á",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Nguyễn Chí Danh",
+      "timestamp_ms": 1759500354759,
+      "content": "tui thấy okii rùi á",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Tu Truong",
+      "timestamp_ms": 1759500173957,
+      "content": "okok",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Quân Hồ Ngọc Trung",
+      "timestamp_ms": 1759500156693,
+      "content": "ý là tui ko biết thầy để để thay mục lục hay s á nhưng thấy thầy có yêu cầu lm mục lục nên thoi tui để v luôn",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Tu Truong",
+      "timestamp_ms": 1759500107397,
+      "content": "Có bị dư trang content hay sao á ông",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Quân Hồ Ngọc Trung",
+      "timestamp_ms": 1759500002575,
+      "content": "còn lỗi gì ko á mn",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Quân Hồ Ngọc Trung",
+      "timestamp_ms": 1759499714520,
+      "files": [
+        {
+          "uri": "your_facebook_activity/messages/inbox/nhom7csc12005phattrienudhttthiendai_1135237997966739/files/1394632222088586.pdf",
+          "creation_timestamp": 1759499710
+        }
+      ],
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Quân Hồ Ngọc Trung",
+      "timestamp_ms": 1759499713917,
+      "content": "mn xem lại nha",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759498030101,
+      "content": "còn vẽ cái flow thôi",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759498020777,
+      "content": "giải pháp nhanh 
+xài v0 dev ae",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Nguyễn Chí Danh",
+      "timestamp_ms": 1759497980976,
+      "content": "tại cái cũ nhìn giống list hơn, mà list có người làm rồi á",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Nguyễn Chí Danh",
+      "timestamp_ms": 1759497956616,
+      "content": "ý tui là sửa prototype của dashboard Quân làm thành cái biểu đồ hoặc sao đó để nhìn vào thấy được thống kê á (này là role của admin á)",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Nguyễn Chí Danh",
+      "timestamp_ms": 1759497879848,
+      "content": "ec hong á Quấn, cái List là Hậu làm rồi á",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Quân Hồ Ngọc Trung",
+      "timestamp_ms": 1759497856191,
+      "content": "thì quân sửa thành cái list á",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Nguyễn Chí Danh",
+      "timestamp_ms": 1759497765325,
+      "content": "cái daasshboard đâu ta",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Nguyễn Chí Danh",
+      "timestamp_ms": 1759497758867,
+      "content": "ụa từ",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Quân Hồ Ngọc Trung",
+      "timestamp_ms": 1759497703894,
+      "files": [
+        {
+          "uri": "your_facebook_activity/messages/inbox/nhom7csc12005phattrienudhttthiendai_1135237997966739/files/1091867809408319.pdf",
+          "creation_timestamp": 1759497698
+        }
+      ],
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Quân Hồ Ngọc Trung",
+      "timestamp_ms": 1759497703171,
+      "content": "mn xem lại cho chắc nha",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Quân Hồ Ngọc Trung",
+      "timestamp_ms": 1759497694001,
+      "photos": [
+        {
+          "uri": "your_facebook_activity/messages/inbox/nhom7csc12005phattrienudhttthiendai_1135237997966739/photos/2157365668086044.png",
+          "creation_timestamp": 1759497689
+        }
+      ],
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Quân Hồ Ngọc Trung",
+      "timestamp_ms": 1759497693708,
+      "content": "r á",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Nguyễn Chí Danh",
+      "timestamp_ms": 1759497608012,
+      "content": "Nhom07_BT_Week 01_SRS.pdf",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Quân Hồ Ngọc Trung",
+      "timestamp_ms": 1759497602181,
+      "content": "okoki",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Nguyễn Chí Danh",
+      "timestamp_ms": 1759497593446,
+      "content": "ye",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Quân Hồ Ngọc Trung",
+      "timestamp_ms": 1759497565885,
+      "content": "Tên nhóm là 07 hay s á :))))",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Nguyễn Chí Danh",
+      "timestamp_ms": 1759497410813,
+      "content": "đặt tên là TenNhom_BT_Week 01_SRS.pdf nha",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Nguyễn Chí Danh",
+      "timestamp_ms": 1759497388941,
+      "content": "Quân nộp luon nha",
+      "reactions": [
+        {
+          "reaction": "❤",
+          "actor": "Tu Truong"
+        }
+      ],
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Tu Truong",
+      "timestamp_ms": 1759496499843,
+      "content": "Chắc tên nhóm á",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Quân Hồ Ngọc Trung",
+      "timestamp_ms": 1759496022038,
+      "content": "mình đặt tên như nào á",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759495715351,
+      "content": "ô nộp luôn đi ô",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Quân Hồ Ngọc Trung",
+      "timestamp_ms": 1759494982572,
+      "content": "ai nộp á mn",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Tu Truong",
+      "timestamp_ms": 1759488300193,
+      "content": "Tu đã bày tỏ cảm xúc ❤ về tin nhắn của bạn ",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Quân Hồ Ngọc Trung",
+      "timestamp_ms": 1759488201641,
+      "files": [
+        {
+          "uri": "your_facebook_activity/messages/inbox/nhom7csc12005phattrienudhttthiendai_1135237997966739/files/809296118270431.docx",
+          "creation_timestamp": 1759488182
+        }
+      ],
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Quân Hồ Ngọc Trung",
+      "timestamp_ms": 1759488201135,
+      "content": "quân sửa thêm r nha",
+      "reactions": [
+        {
+          "reaction": "❤",
+          "actor": "Tu Truong"
+        }
+      ],
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Tu Truong",
+      "timestamp_ms": 1759486880729,
+      "content": "T mới bổ sung cái permission  và role với record of change á",
+      "reactions": [
+        {
+          "reaction": "❤",
+          "actor": "Lê Viết Hưng"
+        }
+      ],
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759486722304,
+      "content": "Hưng đã bày tỏ cảm xúc ❤ về tin nhắn của bạn ",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759486719386,
+      "content": "à Tú sửa qua ta chưa Tú",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Quân Hồ Ngọc Trung",
+      "timestamp_ms": 1759486664001,
+      "content": "Okoki",
+      "reactions": [
+        {
+          "reaction": "❤",
+          "actor": "Lê Viết Hưng"
+        }
+      ],
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759486640792,
+      "content": "bài này k biết lquan đến cái đồ án th sau này mình code không 
+tại time có hạn nên tui làm z cho lẹ 
+còn mà mình thiết kế DB các thứ từ đầu thì chắc làm kiểu khác á ô",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Quân Hồ Ngọc Trung",
+      "timestamp_ms": 1759486543487,
+      "content": "um quân nghĩ v á",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759486524477,
+      "content": "ý là tách ra 1 chức năng chính luôn à ô",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Quân Hồ Ngọc Trung",
+      "timestamp_ms": 1759486090603,
+      "content": "quân thì thấy nên tách gửi email lm 1 chức năng á",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Quân Hồ Ngọc Trung",
+      "timestamp_ms": 1759486069806,
+      "files": [
+        {
+          "uri": "your_facebook_activity/messages/inbox/nhom7csc12005phattrienudhttthiendai_1135237997966739/files/1146797850666521.docx",
+          "creation_timestamp": 1759486061
+        }
+      ],
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Quân Hồ Ngọc Trung",
+      "timestamp_ms": 1759486069430,
+      "content": "quân gửi mn xem thử nha",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Quân Hồ Ngọc Trung",
+      "timestamp_ms": 1759458888607,
+      "content": "okok",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759458883865,
+      "content": "Tại thấy mn đa số ai cx để ta",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759458877314,
+      "content": "Chắc để ta hết đi",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759458872620,
+      "content": "À tui cx định nói",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Quân Hồ Ngọc Trung",
+      "timestamp_ms": 1759458864679,
+      "content": "à mà mình có cần thống nhất tên chức năng đặt tiếng anh hay tiếng việt ko á",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759458848336,
+      "content": "Oke ô",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Quân Hồ Ngọc Trung",
+      "timestamp_ms": 1759458838383,
+      "content": "okoki v khi nào xong nhắn nha",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759458824937,
+      "content": "Phần của tui còn xíu nữa á ô",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Quân Hồ Ngọc Trung",
+      "timestamp_ms": 1759458812683,
+      "content": "để quân down về chỉnh format á",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Quân Hồ Ngọc Trung",
+      "timestamp_ms": 1759458802992,
+      "content": "Mn edit xong chưa á",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Quân Hồ Ngọc Trung",
+      "timestamp_ms": 1759423764120,
+      "content": "r á mn xem thử nha",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Nguyễn Chí Danh",
+      "timestamp_ms": 1759420267352,
+      "content": "@Quân Hồ Ngọc Trung ơi, ông làm luôn phần 4, 6, 7 giúp tui luon nha",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Phạm Trần Trung Hậu",
+      "timestamp_ms": 1759314352717,
+      "content": "tui gửi mn link figma nhe",
+      "reactions": [
+        {
+          "reaction": "❤",
+          "actor": "Nguyễn Chí Danh"
+        },
+        {
+          "reaction": "❤",
+          "actor": "Lê Viết Hưng"
+        }
+      ],
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Phạm Trần Trung Hậu",
+      "timestamp_ms": 1759314348438,
+      "content": "https://www.figma.com/design/cGoUC7HVrL0BdBKbVOZNKo/RECRUITMENT-SYSTEM?node-id=0-1&t=a4SQcXXMj3wnHljA-1",
+      "share": {
+        "link": "https://www.figma.com/design/cGoUC7HVrL0BdBKbVOZNKo/RECRUITMENT-SYSTEM?node-id=0-1&t=a4SQcXXMj3wnHljA-1",
+        "share_text": "Created with Figma"
+      },
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Nguyễn Chí Danh",
+      "timestamp_ms": 1759232731979,
+      "content": "https://docs.google.com/document/d/1sFW5qsrX3v_tNfAwyrDTaQpjF9xqPCfSMxOImQi8QqA/edit?usp=sharing",
+      "share": {
+        "link": "https://docs.google.com/document/d/1sFW5qsrX3v_tNfAwyrDTaQpjF9xqPCfSMxOImQi8QqA/edit?usp=sharing",
+        "share_text": "SOFTWARE REQUIREMENT SPECIFICATION (SRS) <Project Name: E-Library System> Version 1.0 Record of Change No Effective Date Version Change Description Author Reviewer/Approver 1 1.0 First draft Contents 1. Introduction 1.1 Purpose 1.2 Scope 1.3 Definitions, acronyms..."
+      },
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Nguyễn Chí Danh",
+      "timestamp_ms": 1759232604979,
+      "content": "ec đợi tui xíu để tui gửi cho",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Nguyễn Chí Danh",
+      "timestamp_ms": 1759232581024,
+      "content": "noo đó là file note",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Nguyễn Chí Danh",
+      "timestamp_ms": 1759232576346,
+      "content": "à quên",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Nguyễn Chí Danh",
+      "timestamp_ms": 1759232567509,
+      "content": "này á",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Quân Hồ Ngọc Trung",
+      "timestamp_ms": 1759232538005,
+      "content": "ý là file doc để lm á",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759232467717,
+      "content": "Là sao ô",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759232465138,
+      "content": "Hả",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Quân Hồ Ngọc Trung",
+      "timestamp_ms": 1759232434221,
+      "content": "có file doc chung ko á",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759232011724,
+      "content": "xanh đậm",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759232007404,
+      "content": "kì trước t dùng mã này",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759231992525,
+      "content": "#0033060",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759231895210,
+      "content": "mn tham khảo ở đây he",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759231889917,
+      "content": "https://www.schemecolor.com/blue-ocean.php",
+      "share": {
+        "link": "https://www.schemecolor.com/blue-ocean.php"
+      },
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Phạm Trần Trung Hậu",
+      "timestamp_ms": 1759231862543,
+      "content": "Gpt hoi phải có cái mã chi tiết á mới thống nhất chứ khác xanh cũng dị:))",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Phạm Trần Trung Hậu",
+      "timestamp_ms": 1759231846847,
+      "photos": [
+        {
+          "uri": "your_facebook_activity/messages/inbox/nhom7csc12005phattrienudhttthiendai_1135237997966739/photos/2273500036434770.jpg",
+          "creation_timestamp": 1759231845
+        },
+        {
+          "uri": "your_facebook_activity/messages/inbox/nhom7csc12005phattrienudhttthiendai_1135237997966739/photos/1482242746233421.jpg",
+          "creation_timestamp": 1759231845
+        }
+      ],
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Nguyễn Chí Danh",
+      "timestamp_ms": 1759231737458,
+      "content": "chắc là xanh dương + trắng cho basic",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Nguyễn Chí Danh",
+      "timestamp_ms": 1759231728133,
+      "content": "ai rành rành cái này pick luon i",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759231654455,
+      "content": "với kiểu chữ",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759231647846,
+      "content": "chứ mỗi người kiểu k đc",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759231639465,
+      "content": "mn pick màu",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759231629317,
+      "content": "cái này cx qtrong",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759231625111,
+      "content": ":)))",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759231623409,
+      "content": "à nãy quên nói",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Nguyễn Chí Danh",
+      "timestamp_ms": 1759231442515,
+      "content": "https://docs.google.com/document/d/1ue3G1Rz7rVRWCiL0whRsARFBQMKLg998q2Enqo1jVDU/edit?usp=sharing",
+      "reactions": [
+        {
+          "reaction": "❤",
+          "actor": "Lê Viết Hưng"
+        }
+      ],
+      "share": {
+        "link": "https://docs.google.com/document/d/1ue3G1Rz7rVRWCiL0whRsARFBQMKLg998q2Enqo1jVDU/edit?usp=sharing",
+        "share_text": "Candidate: Đăng ký tài khoản, nộp CV, theo dõi trạng thái ứng tuyển (view) HR: Đăng tin tuyển dụng, quản lý hồ sơ, gửi email mời phỏng vấn Admin: Xem báo cáo về số lượng ứng viên, tỷ lệ tuyển thành công Quản lý User Common: xem danh sách tu..."
+      },
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759230135565,
+      "content": "Oke ô",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Nguyễn Chí Danh",
+      "timestamp_ms": 1759229928635,
+      "content": "vô nha mn",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Nguyễn Chí Danh",
+      "timestamp_ms": 1759229923068,
+      "content": "https://meet.google.com/gks-oqgc-pgn",
+      "share": {
+        "link": "https://meet.google.com/gks-oqgc-pgn"
+      },
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759229882072,
+      "content": "hay tối",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759229877728,
+      "content": "là h họp k mn ơi",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759224961796,
+      "content": "À oke",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Phạm Trần Trung Hậu",
+      "timestamp_ms": 1759224944952,
+      "content": "Này tùy mn chọn họp hay nhắn hay gì đó:))",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759216362809,
+      "content": "check sao ta",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Phạm Trần Trung Hậu",
+      "timestamp_ms": 1759216296076,
+      "content": "Nhiều mà phải cho mn check trước khi nộp nữa:)) ác ghê",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759216257074,
+      "content": "nhiều quá",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759216253607,
+      "content": "tại sợ làm k kịp",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759216249282,
+      "content": "thấy ý kiến của Hậu cx oke đó",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759216241635,
+      "content": "lát họp r chia việc luôn he mn",
+      "reactions": [
+        {
+          "reaction": "❤",
+          "actor": "Tu Truong"
+        },
+        {
+          "reaction": "❤",
+          "actor": "Phạm Trần Trung Hậu"
+        }
+      ],
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759216229699,
+      "content": "mệt nhờ",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759216210124,
+      "content": "mỗi cn là đi kèm 1 cái seq",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Phạm Trần Trung Hậu",
+      "timestamp_ms": 1759216111555,
+      "content": "Nó có sẵn chứ năng mình khỏi phải nghiên cứu :))",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759216089738,
+      "content": "ăn gì ác z",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759216086338,
+      "content": "mợ :))",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759216081923,
+      "content": "mà kêu làm cái kia",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759216077348,
+      "content": "chứ có 3 ngày",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759216072935,
+      "content": "cx là 1 ý hay",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759216068330,
+      "content": "à oke",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Phạm Trần Trung Hậu",
+      "timestamp_ms": 1759216058266,
+      "content": "Ùa mình diễn đạt lại đừng copy y chang là được",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759216033073,
+      "content": "xogn bổ sung thêm phần UI",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759216024578,
+      "content": "ý Hậu là làm dựa trên cái này he",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Phạm Trần Trung Hậu",
+      "timestamp_ms": 1759212528489,
+      "content": "Cá nhân tui cảm thấy thầy chỉ cần có bài thôi để coi mình hiểu bài tới đâu với quen tool (figma) không cần mới hoàn toàn hoặc mình tự nghĩ ra vì mình chả có domain knowledge. Nên tui đề xuất vị:(( Hong ổn thì thoai nhe",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Phạm Trần Trung Hậu",
+      "timestamp_ms": 1759212423664,
+      "content": "check đi ông :)) chấn động",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Lê Viết Hưng",
+      "timestamp_ms": 1759212411095,
+      "content": "Tui check dl đã :))
+Mới đi học về",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Phạm Trần Trung Hậu",
+      "timestamp_ms": 1759212389081,
+      "content": "Tại tui nghĩ với thời gian còn nhiêu đây mình tự nghĩ đề tài rùi làm từ đầu chắc hong nổi :((",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Phạm Trần Trung Hậu",
+      "timestamp_ms": 1759212363176,
+      "content": "Kiểu mình chỉ lấy mấy cái scope đồ diễn đạt lại đỡ tốn thời gian, chức năng có sẵn mình chỉ cần remane thôi về cơ bản module khá chuẩn. Mình tập trung làm figma đồ với test lại:(( DL còn 3 ngày hoai. Mn thấy ổn hong.",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Phạm Trần Trung Hậu",
+      "timestamp_ms": 1759212304812,
+      "files": [
+        {
+          "uri": "your_facebook_activity/messages/inbox/nhom7csc12005phattrienudhttthiendai_1135237997966739/files/1514214299712739.pdf",
+          "creation_timestamp": 1759212304
+        }
+      ],
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Phạm Trần Trung Hậu",
+      "timestamp_ms": 1759212291875,
+      "content": "Với cái mẫu người ta không có giao diện mình tự bổ sung giao diện đò",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Phạm Trần Trung Hậu",
+      "timestamp_ms": 1759212277364,
+      "content": "kiểu diễn đạt lại chứ không phải gpt dịch á",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Phạm Trần Trung Hậu",
+      "timestamp_ms": 1759212266069,
+      "content": "Theo tui thấy thì 
+1. gu thầy là y chang mẫu đừng nên khác gì á
+2. Thầy muốn mình làm quen với srs hơn là tự phát triển
+3. DL còn khá ngắn mà mình còn làm và check lại bài nhau nữa.
+Nên tui đề xuất mình tìm 1 bài ( tui có ví dụ pdf đính kèm) rồi làm lại",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Phạm Trần Trung Hậu",
+      "timestamp_ms": 1759210309876,
+      "content": "Thầy giao dl chấn động ghê :))",
+      "reactions": [
+        {
+          "reaction": "😆",
+          "actor": "Quân Hồ Ngọc Trung"
+        }
+      ],
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Nguyễn Chí Danh",
+      "timestamp_ms": 1759209539249,
+      "content": "Ecc mình chuyển về 18h họp cho sớm hơn xíu được hong mn",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Nguyễn Chí Danh",
+      "timestamp_ms": 1759209513049,
+      "content": "Danh đã bày tỏ cảm xúc ❤ về tin nhắn của bạn ",
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    },
+    {
+      "sender_name": "Quân Hồ Ngọc Trung",
+      "timestamp_ms": 1759189835645,
+      "content": "Okoki",
+      "reactions": [
+        {
+          "reaction": "❤",
+          "actor": "Nguyễn Chí Danh"
+        }
+      ],
+      "is_geoblocked_for_viewer": false,
+      "is_unsent_image_by_messenger_kid_parent": false
+    }
+  ],
+  "title": "Nhóm 7 - CSC12005 - Phát triển ƯDHTTT hiện đại",
+  "is_still_participant": true,
+  "thread_path": "inbox/nhom7csc12005phattrienudhttthiendai_1135237997966739",
+  "magic_words": [
+    
+  ],
+  "joinable_mode": {
+    "mode": 1,
+    "link": ""
+  }
+}
