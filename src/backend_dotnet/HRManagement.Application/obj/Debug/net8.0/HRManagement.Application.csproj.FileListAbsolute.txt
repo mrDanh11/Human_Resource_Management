@@ -1,0 +1,16 @@
+E:\HK7\PTTK HTTTHĐ\Human_Resource_Management\src\backend_dotnet\HRManagement.Application\bin\Debug\net8.0\HRManagement.Application.deps.json
+E:\HK7\PTTK HTTTHĐ\Human_Resource_Management\src\backend_dotnet\HRManagement.Application\bin\Debug\net8.0\HRManagement.Application.dll
+E:\HK7\PTTK HTTTHĐ\Human_Resource_Management\src\backend_dotnet\HRManagement.Application\bin\Debug\net8.0\HRManagement.Application.pdb
+E:\HK7\PTTK HTTTHĐ\Human_Resource_Management\src\backend_dotnet\HRManagement.Application\bin\Debug\net8.0\HRManagement.Domain.dll
+E:\HK7\PTTK HTTTHĐ\Human_Resource_Management\src\backend_dotnet\HRManagement.Application\bin\Debug\net8.0\HRManagement.Domain.pdb
+E:\HK7\PTTK HTTTHĐ\Human_Resource_Management\src\backend_dotnet\HRManagement.Application\obj\Debug\net8.0\HRManagement.Application.csproj.AssemblyReference.cache
+E:\HK7\PTTK HTTTHĐ\Human_Resource_Management\src\backend_dotnet\HRManagement.Application\obj\Debug\net8.0\HRManagement.Application.GeneratedMSBuildEditorConfig.editorconfig
+E:\HK7\PTTK HTTTHĐ\Human_Resource_Management\src\backend_dotnet\HRManagement.Application\obj\Debug\net8.0\HRManagement.Application.AssemblyInfoInputs.cache
+E:\HK7\PTTK HTTTHĐ\Human_Resource_Management\src\backend_dotnet\HRManagement.Application\obj\Debug\net8.0\HRManagement.Application.AssemblyInfo.cs
+E:\HK7\PTTK HTTTHĐ\Human_Resource_Management\src\backend_dotnet\HRManagement.Application\obj\Debug\net8.0\HRManagement.Application.csproj.CoreCompileInputs.cache
+E:\HK7\PTTK HTTTHĐ\Human_Resource_Management\src\backend_dotnet\HRManagement.Application\obj\Debug\net8.0\HRManagement.Application.sourcelink.json
+E:\HK7\PTTK HTTTHĐ\Human_Resource_Management\src\backend_dotnet\HRManagement.Application\obj\Debug\net8.0\HRManage.380E2EFB.Up2Date
+E:\HK7\PTTK HTTTHĐ\Human_Resource_Management\src\backend_dotnet\HRManagement.Application\obj\Debug\net8.0\HRManagement.Application.dll
+E:\HK7\PTTK HTTTHĐ\Human_Resource_Management\src\backend_dotnet\HRManagement.Application\obj\Debug\net8.0\refint\HRManagement.Application.dll
+E:\HK7\PTTK HTTTHĐ\Human_Resource_Management\src\backend_dotnet\HRManagement.Application\obj\Debug\net8.0\HRManagement.Application.pdb
+E:\HK7\PTTK HTTTHĐ\Human_Resource_Management\src\backend_dotnet\HRManagement.Application\obj\Debug\net8.0\ref\HRManagement.Application.dll
