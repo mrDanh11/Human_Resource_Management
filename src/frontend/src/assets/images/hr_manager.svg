@@ -1,0 +1,7 @@
+<!-- SVG placeholder for HR manager avatar -->
+<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+  <rect width="200" height="200" fill="#7c3aed"/>
+  <circle cx="100" cy="80" r="30" fill="white"/>
+  <circle cx="100" cy="150" r="50" fill="white"/>
+  <text x="100" y="190" text-anchor="middle" fill="#7c3aed" font-size="20" font-weight="bold">HR MGR</text>
+</svg>

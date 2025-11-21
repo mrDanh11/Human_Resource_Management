@@ -5,7 +5,10 @@
  */
 
 import { Bell, LogOut, Menu } from 'lucide-react';
-import { APP_CONFIG, LABELS, ASSET_PATHS, THEME_COLORS } from '../../constants/app';
+import { APP_CONFIG, LABELS, THEME_COLORS } from '../../constants/app';
+import DemoModeIndicator from './DemoModeIndicator';
+import Logo from './Logo';
+import Avatar from './Avatar';
 import type { Employee } from '../../types/employee';
 
 // ===========================================
@@ -54,30 +57,7 @@ const Header: React.FC<HeaderProps> = ({
 
           {/* Logo và tên ứng dụng */}
           <div className="flex items-center space-x-3">
-            <div 
-              className="w-10 h-10 rounded-lg flex items-center justify-center text-gray-700 font-bold border border-gray-200"
-              style={{ backgroundColor: 'white' }}
-            >
-              {/* Icon placeholder - thêm logo tại đây */}
-              <img 
-                src={ASSET_PATHS.logo} 
-                alt="HRMS Logo"
-                className="w-8 h-8 object-contain"
-                onError={(e) => {
-                  // Fallback nếu không có logo
-                  e.currentTarget.style.display = 'none';
-                  const fallback = e.currentTarget.parentNode?.querySelector('span');
-                  if (fallback) (fallback as HTMLElement).style.display = 'flex';
-                }}
-              />
-              <span 
-                className="hidden w-8 h-8 rounded items-center justify-center text-sm font-bold text-gray-700"
-                style={{ backgroundColor: 'white' }}
-              >
-                HR
-              </span>
-            </div>
-            
+            <Logo size="sm" variant="icon-only" />
             <div className="hidden sm:block">
               <h1 
                 className="text-lg font-semibold"
@@ -94,6 +74,9 @@ const Header: React.FC<HeaderProps> = ({
 
         {/* PHẦN BÊN PHẢI - USER INFO VÀ ACTIONS */}
         <div className="flex items-center space-x-4">
+          
+          {/* Demo Mode Indicator */}
+          <DemoModeIndicator currentUserRole={currentUser.role} className="hidden lg:flex" />
           
           {/* Nút thông báo */}
           <button
@@ -118,26 +101,12 @@ const Header: React.FC<HeaderProps> = ({
               className="flex items-center space-x-2 p-2 rounded-md hover:bg-blue-50 transition-colors"
             >
               {/* Avatar user */}
-              <div className="relative">
-                <img
-                  src={currentUser.avatar || ASSET_PATHS.defaultAvatar}
-                  alt={`Avatar ${currentUser.fullName}`}
-                  className="w-8 h-8 rounded-full object-cover border-2"
-                  style={{ borderColor: THEME_COLORS.primary[300] }}
-                  onError={(e) => {
-                    // Fallback nếu không có avatar
-                    e.currentTarget.style.display = 'none';
-                    const fallback = e.currentTarget.parentNode?.querySelector('div');
-                    if (fallback) (fallback as HTMLElement).style.display = 'flex';
-                  }}
-                />
-                <div 
-                  className="hidden w-8 h-8 rounded-full items-center justify-center text-white text-sm font-medium"
-                  style={{ backgroundColor: THEME_COLORS.primary[500] }}
-                >
-                  {currentUser.fullName.charAt(0).toUpperCase()}
-                </div>
-              </div>
+              <Avatar 
+                src={currentUser.avatar}
+                name={currentUser.fullName}
+                size="sm"
+                showBorder={true}
+              />
 
               {/* Tên user - ẩn trên mobile */}
               <div className="hidden md:block text-left">

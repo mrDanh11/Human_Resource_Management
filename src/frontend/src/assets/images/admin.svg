@@ -1,0 +1,7 @@
+<!-- SVG placeholder for admin avatar -->
+<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+  <rect width="200" height="200" fill="#2563eb"/>
+  <circle cx="100" cy="80" r="30" fill="white"/>
+  <circle cx="100" cy="150" r="50" fill="white"/>
+  <text x="100" y="190" text-anchor="middle" fill="#2563eb" font-size="24" font-weight="bold">ADMIN</text>
+</svg>

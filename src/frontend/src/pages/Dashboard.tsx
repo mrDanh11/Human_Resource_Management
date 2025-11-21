@@ -145,32 +145,29 @@ const QuickActionCard: React.FC<QuickActionProps> = ({
 // COMPONENT DASHBOARD CHÍNH
 // ===========================================
 const Dashboard: React.FC<DashboardProps> = ({ currentUser, onNavigate }) => {
-  // State cho dashboard stats
+  // State cho dashboard stats với mock data mặc định
   const [stats, setStats] = useState<DashboardStats>({
-    totalEmployees: 0,
-    pendingRequests: 0,
-    activeCompetitions: 0,
-    totalPoints: 0,
-    currentPoints: currentUser.currentPoints,
-    teamMembers: 0
+    totalEmployees: 156,
+    pendingRequests: 12,
+    activeCompetitions: 3,
+    totalPoints: 85420,
+    currentPoints: currentUser.currentPoints || 2580,
+    teamMembers: 8
   });
 
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading] = useState(false);
 
   // Effect để load data
   useEffect(() => {
-    // Simulate loading data
-    setTimeout(() => {
-      setStats({
-        totalEmployees: 156,
-        pendingRequests: 12,
-        activeCompetitions: 3,
-        totalPoints: 85420,
-        currentPoints: currentUser.currentPoints,
-        teamMembers: 8
-      });
-      setIsLoading(false);
-    }, 1000);
+    // Load real data nếu có API
+    setStats({
+      totalEmployees: 156,
+      pendingRequests: 12,
+      activeCompetitions: 3,
+      totalPoints: 85420,
+      currentPoints: currentUser.currentPoints || 2580,
+      teamMembers: 8
+    });
   }, [currentUser.currentPoints]);
 
   // Render dashboard theo role

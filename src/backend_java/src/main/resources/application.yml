@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: Human Resource Management
+
+server:
+  port: 8081
+
+# Disable database auto-config for now
+spring.autoconfigure.exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration,org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration

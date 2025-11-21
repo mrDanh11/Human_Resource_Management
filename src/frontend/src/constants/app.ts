@@ -72,6 +72,20 @@ export const ROLE_PERMISSIONS = {
 // LABELS CHUNG CHO UI
 // ===========================================
 export const LABELS = {
+  // Authentication
+  auth: {
+    login: 'Đăng nhập',
+    logout: 'Đăng xuất',
+    username: 'Tên đăng nhập',
+    password: 'Mật khẩu',
+    loginSubtitle: 'Đăng nhập vào hệ thống quản lý nhân sự',
+    forgotPassword: 'Quên mật khẩu?',
+    rememberMe: 'Ghi nhớ đăng nhập',
+    invalidCredentials: 'Tên đăng nhập hoặc mật khẩu không đúng',
+    loginSuccess: 'Đăng nhập thành công',
+    logoutSuccess: 'Đăng xuất thành công'
+  },
+
   // Header
   welcome: 'Chào mừng',
   notifications: 'Thông báo',
@@ -241,11 +255,11 @@ export const THEME_COLORS = {
 } as const;
 
 // ===========================================
-// CẤU HÌNH ICON VÀ HÌNH ẢNH
+// CẤU HÌNH ICON VÀ HÌNH ẢNH  
 // ===========================================
 export const ASSET_PATHS = {
   logo: '/src/assets/images/logo.png',
-  defaultAvatar: '/src/assets/images/default-avatar.png',
+  avatars: '/src/assets/images/',
   icons: {
     company: '/src/assets/icons/company-icon.svg',
     notification: '/src/assets/icons/notification.svg',
@@ -253,6 +267,16 @@ export const ASSET_PATHS = {
     warning: '/src/assets/icons/warning.svg',
     error: '/src/assets/icons/error.svg',
   }
+} as const;
+
+// ===========================================
+// AVATAR CONSTANTS (READ-ONLY)
+// ===========================================
+export const AVATAR_SAMPLES = {
+  admin: '/src/assets/images/admin.svg',
+  hr: '/src/assets/images/hr_manager.svg', 
+  manager: '/src/assets/images/manager.svg',
+  employee: '/src/assets/images/employee.svg'
 } as const;
 
 // ===========================================

@@ -7,39 +7,10 @@
 import { useState, useEffect } from 'react';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
-import RoleSwitcher from './components/common/RoleSwitcher';
+import LoginPage from './pages/LoginPage';
+import ProfilePage from './pages/profile/ProfilePage';
 import type { Employee } from './types/employee';
 import { USER_ROLES, APP_CONFIG } from './constants/app';
-
-// ===========================================
-// MOCK DATA CHO DEMO
-// ===========================================
-const mockCurrentUser: Employee = {
-  id: '1',
-  employeeCode: 'EMP001',
-  fullName: 'Nguyễn Chí Danh',
-  email: 'danh.nguyen@company.com',
-  phone: '0901234567',
-  citizenId: '079123456789',
-  taxCode: '0123456789001',
-  address: '123 Nguyễn Văn Cừ, Quận 5, TP.HCM',
-  bankAccount: {
-    accountNumber: '1234567890',
-    bankName: 'Vietcombank',
-    accountHolder: 'NGUYEN CHI DANH'
-  },
-  department: 'Công nghệ thông tin',
-  position: 'Senior Developer',
-  joinDate: new Date('2023-01-15'),
-  avatar: undefined,
-  status: 'active',
-  role: USER_ROLES.EMPLOYEE, // Mặc định là Employee, có thể đổi bằng RoleSwitcher
-  currentPoints: 2580,
-  totalPoints: 15240,
-  lastLoginAt: new Date(),
-  createdAt: new Date('2023-01-15'),
-  updatedAt: new Date()
-};
 
 // ===========================================
 // COMPONENT APP CHÍNH
@@ -54,22 +25,51 @@ function App() {
 
   // Effect khởi tạo app
   useEffect(() => {
-    // Simulate authentication check
-    setTimeout(() => {
-      setCurrentUser(mockCurrentUser);
-      setIsAuthenticated(true);
-      setIsLoading(false);
-    }, 1000);
-
+    // Check for saved auth state in localStorage
+    const savedUser = localStorage.getItem('currentUser');
+    const savedAuth = localStorage.getItem('isAuthenticated');
+    
+    if (savedUser && savedAuth === 'true') {
+      try {
+        const user = JSON.parse(savedUser);
+        setCurrentUser(user);
+        setIsAuthenticated(true);
+      } catch (error) {
+        console.error('Error parsing saved user data:', error);
+        localStorage.removeItem('currentUser');
+        localStorage.removeItem('isAuthenticated');
+      }
+    }
+    
+    setIsLoading(false);
+    
     // Set document title
     document.title = APP_CONFIG.name;
   }, []);
 
-  // Handlers
+  // Handler đăng nhập
+  const handleLogin = (user: Employee) => {
+    setCurrentUser(user);
+    setIsAuthenticated(true);
+    setCurrentPath('/dashboard');
+    
+    // Save auth state to localStorage
+    localStorage.setItem('currentUser', JSON.stringify(user));
+    localStorage.setItem('isAuthenticated', 'true');
+    
+    console.log('User logged in:', user.fullName, 'as', user.role);
+  };
+
+  // Handler đăng xuất
   const handleLogout = () => {
     setCurrentUser(null);
     setIsAuthenticated(false);
     setCurrentPath('/login');
+    
+    // Clear auth state from localStorage
+    localStorage.removeItem('currentUser');
+    localStorage.removeItem('isAuthenticated');
+    
     console.log('User logged out');
   };
 
@@ -92,12 +92,34 @@ function App() {
         // Cập nhật điểm theo role
         currentPoints: newRole === USER_ROLES.ADMIN ? 10000 : 
                       newRole === USER_ROLES.HR ? 7500 :
-                      newRole === USER_ROLES.MANAGER ? 5000 : 2580
+                      newRole === USER_ROLES.MANAGER ? 5000 : 2580,
+        lastLoginAt: new Date()
       };
       setCurrentUser(updatedUser);
+      
+      // Update localStorage
+      localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+      
       console.log('Role changed to:', newRole);
     }
   };
+
+  // Loading screen
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="w-16 h-16 mx-auto mb-4 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-gray-600">Đang tải...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show login page if not authenticated
+  if (!isAuthenticated) {
+    return <LoginPage onLogin={handleLogin} />;
+  }
 
   // Render content dựa trên route hiện tại
   const renderContent = () => {
@@ -106,20 +128,15 @@ function App() {
     switch (currentPath) {
       case '/dashboard':
         return (
-          <>
-            <RoleSwitcher currentUser={currentUser} onRoleChange={handleRoleChange} />
-            <Dashboard currentUser={currentUser} onNavigate={handleNavigate} />
-          </>
+          <Dashboard currentUser={currentUser} onNavigate={handleNavigate} />
         );
       
       case '/profile':
         return (
-          <div className="p-6">
-            <h1 className="text-2xl font-bold mb-4">Hồ sơ cá nhân</h1>
-            <div className="bg-white rounded-lg shadow p-6">
-              <p>Trang profile sẽ được phát triển ở đây...</p>
-            </div>
-          </div>
+          <ProfilePage 
+            currentUser={currentUser} 
+            onNavigate={handleNavigate} 
+          />
         );
       
       case '/employees':
