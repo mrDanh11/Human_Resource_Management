@@ -10,7 +10,7 @@
 // Save/Cancel buttons với loading state
 
 import { DocumentTextIcon, CloudArrowUpIcon } from '@heroicons/react/24/outline';
-import type { Employee } from '../../types/employee';
+import type { UpdateEmployeeRequest } from '../../types/employee';
 import Modal from '../common/Modal';
 import { useForm, Controller } from 'react-hook-form';
 import { useState, useEffect } from 'react';
@@ -33,7 +33,7 @@ interface FromDataEmployee {
 }
 
 interface UpdateEmployeeInformationModalProps {
-    employee: Employee | null;
+    employee: UpdateEmployeeRequest | null;
     isOpen: boolean;
     onClose: () => void;
     onSubmit: (data: FromDataEmployee) => Promise<void>;
@@ -126,16 +126,9 @@ const UpdateEmployeeInformation = ({ employee, isOpen, onClose, onSubmit, isSubm
 
         // Tạo payload cuối cùng
         const payloadToSend = {
-            fullName: data.fullName,
-            phone: data.phone,
-            email: data.email,
-            citizenId: data.citizenId,
-            taxCode: data.taxCode,
-            address: data.address,
-            gender: data.gender,
-            bankAccount: data.bankAccount,
-
-            // Thêm avatar dưới dạng string (Base64) vào payload
+            id: employee.id,
+            ...data,
+            gender: employee.gender,
             avatar: finalAvatarString,
         };
 
@@ -213,7 +206,7 @@ const UpdateEmployeeInformation = ({ employee, isOpen, onClose, onSubmit, isSubm
                         </label>
                         <input
                             type="text"
-                            value={formatDate(employee.joinDate)}
+                            value={formatDate(employee.joinDate!.toISOString())}
                             readOnly
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none"
                         />
@@ -327,11 +320,11 @@ const UpdateEmployeeInformation = ({ employee, isOpen, onClose, onSubmit, isSubm
                         name="email"
                         defaultValue={employee.email}
                         control={control}
-                        rules={{ required: 'Email là bắt buộc.', pattern: { value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i, message: 'SĐT không hợp lệ.' } }}
+                        rules={{ required: 'Email là bắt buộc.', pattern: { value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i, message: 'Email không hợp lệ.' } }}
                         render={({ field }) => (
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2 text-left">Email (*)</label>
-                                <input {...field} type="tel" className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none" />
+                                <input {...field} type="email" className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none" />
                                 {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
                             </div>
                         )}
@@ -339,13 +332,13 @@ const UpdateEmployeeInformation = ({ employee, isOpen, onClose, onSubmit, isSubm
 
                     <Controller
                         name="gender"
-                        defaultValue={getGenderText(employee.gender)}
+                        defaultValue={getGenderText(employee.gender!)}
                         control={control}
                         rules={{ required: 'Giới tính là bắt buộc.' }}
                         render={({ field }) => (
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2 text-left">Giới tính (*)</label>
-                                <input {...field} type="tel" className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none" />
+                                <input {...field} type="text" className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none" />
                                 {errors.gender && <p className="text-red-500 text-sm mt-1">{errors.gender.message}</p>}
                             </div>
                         )}
@@ -397,13 +390,11 @@ const UpdateEmployeeInformation = ({ employee, isOpen, onClose, onSubmit, isSubm
                     )}
                 />
 
-                {/* -------------------- THÔNG TIN NGÂN HÀNG -------------------- */}
-                <h3 className="text-lg text-gray-900 font-semibold pt-4 border-t">Thông Tin Ngân Hàng</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Tên Ngân hàng */}
                     <Controller
                         name="bankAccount.bankName"
-                        defaultValue={employee.bankAccount.bankName}
+                        defaultValue={employee.bankAccount?.bankName}
                         control={control}
                         rules={{ required: 'Tên ngân hàng là bắt buộc.' }}
                         render={({ field }) => (
@@ -418,7 +409,7 @@ const UpdateEmployeeInformation = ({ employee, isOpen, onClose, onSubmit, isSubm
                     {/* Số TK Ngân Hàng */}
                     <Controller
                         name="bankAccount.accountNumber"
-                        defaultValue={employee.bankAccount.accountNumber}
+                        defaultValue={employee.bankAccount?.accountNumber}
                         control={control}
                         rules={{ required: 'Số tài khoản là bắt buộc.' }}
                         render={({ field }) => (
