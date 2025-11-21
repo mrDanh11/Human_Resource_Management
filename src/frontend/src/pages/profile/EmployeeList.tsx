@@ -1,67 +1,84 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserGroupIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
-import type { Employee } from '../../types/employee';
-import { mockEmployees } from '../../data/employeeData';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { fetchEmployees } from '../../store/employeeSlice';
 import EmployeeDetailModal from '../../components/profile/EmployeeDetailModal';
 
 const EmployeeList = () => {
     const navigate = useNavigate();
-    const [employees] = useState<Employee[]>(mockEmployees);
+    const dispatch = useAppDispatch();
+    
+    // Redux state
+    const { 
+        employees, 
+        loading, 
+        error 
+    } = useAppSelector((state) => state.employee);
+
+    // Local state
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedDepartment, setSelectedDepartment] = useState('');
-    const [selectedPosition, setSelectedPosition] = useState('');
+    const [selectedRole, setSelectedRole] = useState('');
     const [selectedStatus, setSelectedStatus] = useState('');
-    const [currentPage, setCurrentPage] = useState(1);
-    const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+    const [selectedEmployeeId, setSelectedEmployeeId] = useState<number | null>(null);
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
-    // Reset về trang 1 khi filter hoặc search thay đổi
+    // Chỉ fetch một lần khi component mount
     useEffect(() => {
-        setCurrentPage(1);
-    }, [searchTerm, selectedDepartment, selectedPosition, selectedStatus]);
+        dispatch(fetchEmployees({
+            pageNumber: 1,
+            pageSize: 1000, // Lấy nhiều records để filter trên client
+        }));
+    }, [dispatch]);
 
-    const itemsPerPage = 5;
-
-    // Lấy danh sách phòng ban duy nhất
-    const departments = useMemo(() => {
-        return Array.from(new Set(employees.map(emp => emp.department)));
-    }, [employees]);
-
-    // Lấy danh sách chức vụ duy nhất
-    const positions = useMemo(() => {
-        return Array.from(new Set(employees.map(emp => emp.position)));
-    }, [employees]);
-
-    // Lọc danh sách nhân viên
+    // Filter danh sách nhân viên trên client
     const filteredEmployees = useMemo(() => {
         return employees.filter(employee => {
-        const matchesSearch = employee.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            employee.employeeCode.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesDepartment = !selectedDepartment || employee.department === selectedDepartment;
-        const matchesPosition = !selectedPosition || employee.position === selectedPosition;
-        const matchesStatus = !selectedStatus || employee.status === selectedStatus;
+            const matchesSearch = !searchTerm || 
+                employee.fullname.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                employee.email.toLowerCase().includes(searchTerm.toLowerCase());
+            
+            const matchesDepartment = !selectedDepartment || 
+                employee.departmentName.toLowerCase().includes(selectedDepartment.toLowerCase());
+            
+            const matchesRole = !selectedRole || 
+                employee.roleName.toLowerCase().includes(selectedRole.toLowerCase());
+            
+            const matchesStatus = !selectedStatus || 
+                employee.status === selectedStatus;
 
-        return matchesSearch && matchesDepartment && matchesPosition && matchesStatus;
+            return matchesSearch && matchesDepartment && matchesRole && matchesStatus;
         });
-    }, [employees, searchTerm, selectedDepartment, selectedPosition, selectedStatus]);
+    }, [employees, searchTerm, selectedDepartment, selectedRole, selectedStatus]);
 
-    // Tính toán phân trang
-    const totalPages = Math.ceil(filteredEmployees.length / itemsPerPage);
+    // Pagination trên client
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
+    const totalFilteredPages = Math.ceil(filteredEmployees.length / itemsPerPage);
+    const startIdx = (currentPage - 1) * itemsPerPage;
+    const endIdx = startIdx + itemsPerPage;
+    const currentEmployees = filteredEmployees.slice(startIdx, endIdx);
+
+    // Reset về trang 1 khi filter thay đổi
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm, selectedDepartment, selectedRole, selectedStatus]);
+
+    // Tính toán phân trang cho hiển thị
     const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const currentEmployees = filteredEmployees.slice(startIndex, endIndex);
+    const endIndex = startIndex + currentEmployees.length;
 
     // Xử lý xem chi tiết
-    const handleViewDetail = (employee: Employee) => {
-        setSelectedEmployee(employee);
+    const handleViewDetail = (employeeId: number) => {
+        setSelectedEmployeeId(employeeId);
         setIsDetailModalOpen(true);
     };
 
     // Xử lý đóng modal
     const handleCloseModal = () => {
         setIsDetailModalOpen(false);
-        setSelectedEmployee(null);
+        setSelectedEmployeeId(null);
     };
 
     const getStatusBadgeColor = (status: string) => {
@@ -146,47 +163,27 @@ const EmployeeList = () => {
                             <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
                                 Phòng ban
                             </label>
-                            <select
+                            <input
+                                type="text"
+                                placeholder="Nhập tên phòng ban..."
                                 value={selectedDepartment}
                                 onChange={(e) => setSelectedDepartment(e.target.value)}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:outline-none appearance-none bg-white cursor-pointer"
-                                style={{
-                                backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
-                                backgroundPosition: 'right 0.5rem center',
-                                backgroundRepeat: 'no-repeat',
-                                backgroundSize: '1.5em 1.5em',
-                                paddingRight: '2.5rem'
-                                }}
-                            >
-                                <option value="">Tất cả phòng ban</option>
-                                {departments.map(dept => (
-                                <option key={dept} value={dept}>{dept}</option>
-                                ))}
-                            </select>
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                            />
                         </div>
 
-                        {/* Position Filter */}
+                        {/* Position/Role Filter */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
                                 Chức vụ
                             </label>
-                            <select
-                                value={selectedPosition}
-                                onChange={(e) => setSelectedPosition(e.target.value)}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:outline-none appearance-none bg-white cursor-pointer"
-                                style={{
-                                backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
-                                backgroundPosition: 'right 0.5rem center',
-                                backgroundRepeat: 'no-repeat',
-                                backgroundSize: '1.5em 1.5em',
-                                paddingRight: '2.5rem'
-                                }}
-                            >
-                                <option value="">Tất cả chức vụ</option>
-                                {positions.map(pos => (
-                                <option key={pos} value={pos}>{pos}</option>
-                                ))}
-                            </select>
+                            <input
+                                type="text"
+                                placeholder="Nhập tên chức vụ..."
+                                value={selectedRole}
+                                onChange={(e) => setSelectedRole(e.target.value)}
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                            />
                         </div>
 
                         {/* Status Filter */}
@@ -239,53 +236,79 @@ const EmployeeList = () => {
                                 </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
-                                {currentEmployees.map((employee) => (
-                                <tr key={employee.id} className="hover:bg-gray-50">
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="flex items-center">
-                                            <div className="shrink-0 h-10 w-10">
-                                                <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
-                                                    {employee.fullName.charAt(0)}
+                                {loading ? (
+                                    <tr>
+                                        <td colSpan={5} className="px-6 py-12 text-center">
+                                            <div className="flex justify-center items-center">
+                                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                                                <span className="ml-3 text-gray-600">Đang tải dữ liệu...</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ) : error ? (
+                                    <tr>
+                                        <td colSpan={5} className="px-6 py-12 text-center">
+                                            <div className="text-red-600">
+                                                <p className="font-medium">Có lỗi xảy ra</p>
+                                                <p className="text-sm mt-1">{error}</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ) : currentEmployees.length === 0 ? (
+                                    <tr>
+                                        <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
+                                            Không tìm thấy nhân viên nào
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    currentEmployees.map((employee) => (
+                                        <tr key={employee.id} className="hover:bg-gray-50">
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div className="flex items-center">
+                                                    <div className="shrink-0 h-10 w-10">
+                                                        <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
+                                                            {employee.fullname.charAt(0)}
+                                                        </div>
+                                                    </div>
+                                                    <div className="ml-4 text-left">
+                                                        <div className="text-sm font-medium text-gray-900">{employee.fullname}</div>
+                                                        <div className="text-sm text-gray-500">{employee.email}</div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div className="ml-4 text-left">
-                                                <div className="text-sm font-medium text-gray-900">{employee.fullName}</div>
-                                                <div className="text-sm text-gray-500">{employee.employeeCode}</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-left">
-                                        <div className="text-sm text-gray-900">{employee.department}</div>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-left">
-                                        <div className="text-sm text-gray-900">{employee.position}</div>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-left">
-                                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeColor(employee.status)}`}>
-                                            {getStatusText(employee.status)}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-left text-sm font-medium">
-                                    <button
-                                        onClick={() => handleViewDetail(employee)}
-                                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-all"
-                                        style={{
-                                        transition: 'all 0.3s ease'
-                                        }}
-                                        onMouseEnter={(e) => {
-                                        e.currentTarget.style.transform = 'translateY(-2px)';
-                                        e.currentTarget.style.boxShadow = '0 5px 20px rgba(102, 126, 234, 0.4)';
-                                        }}
-                                        onMouseLeave={(e) => {
-                                        e.currentTarget.style.transform = 'translateY(0)';
-                                        e.currentTarget.style.boxShadow = 'none';
-                                        }}
-                                    >
-                                        Xem chi tiết
-                                    </button>
-                                    </td>
-                                </tr>
-                                ))}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-left">
+                                                <div className="text-sm text-gray-900">{employee.departmentName}</div>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-left">
+                                                <div className="text-sm text-gray-900">{employee.roleName}</div>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-left">
+                                                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeColor(employee.status)}`}>
+                                                    {getStatusText(employee.status)}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-left text-sm font-medium">
+                                                <button
+                                                    onClick={() => handleViewDetail(employee.id)}
+                                                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-all"
+                                                    style={{
+                                                        transition: 'all 0.3s ease'
+                                                    }}
+                                                    onMouseEnter={(e) => {
+                                                        e.currentTarget.style.transform = 'translateY(-2px)';
+                                                        e.currentTarget.style.boxShadow = '0 5px 20px rgba(102, 126, 234, 0.4)';
+                                                    }}
+                                                    onMouseLeave={(e) => {
+                                                        e.currentTarget.style.transform = 'translateY(0)';
+                                                        e.currentTarget.style.boxShadow = 'none';
+                                                    }}
+                                                >
+                                                    Xem chi tiết
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
                             </tbody>
                         </table>
                     </div>
@@ -301,8 +324,8 @@ const EmployeeList = () => {
                                 Trước
                             </button>
                             <button
-                                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                                disabled={currentPage === totalPages}
+                                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalFilteredPages))}
+                                disabled={currentPage === totalFilteredPages}
                                 className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
                             >
                                 Sau
@@ -311,7 +334,7 @@ const EmployeeList = () => {
                         <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                             <div>
                                 <p className="text-sm text-gray-700">
-                                    Hiển thị <span className="font-medium">{startIndex + 1}</span> - <span className="font-medium">{Math.min(endIndex, filteredEmployees.length)}</span> trong tổng số <span className="font-medium">{filteredEmployees.length}</span> nhân viên
+                                    Hiển thị <span className="font-medium">{startIndex + 1}</span> - <span className="font-medium">{endIndex}</span> trong tổng số <span className="font-medium">{filteredEmployees.length}</span> nhân viên
                                 </p>
                             </div>
                             <div>
@@ -323,7 +346,7 @@ const EmployeeList = () => {
                                     >
                                         ‹
                                     </button>
-                                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                                    {Array.from({ length: totalFilteredPages }, (_, i) => i + 1).map((page) => (
                                         <button
                                         key={page}
                                         onClick={() => setCurrentPage(page)}
@@ -337,8 +360,8 @@ const EmployeeList = () => {
                                         </button>
                                     ))}
                                     <button
-                                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                                        disabled={currentPage === totalPages}
+                                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalFilteredPages))}
+                                        disabled={currentPage === totalFilteredPages}
                                         className="relative inline-flex items-center px-3 py-1.5 rounded border border-gray-400 bg-white text-xs font-bold text-black hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed justify-center"
                                     >
                                         ›
@@ -352,7 +375,7 @@ const EmployeeList = () => {
 
             {/* Employee Detail Modal */}
             <EmployeeDetailModal
-                employee={selectedEmployee}
+                employeeId={selectedEmployeeId}
                 isOpen={isDetailModalOpen}
                 onClose={handleCloseModal}
             />
