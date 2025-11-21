@@ -1,10 +1,10 @@
-/**
- * employeeService.ts - Service cho quản lý nhân viên
- * Các API calls: CRUD nhân viên, tìm kiếm, cập nhật profile
- */
+import axios from 'axios';
 
-// API lấy danh sách nhân viên
-// API tạo nhân viên mới  
-// API cập nhật thông tin nhân viên
-// API xóa nhân viên
-// API tìm kiếm nhân viên theo criteria
+const API_URL = 'http://localhost:5258/api/employee';
+
+export const employee = {
+    createEmployee: async (employee : any) => {
+        const response = await axios.post(API_URL, employee);
+        return response.data;
+    }
+}
