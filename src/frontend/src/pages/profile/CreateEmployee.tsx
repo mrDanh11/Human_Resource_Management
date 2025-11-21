@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserPlusIcon } from "@heroicons/react/24/outline";
-import { employee } from "../../services/employeeService";
+import { employeeService } from "../../services/employeeService";
 
 const CreateEmployee = () => {
     const navigate = useNavigate();
@@ -56,7 +56,7 @@ const CreateEmployee = () => {
         console.log("Payload gửi API:", payload);
 
         try {
-            await employee.createEmployee(payload);
+            await employeeService.createEmployee(payload);
             alert("Tạo nhân viên thành công!");
             navigate("/employee/list");
         } catch (error) {
