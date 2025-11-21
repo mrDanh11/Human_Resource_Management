@@ -1,8 +1,3 @@
-/**
- * employee.ts - Định nghĩa types cho thông tin nhân viên
- * Chứa các interface cho quản lý profile nhân viên
- */
-
 export interface Employee {
   id: string;
   employeeCode: string;
@@ -19,7 +14,9 @@ export interface Employee {
   };
   department: string;
   position: string;
-  joinDate: Date;
+  joinDate: string; // ISO date string
+  birthDate: string; // ISO date string - Ngày sinh nhật
+  gender: 'male' | 'female' | 'other'; // Giới tính
   avatar?: string;
   status: 'active' | 'inactive' | 'terminated';
   role: 'employee' | 'manager' | 'admin';
