@@ -55,8 +55,8 @@ const Header: React.FC<HeaderProps> = ({
           {/* Logo và tên ứng dụng */}
           <div className="flex items-center space-x-3">
             <div 
-              className="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold"
-              style={{ backgroundColor: THEME_COLORS.primary[600] }}
+              className="w-10 h-10 rounded-lg flex items-center justify-center text-gray-700 font-bold border border-gray-200"
+              style={{ backgroundColor: 'white' }}
             >
               {/* Icon placeholder - thêm logo tại đây */}
               <img 
@@ -71,8 +71,8 @@ const Header: React.FC<HeaderProps> = ({
                 }}
               />
               <span 
-                className="hidden w-8 h-8 rounded items-center justify-center text-sm font-bold"
-                style={{ backgroundColor: THEME_COLORS.primary[600] }}
+                className="hidden w-8 h-8 rounded items-center justify-center text-sm font-bold text-gray-700"
+                style={{ backgroundColor: 'white' }}
               >
                 HR
               </span>
