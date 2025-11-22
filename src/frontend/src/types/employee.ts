@@ -31,6 +31,7 @@ export interface CreateEmployeeRequest {
   citizenId: string;
   taxCode: string;
   address: string;
+  gender: 'male' | 'female' | 'other';
   bankAccount: {
     accountNumber: string;
     bankName: string;
@@ -38,9 +39,15 @@ export interface CreateEmployeeRequest {
   };
   department: string;
   position: string;
+  role: 'employee' | 'manager' | 'admin';
   joinDate: Date;
 }
 
 export interface UpdateEmployeeRequest extends Partial<CreateEmployeeRequest> {
   id: string;
+  employeeCode: string;
+  avatar: string;
+  status: 'active' | 'inactive' | 'terminated';
+  currentPoints: number,
+  totalPoints: number,
 }
