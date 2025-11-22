@@ -47,7 +47,7 @@ public class EmployeeMappingProfile : Profile
             .ForMember(dest => dest.Email, opt => opt.Ignore())
             .ForMember(dest => dest.RoleId, opt => opt.Ignore())
             .ForMember(dest => dest.JoinDate, opt => opt.Ignore())
-            .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
             .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
             .ForMember(dest => dest.Role, opt => opt.Ignore())
             .ForMember(dest => dest.Department, opt => opt.Ignore())
