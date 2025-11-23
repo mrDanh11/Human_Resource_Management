@@ -1,48 +1,33 @@
-/**
- * employeeService.ts - Service cho quản lý nhân viên
- * Các API calls: CRUD nhân viên, tìm kiếm, cập nhật profile
- */
+import axios from 'axios';
 
-import api from './api';
-import type { PaginatedResponse, PaginationParams } from '../types/pagination';
-import type { EmployeeListItem } from '../store/employeeSlice';
-import type { Employee, CreateEmployeeRequest, UpdateEmployeeRequest } from '../types/employee';
+const API_URL = 'http://localhost:5258/api/employee';
 
 export const employeeService = {
-  // Lấy danh sách nhân viên với pagination
-  getEmployees: async (params: PaginationParams): Promise<PaginatedResponse<EmployeeListItem>> => {
-    const response = await api.get<PaginatedResponse<EmployeeListItem>>('/Employee', {
-      params: {
-        PageNumber: params.pageNumber || 1,
-        PageSize: params.pageSize || 10,
-        SearchTerm: params.searchTerm || '',
-        DepartmentName: params.departmentName || '',
-        Status: params.status || '',
-      },
-    });
-    return response.data;
-  },
+    getAllEmployees: async (pageNumber = 1, pageSize = 5) => {
+        const response = await axios.get(API_URL, {
+            params: { pageNumber, pageSize }
+        });
+        return response.data;
+    },
+    
+    getEmployeeById: async (id: number) => {
+        const response = await axios.get(`${API_URL}/${id}`);
+        return response.data;
+    },
 
-  // Lấy thông tin chi tiết nhân viên
-  getEmployeeById: async (id: string): Promise<Employee> => {
-    const response = await api.get<Employee>(`/Employee/${id}`);
-    return response.data;
-  },
+    createEmployee: async (employee : any) => {
+        const response = await axios.post(API_URL, employee);
+        return response.data;
+    },
 
-  // Tạo nhân viên mới
-  createEmployee: async (data: CreateEmployeeRequest): Promise<Employee> => {
-    const response = await api.post<Employee>('/Employee', data);
-    return response.data;
-  },
+    updateEmployee: async (id: number, employee: any) => {
+        const response = await axios.put(`${API_URL}/${id}`, employee);
+        return response.data;
+    },
 
-  // Cập nhật thông tin nhân viên
-  updateEmployee: async (id: string, data: UpdateEmployeeRequest): Promise<Employee> => {
-    const response = await api.put<Employee>(`/Employee/${id}`, data);
-    return response.data;
-  },
+    deleteEmployee: async (id: number) => {
+        const response = await axios.delete(`${API_URL}/${id}`);
+        return response.data;
+    }
+}
 
-  // Xóa nhân viên
-  deleteEmployee: async (id: string): Promise<void> => {
-    await api.delete(`/Employee/${id}`);
-  },
-};
