@@ -54,7 +54,7 @@ const EmployeeList = () => {
 
     // Pagination trên client
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 10;
+    const itemsPerPage = 5;
     const totalFilteredPages = Math.ceil(filteredEmployees.length / itemsPerPage);
     const startIdx = (currentPage - 1) * itemsPerPage;
     const endIdx = startIdx + itemsPerPage;
