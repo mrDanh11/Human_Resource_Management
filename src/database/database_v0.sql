@@ -624,3 +624,4 @@ INSERT INTO request (employee_id, description, start_time, end_time, type, statu
 -- $$ LANGUAGE plpgsql;
 
 -- COMMIT;
+
