@@ -2,18 +2,19 @@ import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserGroupIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { fetchEmployees } from '../../store/employeeSlice';
+import { fetchEmployees, updateEmployeeWorkingInfo } from '../../store/employeeSlice';
 import EmployeeDetailModal from '../../components/profile/EmployeeDetailModal';
+import UpdateEmployeeWorkingInformation from '../../components/profile/ProfileFromEmployeeForHR';
 
 const EmployeeList = () => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
-    
+
     // Redux state
-    const { 
-        employees, 
-        loading, 
-        error 
+    const {
+        employees,
+        loading,
+        error
     } = useAppSelector((state) => state.employee);
 
     // Local state
@@ -23,6 +24,8 @@ const EmployeeList = () => {
     const [selectedStatus, setSelectedStatus] = useState('');
     const [selectedEmployeeId, setSelectedEmployeeId] = useState<number | null>(null);
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+    const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Chỉ fetch một lần khi component mount
     useEffect(() => {
@@ -35,17 +38,17 @@ const EmployeeList = () => {
     // Filter danh sách nhân viên trên client
     const filteredEmployees = useMemo(() => {
         return employees.filter(employee => {
-            const matchesSearch = !searchTerm || 
+            const matchesSearch = !searchTerm ||
                 employee.fullname.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 employee.email.toLowerCase().includes(searchTerm.toLowerCase());
-            
-            const matchesDepartment = !selectedDepartment || 
+
+            const matchesDepartment = !selectedDepartment ||
                 employee.departmentName.toLowerCase().includes(selectedDepartment.toLowerCase());
-            
-            const matchesRole = !selectedRole || 
+
+            const matchesRole = !selectedRole ||
                 employee.roleName.toLowerCase().includes(selectedRole.toLowerCase());
-            
-            const matchesStatus = !selectedStatus || 
+
+            const matchesStatus = !selectedStatus ||
                 employee.status === selectedStatus;
 
             return matchesSearch && matchesDepartment && matchesRole && matchesStatus;
@@ -78,32 +81,65 @@ const EmployeeList = () => {
     // Xử lý đóng modal
     const handleCloseModal = () => {
         setIsDetailModalOpen(false);
+        setIsUpdateModalOpen(false);
         setSelectedEmployeeId(null);
+    };
+
+    //Xử lý cập nhật
+    const handleUpdate = (employeeId: number) => {
+        setSelectedEmployeeId(employeeId);
+        setIsUpdateModalOpen(true);
+    };
+
+    // Xử lý submit cập nhật thông tin làm việc
+    const handleUpdateSubmit = async (data: { employeeId: number; fullname: string; departmentId: number; status: string }) => {
+        if (!data.employeeId) return;
+
+        setIsSubmitting(true);
+        try {
+            await dispatch(updateEmployeeWorkingInfo({
+                employeeId: data.employeeId,
+                fullname: data.fullname,
+                departmentId: data.departmentId,
+                status: data.status,
+            })).unwrap();
+
+            // Refresh danh sách nhân viên sau khi cập nhật thành công
+            dispatch(fetchEmployees({
+                pageNumber: 1,
+                pageSize: 1000,
+            }));
+        } catch (error) {
+            console.error('Lỗi khi cập nhật thông tin nhân viên:', error);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const getStatusBadgeColor = (status: string) => {
         switch (status) {
-        case 'active':
-            return 'bg-green-100 text-green-800';
-        case 'inactive':
-            return 'bg-yellow-100 text-yellow-800';
-        case 'terminated':
-            return 'bg-red-100 text-red-800';
-        default:
-            return 'bg-gray-100 text-gray-800';
+            case 'active':
+                return 'bg-green-100 text-green-800';
+            case 'inactive':
+                return 'bg-yellow-100 text-yellow-800';
+            case 'terminated':
+            case 'suspended':
+                return 'bg-red-100 text-red-800';
+            default:
+                return 'bg-gray-100 text-gray-800';
         }
     };
 
     const getStatusText = (status: string) => {
         switch (status) {
-        case 'active':
-            return 'Đang làm việc';
-        case 'inactive':
-            return 'Tạm nghỉ';
-        case 'terminated':
-            return 'Đã nghỉ việc';
-        default:
-            return '';
+            case 'active':
+                return 'Đang làm việc';
+            case 'inactive':
+                return 'Tạm nghỉ';
+            case 'terminated':
+                return 'Đã nghỉ việc';
+            default:
+                return '';
         }
     };
 
@@ -196,11 +232,11 @@ const EmployeeList = () => {
                                 onChange={(e) => setSelectedStatus(e.target.value)}
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:outline-none appearance-none bg-white cursor-pointer"
                                 style={{
-                                backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
-                                backgroundPosition: 'right 0.5rem center',
-                                backgroundRepeat: 'no-repeat',
-                                backgroundSize: '1.5em 1.5em',
-                                paddingRight: '2.5rem'
+                                    backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+                                    backgroundPosition: 'right 0.5rem center',
+                                    backgroundRepeat: 'no-repeat',
+                                    backgroundSize: '1.5em 1.5em',
+                                    paddingRight: '2.5rem'
                                 }}
                             >
                                 <option value="">Tất cả trạng thái</option>
@@ -218,21 +254,21 @@ const EmployeeList = () => {
                         <table className="min-w-full divide-y divide-gray-200">
                             <thead className="bg-gray-50">
                                 <tr>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    NHÂN VIÊN
-                                </th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    PHÒNG BAN
-                                </th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    CHỨC VỤ
-                                </th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    TRẠNG THÁI
-                                </th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    THAO TÁC
-                                </th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        NHÂN VIÊN
+                                    </th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        PHÒNG BAN
+                                    </th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        CHỨC VỤ
+                                    </th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        TRẠNG THÁI
+                                    </th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        THAO TÁC
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
@@ -288,23 +324,42 @@ const EmployeeList = () => {
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-left text-sm font-medium">
-                                                <button
-                                                    onClick={() => handleViewDetail(employee.id)}
-                                                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-all"
-                                                    style={{
-                                                        transition: 'all 0.3s ease'
-                                                    }}
-                                                    onMouseEnter={(e) => {
-                                                        e.currentTarget.style.transform = 'translateY(-2px)';
-                                                        e.currentTarget.style.boxShadow = '0 5px 20px rgba(102, 126, 234, 0.4)';
-                                                    }}
-                                                    onMouseLeave={(e) => {
-                                                        e.currentTarget.style.transform = 'translateY(0)';
-                                                        e.currentTarget.style.boxShadow = 'none';
-                                                    }}
-                                                >
-                                                    Xem chi tiết
-                                                </button>
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        onClick={() => handleViewDetail(employee.id)}
+                                                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-all"
+                                                        style={{
+                                                            transition: 'all 0.3s ease'
+                                                        }}
+                                                        onMouseEnter={(e) => {
+                                                            e.currentTarget.style.transform = 'translateY(-2px)';
+                                                            e.currentTarget.style.boxShadow = '0 5px 20px rgba(102, 126, 234, 0.4)';
+                                                        }}
+                                                        onMouseLeave={(e) => {
+                                                            e.currentTarget.style.transform = 'translateY(0)';
+                                                            e.currentTarget.style.boxShadow = 'none';
+                                                        }}
+                                                    >
+                                                        Xem chi tiết
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleUpdate(employee.id)}
+                                                        className="bg-white hover:bg-gray-100 text-blue-700 px-4 py-2 rounded-lg transition-all"
+                                                        style={{
+                                                            transition: 'all 0.3s ease'
+                                                        }}
+                                                        onMouseEnter={(e) => {
+                                                            e.currentTarget.style.transform = 'translateY(-2px)';
+                                                            e.currentTarget.style.boxShadow = '0 5px 20px rgba(34, 197, 94, 0.4)';
+                                                        }}
+                                                        onMouseLeave={(e) => {
+                                                            e.currentTarget.style.transform = 'translateY(0)';
+                                                            e.currentTarget.style.boxShadow = 'none';
+                                                        }}
+                                                    >
+                                                        ✎
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     ))
@@ -348,15 +403,14 @@ const EmployeeList = () => {
                                     </button>
                                     {Array.from({ length: totalFilteredPages }, (_, i) => i + 1).map((page) => (
                                         <button
-                                        key={page}
-                                        onClick={() => setCurrentPage(page)}
-                                        className={`relative inline-flex items-center px-3 py-1.5 rounded border text-xs font-medium justify-center ${
-                                            currentPage === page
-                                            ? 'bg-blue-600 border-blue-600 text-white'
-                                            : 'bg-white border-gray-400 text-black hover:bg-gray-50'
-                                        }`}
+                                            key={page}
+                                            onClick={() => setCurrentPage(page)}
+                                            className={`relative inline-flex items-center px-3 py-1.5 rounded border text-xs font-medium justify-center ${currentPage === page
+                                                ? 'bg-blue-600 border-blue-600 text-white'
+                                                : 'bg-white border-gray-400 text-black hover:bg-gray-50'
+                                                }`}
                                         >
-                                        {page}
+                                            {page}
                                         </button>
                                     ))}
                                     <button
@@ -379,6 +433,16 @@ const EmployeeList = () => {
                 isOpen={isDetailModalOpen}
                 onClose={handleCloseModal}
             />
+
+            {/* Employee Update Modal for HR */}
+            <UpdateEmployeeWorkingInformation
+                employeeId={selectedEmployeeId}
+                isOpen={isUpdateModalOpen}
+                onClose={handleCloseModal}
+                onSubmit={handleUpdateSubmit}
+                isSubmitting={isSubmitting}
+            />
+
         </div>
     );
 };
