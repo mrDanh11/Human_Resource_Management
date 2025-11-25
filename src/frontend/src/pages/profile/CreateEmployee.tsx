@@ -30,6 +30,7 @@ const CreateEmployee = () => {
         taxCode: '',
         email: '',
         bankAccount: '',
+        birthday: '',
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -69,6 +70,22 @@ const CreateEmployee = () => {
             case 'bankAccount':
                 if (value && !/^[0-9]{8,15}$/.test(value)) {
                     error = 'Số tài khoản chứa chữ hoặc không đủ từ 8 đến 15 chữ số';
+                }
+                break;
+            case 'birthday':
+                if (value) {
+                    const birthDate = new Date(value);
+                    const today = new Date();
+                    const age = today.getFullYear() - birthDate.getFullYear();
+                    const monthDiff = today.getMonth() - birthDate.getMonth();
+                    const dayDiff = today.getDate() - birthDate.getDate();
+                    
+                    // Điều chỉnh tuổi nếu chưa đến sinh nhật trong năm hiện tại
+                    const actualAge = (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) ? age - 1 : age;
+                    
+                    if (actualAge < 18) {
+                        error = 'Nhân viên phải từ 18 tuổi trở lên';
+                    }
                 }
                 break;
         }
@@ -141,6 +158,7 @@ const CreateEmployee = () => {
             taxCode: '',
             email: '',
             bankAccount: '',
+            birthday: '',
         });
     };
 
@@ -202,8 +220,11 @@ const CreateEmployee = () => {
                                         value={formData.birthday}
                                         onChange={handleChange}
                                         required
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent focus:outline-none ${
+                                            errors.birthday ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                                        }`}
                                     />
+                                    {errors.birthday && <p className="text-red-500 text-xs mt-1 text-left">{errors.birthday}</p>}
                                 </div>
 
                                 <div>
