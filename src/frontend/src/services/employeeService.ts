@@ -25,8 +25,35 @@ export const employeeService = {
 
   // Lấy thông tin chi tiết nhân viên
   getEmployeeById: async (id: string): Promise<Employee> => {
-    const response = await api.get<Employee>(`/Employee/${id}`);
-    return response.data;
+    const response = await api.get<any>(`/v1/Employee/${id}`);
+    // Chuyển đổi dữ liệu từ backend sang đúng interface Employee FE
+    const raw = response.data?.data || response.data;
+    const employee: Employee = {
+      id: String(raw.id),
+      employeeCode: raw.employeeCode || '',
+      fullName: raw.fullname || raw.fullName || '',
+      email: raw.email || '',
+      phone: raw.phone || '',
+      citizenId: raw.cccd || raw.citizenId || '',
+      taxCode: raw.taxCode || '',
+      address: raw.address || '',
+      bankAccount: typeof raw.bankAccount === 'object' ? raw.bankAccount : {
+        accountNumber: raw.bankAccount || '',
+        bankName: '',
+        accountHolder: ''
+      },
+      department: raw.departmentName || raw.department || '',
+      position: raw.position || '',
+      joinDate: raw.joinDate || '',
+      birthDate: raw.birthday || raw.birthDate || '',
+      gender: raw.gender || 'other',
+      avatar: raw.avatar || '',
+      status: raw.status || 'active',
+      role: raw.roleName === 'admin' ? 'admin' : (raw.roleName === 'manager' ? 'manager' : 'employee'),
+      currentPoints: raw.currentPoints || 0,
+      totalPoints: raw.totalPoints || 0
+    };
+    return employee;
   },
 
   // Tạo nhân viên mới
