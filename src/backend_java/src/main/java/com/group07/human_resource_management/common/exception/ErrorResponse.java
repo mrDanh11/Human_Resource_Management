@@ -1,4 +1,4 @@
-package com.group07.human_resource_management.exception;
+package com.group07.human_resource_management.common.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
