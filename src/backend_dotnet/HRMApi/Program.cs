@@ -2,6 +2,10 @@ using HRMApi.Data;
 using HRMApi.Repositories;
 using Microsoft.EntityFrameworkCore;
 using HRMApi.Services;
+using DotNetEnv;
+
+// Load environment variables from .env
+Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
