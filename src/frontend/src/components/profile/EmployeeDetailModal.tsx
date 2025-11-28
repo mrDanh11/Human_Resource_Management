@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { DocumentTextIcon } from '@heroicons/react/24/outline';
+import { FileText, User, CreditCard, Hash, Briefcase, Building2, MapPin, Wallet, UserCircle, Calendar, Mail, Phone, Activity, Loader2, AlertCircle, X } from 'lucide-react';
 import Modal from '../common/Modal';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { fetchEmployeeDetail, clearSelectedEmployee } from '../../store/employeeSlice';
@@ -58,29 +58,34 @@ const EmployeeDetailModal = ({ employeeId, isOpen, onClose }: EmployeeDetailModa
             isOpen={isOpen} 
             onClose={onClose} 
             title="Thông Tin Nhân Viên" 
-            titleIcon={<DocumentTextIcon className="w-7 h-7" />}
+            titleIcon={<FileText className="w-7 h-7" />}
             size="lg"
         >
             {loading ? (
                 <div className="flex justify-center items-center py-12">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                    <Loader2 className="h-12 w-12 text-blue-600 animate-spin" />
                     <span className="ml-3 text-gray-600">Đang tải dữ liệu...</span>
                 </div>
             ) : error ? (
                 <div className="text-center py-12">
-                    <p className="text-red-600">{error}</p>
-                    <button
-                        onClick={onClose}
-                        className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                    >
-                        Đóng
-                    </button>
+                    <div className="flex flex-col items-center">
+                        <AlertCircle className="h-16 w-16 text-red-600 mb-4" />
+                        <p className="text-red-600 mb-4">{error}</p>
+                        <button
+                            onClick={onClose}
+                            className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
+                        >
+                            <X className="w-4 h-4" />
+                            Đóng
+                        </button>
+                    </div>
                 </div>
             ) : employeeData ? (
                 <div className="space-y-4">
                     {/* Họ và Tên */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                            <User className="w-4 h-4" />
                             Họ và Tên
                         </label>
                         <input
@@ -94,7 +99,8 @@ const EmployeeDetailModal = ({ employeeId, isOpen, onClose }: EmployeeDetailModa
                     {/* CCCD và Mã Số Thuế */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                                <CreditCard className="w-4 h-4" />
                                 Căn cước công dân
                             </label>
                             <input
@@ -105,7 +111,8 @@ const EmployeeDetailModal = ({ employeeId, isOpen, onClose }: EmployeeDetailModa
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                                <Hash className="w-4 h-4" />
                                 Mã Số Thuế
                             </label>
                             <input
@@ -120,7 +127,8 @@ const EmployeeDetailModal = ({ employeeId, isOpen, onClose }: EmployeeDetailModa
                     {/* Chức Vụ và Phòng Ban */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                                <Briefcase className="w-4 h-4" />
                                 Chức Vụ
                             </label>
                             <input
@@ -131,7 +139,8 @@ const EmployeeDetailModal = ({ employeeId, isOpen, onClose }: EmployeeDetailModa
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                                <Building2 className="w-4 h-4" />
                                 Phòng Ban
                             </label>
                             <input
@@ -145,7 +154,8 @@ const EmployeeDetailModal = ({ employeeId, isOpen, onClose }: EmployeeDetailModa
 
                     {/* Địa Chỉ */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                            <MapPin className="w-4 h-4" />
                             Địa Chỉ
                         </label>
                         <input
@@ -159,7 +169,8 @@ const EmployeeDetailModal = ({ employeeId, isOpen, onClose }: EmployeeDetailModa
                     {/* Tài Khoản Ngân Hàng và Giới Tính */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                                <Wallet className="w-4 h-4" />
                                 Tài Khoản Ngân Hàng
                             </label>
                             <input
@@ -170,7 +181,8 @@ const EmployeeDetailModal = ({ employeeId, isOpen, onClose }: EmployeeDetailModa
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                                <UserCircle className="w-4 h-4" />
                                 Giới Tính
                             </label>
                             <input
@@ -185,7 +197,8 @@ const EmployeeDetailModal = ({ employeeId, isOpen, onClose }: EmployeeDetailModa
                     {/* Ngày Vào Làm và Ngày Sinh */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                                <Calendar className="w-4 h-4" />
                                 Ngày Vào Làm
                             </label>
                             <input
@@ -196,7 +209,8 @@ const EmployeeDetailModal = ({ employeeId, isOpen, onClose }: EmployeeDetailModa
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                                <Calendar className="w-4 h-4" />
                                 Ngày Sinh
                             </label>
                             <input
@@ -211,7 +225,8 @@ const EmployeeDetailModal = ({ employeeId, isOpen, onClose }: EmployeeDetailModa
                     {/* Email và Số Điện Thoại */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                                <Mail className="w-4 h-4" />
                                 Email
                             </label>
                             <input
@@ -222,7 +237,8 @@ const EmployeeDetailModal = ({ employeeId, isOpen, onClose }: EmployeeDetailModa
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                                <Phone className="w-4 h-4" />
                                 Số Điện Thoại
                             </label>
                             <input
@@ -236,7 +252,8 @@ const EmployeeDetailModal = ({ employeeId, isOpen, onClose }: EmployeeDetailModa
 
                     {/* Trạng thái */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                            <Activity className="w-4 h-4" />
                             Trạng thái
                         </label>
                         <input
@@ -252,7 +269,7 @@ const EmployeeDetailModal = ({ employeeId, isOpen, onClose }: EmployeeDetailModa
                         <div className="border-t mx-4 w-full pt-4 flex justify-end">
                             <button
                                 onClick={onClose}
-                                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all"
+                                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all flex items-center gap-2"
                                 style={{
                                     transition: 'all 0.3s ease'
                                 }}
@@ -265,6 +282,7 @@ const EmployeeDetailModal = ({ employeeId, isOpen, onClose }: EmployeeDetailModa
                                     e.currentTarget.style.boxShadow = 'none';
                                 }}
                             >
+                                <X className="w-4 h-4" />
                                 Đóng
                             </button>
                         </div>
