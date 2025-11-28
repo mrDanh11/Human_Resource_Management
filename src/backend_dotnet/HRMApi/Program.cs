@@ -14,9 +14,11 @@ builder.Services.AddDbContext<HrmDbContext>(options =>
 
 // Register Repositories
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+builder.Services.AddScoped<IPointRepository, PointRepository>();
 
 // Register Services
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+builder.Services.AddScoped<IPointService, PointService>();
 
 // Configure AutoMapper
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
