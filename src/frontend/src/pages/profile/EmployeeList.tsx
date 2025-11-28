@@ -60,7 +60,7 @@ const EmployeeList = () => {
         fetchEmployees();
     }, [pageNumber, pageSize]);
 
-    // Reset về trang 1 khi filter hoặc search thay đổi
+    // Chỉ fetch một lần khi component mount
     useEffect(() => {
         setPageNumber(1);
     }, [searchTerm, selectedDepartment, selectedRole, selectedStatus]);
@@ -75,7 +75,7 @@ const EmployeeList = () => {
         return Array.from(new Set(employees.map(emp => emp.roleName).filter(Boolean)));
     }, [employees]);
 
-    // Lọc danh sách nhân viên
+    // Filter danh sách nhân viên trên client
     const filteredEmployees = useMemo(() => {
         return employees.filter(employee => {
             const matchesSearch = employee.fullname.toLowerCase().includes(searchTerm.toLowerCase()) ||

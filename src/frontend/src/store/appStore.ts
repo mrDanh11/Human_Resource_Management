@@ -1,11 +1,16 @@
 /**
- * appStore.ts - General application state
- * Loading states, notifications, UI preferences
- * Theme, language settings
+ * appStore.ts - Redux Store Configuration
+ * Centralized state management với Redux Toolkit
  */
 
-// Global loading state
-// Notification queue
-// UI preferences (theme, sidebar collapsed)
-// Language settings
-// Error handling state
+import { configureStore } from '@reduxjs/toolkit';
+import employeeReducer from './employeeSlice';
+
+export const store = configureStore({
+  reducer: {
+    employee: employeeReducer,
+  },
+});
+
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;

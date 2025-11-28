@@ -625,3 +625,10 @@ INSERT INTO request (employee_id, description, start_time, end_time, type, statu
 
 -- COMMIT;
 
+
+ALTER TABLE point_to_money_history
+ALTER COLUMN created_at TYPE timestamptz USING created_at AT TIME ZONE 'UTC';
+
+ALTER TABLE point_to_money_history
+ALTER COLUMN processed_at TYPE timestamptz USING processed_at AT TIME ZONE 'UTC';
+
