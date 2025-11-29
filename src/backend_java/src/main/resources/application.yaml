@@ -2,7 +2,7 @@
 #spring.application.name=human-resource-management
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5433/hr_management  # s?a port thành 5422 (if)
+    url: jdbc:postgresql://localhost:5433/hr_management  # s?a port thï¿½nh 5422 (if)
     username: postgres
     password: 123456
     driver-class-name: org.postgresql.Driver
@@ -19,3 +19,8 @@ spring:
 # Server port
 server:
   port: 8080
+
+jwt:
+  secret: # add secret o day
+  expiration: 3600000
+  refresh-expiration: 604800000
