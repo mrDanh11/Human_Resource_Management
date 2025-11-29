@@ -21,6 +21,6 @@ server:
   port: 8080
 
 jwt:
-  secret: # add secret o day
+  secret: mysecret_nguyenchidanh_mysecret_nguyenchidanh
   expiration: 3600000
   refresh-expiration: 604800000

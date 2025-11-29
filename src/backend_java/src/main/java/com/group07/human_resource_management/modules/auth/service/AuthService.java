@@ -7,6 +7,7 @@ import com.group07.human_resource_management.modules.auth.dto.request.LoginReque
 import com.group07.human_resource_management.modules.auth.dto.response.LoginResponse;
 import com.group07.human_resource_management.modules.auth.repository.UserAccountRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -15,34 +16,27 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class AuthService implements IAuthService {
-    private final UserAccountRepository userAccountRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtUtil jwtUtil;
+    private final UserAccountRepository userRepo;
     private final PermissionService permissionService;
+    private final JwtUtil jwtUtil;
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @Override
     public LoginResponse login(LoginRequest req) {
 
-        UserAccount account = userAccountRepository
-                .findByUsername(req.getUsername())
+        var user = userRepo.findByUsername(req.getUsername())
                 .orElseThrow(() -> new RuntimeException("Invalid username or password"));
 
-        if (!passwordEncoder.matches(req.getPassword(), account.getPasswordHash())) {
+        if (!encoder.matches(req.getPassword(), user.getPasswordHash())) {
             throw new RuntimeException("Invalid username or password");
         }
 
-        // Lấy role
-        String role = account.getEmployee().getRole().getName();
-
-        // Lấy permissions theo role
+        String role = user.getEmployee().getRole().getName();
         List<String> permissions = permissionService.getPermissionsForRole(role);
 
-        // Tạo Access Token
-        String token = jwtUtil.generateToken(account, permissions);
+        String token = jwtUtil.generateToken(user, permissions);
+        String refresh = jwtUtil.generateRefreshToken(user);
 
-        // Tạo Refresh Token
-        String refreshToken = jwtUtil.generateRefreshToken(account);
-
-        return new LoginResponse(token, refreshToken, role, permissions);
+        return new LoginResponse(token, refresh, role, permissions);
     }
 }
