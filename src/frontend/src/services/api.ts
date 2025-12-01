@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const API_PORT = import.meta.env.VITE_API_PORT || '5258';
 const api = axios.create({
-  baseURL: `http://localhost:${API_PORT}/api`,
+  baseURL: `http://localhost:${API_PORT}/api/v1`,
   headers: {
     'Content-Type': 'application/json',
   },
