@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserGroupIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { Users, Search, UserPlus, Filter, Mail, Building2, Briefcase, Loader2, AlertCircle } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { fetchEmployees, updateEmployeeWorkingInfo } from '../../store/employeeSlice';
 import EmployeeDetailModal from '../../components/profile/EmployeeDetailModal';
@@ -31,10 +31,11 @@ const EmployeeList = () => {
     useEffect(() => {
         dispatch(fetchEmployees({
             pageNumber: 1,
-            pageSize: 1000, // Lấy nhiều records để filter trên client
+            pageSize: 100, // Lấy nhiều records để filter trên client
         }));
     }, [dispatch]);
 
+    console.log("Employees fetched:", employees);
     // Filter danh sách nhân viên trên client
     const filteredEmployees = useMemo(() => {
         return employees.filter(employee => {
@@ -92,16 +93,24 @@ const EmployeeList = () => {
     };
 
     // Xử lý submit cập nhật thông tin làm việc
-    const handleUpdateSubmit = async (data: { employeeId: number; fullname: string; departmentId: number; status: string }) => {
+    const handleUpdateSubmit = async (data: { employeeId: number; fullname: string; departmentId: number; status: string; phone: string; email: string; address: string; bankAccount: string; birthday: string; gender: string }) => {
         if (!data.employeeId) return;
 
         setIsSubmitting(true);
         try {
             await dispatch(updateEmployeeWorkingInfo({
-                employeeId: data.employeeId,
-                fullname: data.fullname,
-                departmentId: data.departmentId,
-                status: data.status,
+                id: data.employeeId,
+                data: {
+                    fullname: data.fullname,
+                    status: data.status,
+                    departmentId: data.departmentId,
+                    phone: data.phone,
+                    email: data.email,
+                    address: data.address,
+                    bankAccount: data.bankAccount,
+                    birthday: data.birthday,
+                    gender: data.gender,
+                }
             })).unwrap();
 
             // Refresh danh sách nhân viên sau khi cập nhật thành công
@@ -150,7 +159,7 @@ const EmployeeList = () => {
                 <div className="bg-linear-to-r from-blue-600 to-blue-700 p-6 shadow-lg">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
-                            <UserGroupIcon className="w-8 h-8 text-white" />
+                            <Users className="w-8 h-8 text-white" />
                             <div className="text-2xl font-bold text-white">Quản lý Hồ sơ Nhân viên</div>
                         </div>
                         <button
@@ -168,7 +177,7 @@ const EmployeeList = () => {
                                 e.currentTarget.style.boxShadow = 'none';
                             }}
                         >
-                            <span>+</span>
+                            <UserPlus className="w-4 h-4" />
                             <span>Thêm nhân viên</span>
                         </button>
                     </div>
@@ -180,7 +189,7 @@ const EmployeeList = () => {
                     <div className="mb-4">
                         <div className="relative">
                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <MagnifyingGlassIcon className="h-5 w-5 text-black" />
+                                <Search className="h-5 w-5 text-gray-400" />
                             </div>
                             <input
                                 type="text"
@@ -196,7 +205,8 @@ const EmployeeList = () => {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {/* Department Filter */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                                <Building2 className="w-4 h-4" />
                                 Phòng ban
                             </label>
                             <input
@@ -210,7 +220,8 @@ const EmployeeList = () => {
 
                         {/* Position/Role Filter */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                                <Briefcase className="w-4 h-4" />
                                 Chức vụ
                             </label>
                             <input
@@ -224,7 +235,8 @@ const EmployeeList = () => {
 
                         {/* Status Filter */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                                <Filter className="w-4 h-4" />
                                 Trạng thái
                             </label>
                             <select
@@ -276,7 +288,7 @@ const EmployeeList = () => {
                                     <tr>
                                         <td colSpan={5} className="px-6 py-12 text-center">
                                             <div className="flex justify-center items-center">
-                                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                                                <Loader2 className="h-8 w-8 text-blue-600 animate-spin" />
                                                 <span className="ml-3 text-gray-600">Đang tải dữ liệu...</span>
                                             </div>
                                         </td>
@@ -284,7 +296,8 @@ const EmployeeList = () => {
                                 ) : error ? (
                                     <tr>
                                         <td colSpan={5} className="px-6 py-12 text-center">
-                                            <div className="text-red-600">
+                                            <div className="flex flex-col items-center text-red-600">
+                                                <AlertCircle className="h-12 w-12 mb-2" />
                                                 <p className="font-medium">Có lỗi xảy ra</p>
                                                 <p className="text-sm mt-1">{error}</p>
                                             </div>
@@ -308,7 +321,10 @@ const EmployeeList = () => {
                                                     </div>
                                                     <div className="ml-4 text-left">
                                                         <div className="text-sm font-medium text-gray-900">{employee.fullname}</div>
-                                                        <div className="text-sm text-gray-500">{employee.email}</div>
+                                                        <div className="flex items-center text-sm text-gray-500">
+                                                            <Mail className="w-3 h-3 mr-1" />
+                                                            {employee.email}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </td>

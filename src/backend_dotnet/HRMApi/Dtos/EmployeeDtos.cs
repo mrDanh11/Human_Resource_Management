@@ -91,6 +91,7 @@ public class UpdateEmployeeDto
     [Phone(ErrorMessage = "Số điện thoại không hợp lệ")]
     [StringLength(15, ErrorMessage = "Số điện thoại không được vượt quá 15 ký tự")]
     public string? Phone { get; set; }
+    public string? Email { get; set; }
 
     public string? Address { get; set; }
 
@@ -106,6 +107,7 @@ public class UpdateEmployeeDto
     public string? Gender { get; set; }
 
     public int? DepartmentId { get; set; }
+    public DateTime? UpdatedAt { get; set; }
 }
 
 // DTO cho response API
