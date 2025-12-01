@@ -70,4 +70,10 @@ public class JwtUtil {
     public boolean isExpired(String token) {
         return extractAllClaims(token).getExpiration().before(new Date());
     }
+
+    public List<String> extractPermissions(String token) {
+        Claims claims = extractAllClaims(token);
+        return claims.get("permissions", List.class);
+    }
+
 }

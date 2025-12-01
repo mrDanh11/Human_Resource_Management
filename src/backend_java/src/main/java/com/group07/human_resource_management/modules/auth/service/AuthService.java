@@ -4,6 +4,7 @@ import com.group07.human_resource_management.common.service.PermissionService;
 import com.group07.human_resource_management.common.utils.JwtUtil;
 import com.group07.human_resource_management.entity.RefreshToken;
 import com.group07.human_resource_management.modules.auth.dto.request.LoginRequest;
+import com.group07.human_resource_management.modules.auth.dto.request.RefreshRequest;
 import com.group07.human_resource_management.modules.auth.dto.response.LoginResponse;
 import com.group07.human_resource_management.modules.auth.dto.response.LogoutResponse;
 import com.group07.human_resource_management.modules.auth.repository.RefreshTokenRepository;
@@ -79,4 +80,57 @@ public class AuthService implements IAuthService {
 
         return new LogoutResponse("Logout successful");
     }
+
+    public LoginResponse refresh(RefreshRequest request) {
+
+        // 1) Lấy refresh token từ request
+        String refreshTokenStr = request.getRefreshToken();
+
+        // 2) Tìm trong DB
+        RefreshToken rt = refreshTokenRepository.findByToken(refreshTokenStr)
+                .orElseThrow(() -> new RuntimeException("Invalid refresh token"));
+
+        // 3) Check token revoked hoặc expired
+        if (rt.getIsRevoked() || rt.getExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("Refresh token expired or revoked");
+        }
+
+        var user = rt.getUser();
+
+        // 4) Lấy permission từ role
+        String role = user.getEmployee().getRole().getName();
+        List<String> permissions = permissionService.getPermissionsForRole(role);
+
+        // 5) Tạo access token mới
+        String newAccessToken = jwtUtil.generateToken(user, permissions);
+
+        // 6)
+        // Xóa refresh token cũ
+        refreshTokenRepository.delete(rt);
+
+        // 7) Tạo refresh token mới và lưu DB
+        String newRefresh = jwtUtil.generateRefreshToken(user);
+
+        RefreshToken newRt = RefreshToken.builder()
+                .user(user)
+                .token(newRefresh)
+                .deviceInfo(rt.getDeviceInfo())
+                .ipAddress(rt.getIpAddress())
+                .isRevoked(false)
+                .expiresAt(LocalDateTime.now().plusDays(7))
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        refreshTokenRepository.save(newRt);
+
+        // 8) Trả về new access + new refresh
+        return new LoginResponse(
+                newAccessToken,
+                newRefresh,
+                role,
+                permissions,
+                user.getEmployee().getId()
+        );
+    }
+
 }

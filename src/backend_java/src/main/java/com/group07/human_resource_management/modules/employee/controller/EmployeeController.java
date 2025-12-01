@@ -5,6 +5,7 @@ import com.group07.human_resource_management.modules.employee.dto.response.Emplo
 import com.group07.human_resource_management.modules.employee.service.EmployeeService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,11 +17,13 @@ public class EmployeeController {
         this.employeeService = employeeService;
     }
 
+    @PreAuthorize("hasAnyAuthority('employee:view')")
     @GetMapping
     public String getEmployee(){
         return "None";
     }
 
+    @PreAuthorize("hasAuthority('employee:create')")
     @PostMapping
     public ResponseEntity<EmployeeWithAccountResponse> createEmployee(
             @Valid @RequestBody CreateEmployeeRequest request) {

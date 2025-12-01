@@ -23,11 +23,16 @@ public class PermissionService {
             case "hr" -> List.of(
                     "employee:update",
                     "employee:view",
+                    "employee:create",
+                    "employee:delete",
                     "department:view"
             );
 
             case "manager" -> List.of(
                     "employee:view",
+                    "employee:create",
+                    "employee:update",
+                    "employee:delete",
                     "department:view"
             );
 

@@ -1,6 +1,7 @@
 package com.group07.human_resource_management.modules.auth.controller;
 
 import com.group07.human_resource_management.modules.auth.dto.request.LoginRequest;
+import com.group07.human_resource_management.modules.auth.dto.request.RefreshRequest;
 import com.group07.human_resource_management.modules.auth.dto.response.LoginResponse;
 import com.group07.human_resource_management.modules.auth.dto.response.LogoutResponse;
 import com.group07.human_resource_management.modules.auth.service.AuthService;
@@ -42,5 +43,10 @@ public class AuthController {
         catch (Exception e) {
             return ResponseEntity.status(400).body(new LogoutResponse(e.getMessage()));
         }
+    }
+
+    @PostMapping("/refresh-token")
+    public LoginResponse refresh(@RequestBody RefreshRequest req) {
+        return authService.refresh(req);
     }
 }
