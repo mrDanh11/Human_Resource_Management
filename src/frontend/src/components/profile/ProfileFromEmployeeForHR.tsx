@@ -8,9 +8,15 @@ import { fetchEmployeeDetail, clearSelectedEmployee } from '../../store/employee
 
 interface WorkingInformationProps {
     employeeId: number,
-    fullname: string,
-    departmentId: number,
+    fullname: string;
+    phone: string;
+    email: string;
+    address: string;
+    bankAccount: string;
     status: string;
+    birthday: string;
+    gender: string;
+    departmentId: number;
 }
 
 interface UpdateEmployeeWorkingInformationModalProps {
@@ -57,6 +63,12 @@ const UpdateEmployeeWorkingInformation = ({ employeeId, isOpen, onClose, onSubmi
             reset({
                 employeeId: employeeData.id,
                 fullname: employeeData.fullname,
+                phone: employeeData.phone || '',
+                email: employeeData.email || '',
+                address: employeeData.address || '',
+                bankAccount: employeeData.bankAccount || '',
+                birthday: employeeData.birthday || '',
+                gender: employeeData.gender || '',
                 departmentId: employeeData.departmentId || 0,
                 status: employeeData.status || 'active',
             });
