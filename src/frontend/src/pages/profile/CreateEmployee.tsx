@@ -164,7 +164,7 @@ const CreateEmployee = () => {
 
     return (
         <div className="min-h-screen p-6">
-            <div className="min-w-4xl mx-auto">
+            <div className="max-w-4xl mx-auto">
                 <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl overflow-hidden">
                     {/* Header */}
                     <div className="p-6 bg-linear-to-r from-blue-600 to-blue-700">
