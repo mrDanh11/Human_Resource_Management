@@ -2,6 +2,9 @@ package com.group07.human_resource_management.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -37,6 +40,7 @@ public class RefreshToken {
     @Column(name = "device_info")
     private String deviceInfo;
 
-    @Column(name = "ip_address")
+    @JdbcTypeCode(SqlTypes.INET)
+    @Column(name = "ip_address", columnDefinition = "inet")
     private String ipAddress; // INET → String
 }
