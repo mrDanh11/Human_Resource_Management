@@ -8,9 +8,15 @@ import { fetchEmployeeDetail, clearSelectedEmployee } from '../../store/employee
 
 interface WorkingInformationProps {
     employeeId: number,
-    fullname: string,
-    departmentId: number,
+    fullname: string;
+    phone: string;
+    email: string;
+    address: string;
+    bankAccount: string;
     status: string;
+    birthday: string;
+    gender: string;
+    departmentId: number;
 }
 
 interface UpdateEmployeeWorkingInformationModalProps {
@@ -57,6 +63,12 @@ const UpdateEmployeeWorkingInformation = ({ employeeId, isOpen, onClose, onSubmi
             reset({
                 employeeId: employeeData.id,
                 fullname: employeeData.fullname,
+                phone: employeeData.phone || '',
+                email: employeeData.email || '',
+                address: employeeData.address || '',
+                bankAccount: employeeData.bankAccount || '',
+                birthday: employeeData.birthday || '',
+                gender: employeeData.gender || '',
                 departmentId: employeeData.departmentId || 0,
                 status: employeeData.status || 'active',
             });
@@ -128,7 +140,7 @@ const UpdateEmployeeWorkingInformation = ({ employeeId, isOpen, onClose, onSubmi
                 onClose={onClose}
                 title="Chỉnh sửa thông tin làm việc của nhân viên"
                 titleIcon={<DocumentTextIcon className="w-7 h-7" />}
-                size="lg"
+                size="xl"
             >
                 {loading ? (
                     <div className="flex justify-center items-center py-12">
@@ -148,11 +160,11 @@ const UpdateEmployeeWorkingInformation = ({ employeeId, isOpen, onClose, onSubmi
                 ) : employeeData ? (
                     <form onSubmit={handleSubmit(handleSubmitForm)} className="space-y-6">
 
-                        <p className="text-gray-500">Cập nhật phòng ban, chức vụ và trạng hái làm việc của nhân viên</p>
+                        <p className="text-gray-500">Thông tin cá nhân( chỉ đọc)</p>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
-                                    Ho và tên
+                                <label className="block text-sm font-light text-gray-700 mb-2 text-left">
+                                    Họ và tên
                                 </label>
                                 <input
                                     type="text"
@@ -162,7 +174,7 @@ const UpdateEmployeeWorkingInformation = ({ employeeId, isOpen, onClose, onSubmi
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                                <label className="block text-sm font-light text-gray-700 mb-2 text-left">
                                     Mã nhân viên
                                 </label>
                                 <input
@@ -175,7 +187,7 @@ const UpdateEmployeeWorkingInformation = ({ employeeId, isOpen, onClose, onSubmi
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                                <label className="block text-sm font-light text-gray-700 mb-2 text-left">
                                     Email
                                 </label>
                                 <input
@@ -186,17 +198,66 @@ const UpdateEmployeeWorkingInformation = ({ employeeId, isOpen, onClose, onSubmi
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
-                                    Ngày vào làm
+                                <label className="block text-sm font-light text-gray-700 mb-2 text-left">
+                                    Số điện thoại
                                 </label>
                                 <input
                                     type="text"
-                                    value={employeeData?.joinDate ? formatDate(employeeData.joinDate) : 'Chưa cập nhật'}
+                                    value={employeeData?.phone}
                                     readOnly
                                     className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none"
                                 />
                             </div>
                         </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-light text-gray-700 mb-2 text-left">
+                                    Địa chỉ
+                                </label>
+                                <input
+                                    type="text"
+                                    value={employeeData?.address}
+                                    readOnly
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-light text-gray-700 mb-2 text-left">
+                                    Tài khoản ngân hàng
+                                </label>
+                                <input
+                                    type="text"
+                                    value={employeeData?.bankAccount}
+                                    readOnly
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none"
+                                />
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-light text-gray-700 mb-2 text-left">
+                                    Ngày sinh
+                                </label>
+                                <input
+                                    type="text"
+                                    value={employeeData?.birthday ? formatDate(employeeData.birthday) : 'Chưa cập nhật'}
+                                    readOnly
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-light text-gray-700 mb-2 text-left">
+                                    Giới tính
+                                </label>
+                                <input
+                                    type="text"
+                                    value={employeeData?.gender}
+                                    readOnly
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none"
+                                />
+                            </div>
+                        </div>
+
                         <p className="text-gray-500">Thông tin làm việc</p>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {/* Phòng ban */}
@@ -210,7 +271,7 @@ const UpdateEmployeeWorkingInformation = ({ employeeId, isOpen, onClose, onSubmi
                                 }}
                                 render={({ field }) => (
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                                        <label className="block text-sm font-light text-gray-700 mb-2 text-left">
                                             Bộ phận (*)
                                             {employeeData?.departmentName && (
                                                 <span className="text-gray-500 text-xs ml-2">(Hiện tại: {employeeData.departmentName})</span>
@@ -229,25 +290,25 @@ const UpdateEmployeeWorkingInformation = ({ employeeId, isOpen, onClose, onSubmi
                                     </div>
                                 )}
                             />
+                            {/* Trạng thái */}
+                            <Controller
+                                name="status"
+                                defaultValue={employeeData?.status}
+                                control={control}
+                                rules={{ required: 'Nhân viên phải có trạng hái làm việc', pattern: { value: /^(active|inactive|terminated)$/, message: 'Trạng thái không hợp lệ' } }}
+                                render={({ field }) => (
+                                    <div>
+                                        <label className="block text-sm font-light text-gray-700 mb-2 text-left">Trạng thái (*)</label>
+                                        <select {...field} className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none">
+                                            <option value="active">Đang làm việc</option>
+                                            <option value="inactive">Tạm nghỉ</option>
+                                            <option value="terminated">Đã thôi việc (Vô hiệu hóa)</option>
+                                        </select>
+                                        {errors.status && <p className="text-red-500 text-sm mt-1">{errors.status.message}</p>}
+                                    </div>
+                                )}
+                            />
                         </div>
-                        {/* Trạng thái */}
-                        <Controller
-                            name="status"
-                            defaultValue={employeeData?.status}
-                            control={control}
-                            rules={{ required: 'Nhân viên phải có trạng hái làm việc', pattern: { value: /^(active|inactive|terminated)$/, message: 'Trạng thái không hợp lệ' } }}
-                            render={({ field }) => (
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2 text-left">Trạng thái (*)</label>
-                                    <select {...field} className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none">
-                                        <option value="active">Đang làm việc</option>
-                                        <option value="inactive">Tạm nghỉ</option>
-                                        <option value="terminated">Đã thôi việc (Vô hiệu hóa)</option>
-                                    </select>
-                                    {errors.status && <p className="text-red-500 text-sm mt-1">{errors.status.message}</p>}
-                                </div>
-                            )}
-                        />
                         <div className="flex justify-end gap-3 pt-6 border-t">
                             <button
                                 type="button"

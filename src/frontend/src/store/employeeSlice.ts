@@ -50,15 +50,29 @@ export interface CreateEmployeeData {
   bankAccount: string;
 }
 
+export interface UpdateEmployeeWorkingInfoData {
+  fullname: string;
+  phone: string;
+  email: string;
+  address: string;
+  bankAccount: string;
+  status: string;
+  birthday: string;
+  gender: string;
+  departmentId: number;
+}
+
 interface EmployeeState {
   employees: EmployeeListItem[];
   selectedEmployee: EmployeeDetailData | null;
   loading: boolean;
   detailLoading: boolean;
   createLoading: boolean;
+  updateLoading: boolean;
   error: string | null;
   detailError: string | null;
   createError: string | null;
+  updateError: string | null;
 }
 
 const initialState: EmployeeState = {
@@ -67,9 +81,11 @@ const initialState: EmployeeState = {
   loading: false,
   detailLoading: false,
   createLoading: false,
+  updateLoading: false,
   error: null,
   detailError: null,
   createError: null,
+  updateError: null,
 };
 
 // Async thunk để fetch danh sách nhân viên
@@ -108,6 +124,18 @@ export const createEmployee = createAsyncThunk(
   }
 );
 
+// Async thunk để thay đổi thông tin làm việc của nhân viên
+export const updateEmployeeWorkingInfo = createAsyncThunk(
+  'employee/updateEmployeeWorkingInfo',
+  async ({ id, data }: { id: number, data: UpdateEmployeeWorkingInfoData }, { rejectWithValue }) => {
+    try {
+      return await employeeService.updateEmployee(id, data);
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 const employeeSlice = createSlice({
   name: 'employee',
   initialState,
@@ -123,6 +151,9 @@ const employeeSlice = createSlice({
     },
     clearSelectedEmployee: (state) => {
       state.selectedEmployee = null;
+    },
+    clearUpdateError: (state) => {
+      state.updateError = null;
     },
   },
   extraReducers: (builder) => {
@@ -140,7 +171,7 @@ const employeeSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
-      
+
       // Fetch employee detail
       .addCase(fetchEmployeeDetail.pending, (state) => {
         state.detailLoading = true;
@@ -154,7 +185,7 @@ const employeeSlice = createSlice({
         state.detailLoading = false;
         state.detailError = action.payload as string;
       })
-      
+
       // Create employee
       .addCase(createEmployee.pending, (state) => {
         state.createLoading = true;
@@ -166,7 +197,20 @@ const employeeSlice = createSlice({
       .addCase(createEmployee.rejected, (state, action) => {
         state.createLoading = false;
         state.createError = action.payload as string;
-      });
+      })
+
+      // Update employee working info
+      .addCase(updateEmployeeWorkingInfo.pending, (state) => {
+        state.updateLoading = true;
+        state.updateError = null;
+      })
+      .addCase(updateEmployeeWorkingInfo.fulfilled, (state) => {
+        state.updateLoading = false;
+      })
+      .addCase(updateEmployeeWorkingInfo.rejected, (state, action) => {
+        state.updateLoading = false;
+        state.updateError = action.payload as string;
+      })
   },
 });
 

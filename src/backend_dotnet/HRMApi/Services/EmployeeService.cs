@@ -60,7 +60,7 @@ public class EmployeeService : IEmployeeService
         try
         {
             var employee = await _employeeRepository.GetByIdWithDetailsAsync(id);
-            
+
             if (employee == null)
                 return null;
 
@@ -136,7 +136,7 @@ public class EmployeeService : IEmployeeService
 
             // Begin transaction
             await using var transaction = await _context.Database.BeginTransactionAsync();
-            
+
             try
             {
                 // Add employee
@@ -182,7 +182,7 @@ public class EmployeeService : IEmployeeService
         try
         {
             var employee = await _employeeRepository.GetByIdAsync(id);
-            
+
             if (employee == null)
             {
                 return ApiResponse<EmployeeDetailDto>.ErrorResponse(
@@ -230,7 +230,7 @@ public class EmployeeService : IEmployeeService
         try
         {
             var employee = await _employeeRepository.GetByIdAsync(id);
-            
+
             if (employee == null)
             {
                 return ApiResponse<bool>.ErrorResponse(
