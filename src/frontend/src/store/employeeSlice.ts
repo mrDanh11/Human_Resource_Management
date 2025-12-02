@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { PaginationParams } from '../types/pagination';
 import { employeeService } from '../services/employeeService';
+import api from '../services/api';
 
 // Response type từ API
 export interface EmployeeListItem {
@@ -50,18 +51,6 @@ export interface CreateEmployeeData {
   bankAccount: string;
 }
 
-export interface UpdateEmployeeWorkingInfoData {
-  fullname: string;
-  phone: string;
-  email: string;
-  address: string;
-  bankAccount: string;
-  status: string;
-  birthday: string;
-  gender: string;
-  departmentId: number;
-}
-
 interface EmployeeState {
   employees: EmployeeListItem[];
   selectedEmployee: EmployeeDetailData | null;
@@ -87,6 +76,145 @@ const initialState: EmployeeState = {
   createError: null,
   updateError: null,
 };
+
+//Interface cho update employee
+export interface UpdateEmployeeRequest {
+  employeeId: number;
+  fullname: string;
+  phone: string;
+  birthday: string;
+  address: string;
+  gender: string;
+  bankAccount: string;
+  avatar: string;
+}
+
+// Interface cho update working information
+export interface UpdateWorkingInformationRequest {
+  employeeId: number;
+  fullname: string;
+  departmentId: number;
+  status: string;
+}
+
+// Async thunk để cập nhật thông tin nhân viên(chỉ departmentId và status)
+export const updateEmployeeInfo = createAsyncThunk(
+  'employee/updateWorkingInfo',
+  async ({ employeeId, fullname, phone, birthday, address, gender, bankAccount }: UpdateEmployeeRequest, { rejectWithValue }) => {
+    try {
+      const detailResponse = await api.get<{
+        success: boolean;
+        message: string;
+        data: EmployeeDetailData;
+        errors: string[];
+      }>(`/Employee/${employeeId}`);
+
+      if (!detailResponse.data.success || !detailResponse.data.data) {
+        return rejectWithValue('Không tìm thấy thông tin nhân viên');
+      }
+
+      const employeeData = detailResponse.data.data;
+
+      // Tạo payload cho update - chỉ cập nhật departmentId và status
+      const updatePayload: {
+        fullname: string;
+        phone?: string | null;
+        address?: string | null;
+        bankAccount?: string | null;
+        status?: string | null;
+        birthday?: string | null;
+        gender?: string | null;
+        departmentId?: number | null;
+      } = {
+        fullname: fullname,
+        phone: phone || null,
+        address: address || null,
+        bankAccount: bankAccount || null,
+        status: employeeData.status || null,
+        birthday: birthday ? new Date(employeeData.birthday).toISOString().split('T')[0] : null,
+        gender: gender || null,
+        departmentId: employeeData.departmentId || null,
+      };
+
+      const response = await api.put<{
+        success: boolean;
+        message: string;
+        data: EmployeeDetailData;
+        errors: string[];
+      }>(`/Employee/${employeeId}`, updatePayload);
+
+      if (response.data.success) {
+        return response.data.data;
+      } else {
+        return rejectWithValue(response.data.message || 'Cập nhật thất bại');
+      }
+    } catch (error: any) {
+      const message = error?.response?.data?.message || error?.message || 'Cập nhật thất bại';
+      return rejectWithValue(message);
+    }
+  }
+);
+
+// Async thunk để cập nhật thông tin làm việc (chỉ departmentId và status)
+export const updateEmployeeWorkingInfo = createAsyncThunk(
+  'employee/updateWorkingInfo',
+  async ({ employeeId, departmentId, status }: UpdateWorkingInformationRequest, { rejectWithValue }) => {
+    try {
+      const detailResponse = await api.get<{
+        success: boolean;
+        message: string;
+        data: EmployeeDetailData;
+        errors: string[];
+      }>(`/Employee/${employeeId}`);
+
+      if (!detailResponse.data.success || !detailResponse.data.data) {
+        return rejectWithValue('Không tìm thấy thông tin nhân viên');
+      }
+
+      const employeeData = detailResponse.data.data;
+
+      // Map status: frontend dùng "terminated" nhưng backend dùng "suspended"
+      const backendStatus = status === 'terminated' ? 'suspended' : status;
+
+      // Tạo payload cho update - chỉ cập nhật departmentId và status
+      const updatePayload: {
+        fullname: string;
+        phone?: string | null;
+        address?: string | null;
+        bankAccount?: string | null;
+        status?: string | null;
+        birthday?: string | null;
+        gender?: string | null;
+        departmentId?: number | null;
+      } = {
+        fullname: employeeData.fullname,
+        phone: employeeData.phone || null,
+        address: employeeData.address || null,
+        bankAccount: employeeData.bankAccount || null,
+        status: backendStatus || null,
+        birthday: employeeData.birthday ? new Date(employeeData.birthday).toISOString().split('T')[0] : null,
+        gender: employeeData.gender || null,
+        departmentId: departmentId || null,
+      };
+
+      const response = await api.put<{
+        success: boolean;
+        message: string;
+        data: EmployeeDetailData;
+        errors: string[];
+      }>(`/Employee/${employeeId}`, updatePayload);
+
+      if (response.data.success) {
+        return response.data.data;
+      } else {
+        return rejectWithValue(response.data.message || 'Cập nhật thất bại');
+      }
+    } catch (error: any) {
+      const message = error?.response?.data?.message || error?.message || 'Cập nhật thất bại';
+      return rejectWithValue(message);
+    }
+  }
+);
 
 // Async thunk để fetch danh sách nhân viên
 export const fetchEmployees = createAsyncThunk(
@@ -124,18 +252,6 @@ export const createEmployee = createAsyncThunk(
   }
 );
 
-// Async thunk để thay đổi thông tin làm việc của nhân viên
-export const updateEmployeeWorkingInfo = createAsyncThunk(
-  'employee/updateEmployeeWorkingInfo',
-  async ({ id, data }: { id: number, data: UpdateEmployeeWorkingInfoData }, { rejectWithValue }) => {
-    try {
-      return await employeeService.updateEmployee(id, data);
-    } catch (error: any) {
-      return rejectWithValue(error.response.data);
-    }
-  }
-);
-
 const employeeSlice = createSlice({
   name: 'employee',
   initialState,
@@ -151,9 +267,6 @@ const employeeSlice = createSlice({
     },
     clearSelectedEmployee: (state) => {
       state.selectedEmployee = null;
-    },
-    clearUpdateError: (state) => {
-      state.updateError = null;
     },
   },
   extraReducers: (builder) => {
@@ -171,7 +284,7 @@ const employeeSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
-
+      
       // Fetch employee detail
       .addCase(fetchEmployeeDetail.pending, (state) => {
         state.detailLoading = true;
@@ -185,7 +298,7 @@ const employeeSlice = createSlice({
         state.detailLoading = false;
         state.detailError = action.payload as string;
       })
-
+      
       // Create employee
       .addCase(createEmployee.pending, (state) => {
         state.createLoading = true;
@@ -198,19 +311,28 @@ const employeeSlice = createSlice({
         state.createLoading = false;
         state.createError = action.payload as string;
       })
-
       // Update employee working info
       .addCase(updateEmployeeWorkingInfo.pending, (state) => {
         state.updateLoading = true;
         state.updateError = null;
       })
-      .addCase(updateEmployeeWorkingInfo.fulfilled, (state) => {
+      .addCase(updateEmployeeWorkingInfo.fulfilled, (state, action) => {
         state.updateLoading = false;
+        state.selectedEmployee = action.payload;
+        // Cập nhật lại danh sách nếu employee có trong list
+        const index = state.employees.findIndex(emp => emp.id === action.payload.id);
+        if (index !== -1) {
+          state.employees[index] = {
+            ...state.employees[index],
+            status: action.payload.status,
+            departmentName: action.payload.departmentName || state.employees[index].departmentName,
+          };
+        }
       })
       .addCase(updateEmployeeWorkingInfo.rejected, (state, action) => {
         state.updateLoading = false;
         state.updateError = action.payload as string;
-      })
+      });
   },
 });
 
