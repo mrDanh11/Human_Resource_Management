@@ -35,7 +35,7 @@ const EmployeeList = () => {
         }));
     }, [dispatch]);
 
-           console.log("Employees fetched:", employees);
+    console.log("Employees fetched:", employees);
     // Filter danh sách nhân viên trên client
     const filteredEmployees = useMemo(() => {
         return employees.filter(employee => {
@@ -93,16 +93,24 @@ const EmployeeList = () => {
     };
 
     // Xử lý submit cập nhật thông tin làm việc
-    const handleUpdateSubmit = async (data: { employeeId: number; fullname: string; departmentId: number; status: string }) => {
+    const handleUpdateSubmit = async (data: { employeeId: number; fullname: string; departmentId: number; status: string; phone: string; email: string; address: string; bankAccount: string; birthday: string; gender: string }) => {
         if (!data.employeeId) return;
 
         setIsSubmitting(true);
         try {
             await dispatch(updateEmployeeWorkingInfo({
-                employeeId: data.employeeId,
-                fullname: data.fullname,
-                departmentId: data.departmentId,
-                status: data.status,
+                id: data.employeeId,
+                data: {
+                    fullname: data.fullname,
+                    status: data.status,
+                    departmentId: data.departmentId,
+                    phone: data.phone,
+                    email: data.email,
+                    address: data.address,
+                    bankAccount: data.bankAccount,
+                    birthday: data.birthday,
+                    gender: data.gender,
+                }
             })).unwrap();
 
             // Refresh danh sách nhân viên sau khi cập nhật thành công

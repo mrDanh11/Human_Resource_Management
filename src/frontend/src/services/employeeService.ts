@@ -22,7 +22,7 @@ export const employeeService = {
   // Lấy thông tin chi tiết nhân viên
   getEmployeeById: async (id: number): Promise<EmployeeDetailData> => {
     const response = await api.get(`/Employee/${id}`);
-    
+
     if (response.data.success) {
       return response.data.data;
     } else {
@@ -44,7 +44,7 @@ export const employeeService = {
   // Cập nhật thông tin nhân viên
   updateEmployee: async (id: number, data: Partial<CreateEmployeeData>): Promise<EmployeeDetailData> => {
     const response = await api.put(`/Employee/${id}`, data);
-    
+
     if (response.data.success) {
       return response.data;
     } else {
@@ -55,7 +55,7 @@ export const employeeService = {
   // Xóa nhân viên
   deleteEmployee: async (id: number): Promise<void> => {
     const response = await api.delete(`/Employee/${id}`);
-    
+
     if (!response.data.success) {
       throw new Error(response.data || 'Something went wrong while deleting employee');
     }

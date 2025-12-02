@@ -12,11 +12,13 @@ interface DataEmployeeProps {
     fullname: string;
     phone: string;
     email: string;
-    birthday: string;
     address: string;
-    gender: string;
     bankAccount: string;
-    avatar: string;
+    status: string;
+    birthday: string;
+    gender: string;
+    departmentId: number;
+    //avatar: string;
 }
 
 interface UpdateEmployeeInformationModalProps {
@@ -64,7 +66,8 @@ const UpdateEmployeeInformation = ({ employeeId, isOpen, onClose, onSubmit, isSu
                 address: employeeData.address,
                 gender: employeeData.gender,
                 bankAccount: employeeData.bankAccount,
-                avatar: '',
+                status: employeeData.status,
+                departmentId: employeeData.departmentId,
             });
         }
     }, [employeeData, isOpen, reset]);
@@ -147,7 +150,7 @@ const UpdateEmployeeInformation = ({ employeeId, isOpen, onClose, onSubmit, isSu
             onClose={onClose}
             title="Chỉnh sửa thông tin nhân viên"
             titleIcon={<DocumentTextIcon className="w-7 h-7" />}
-            size="lg"
+            size="xl"
         >
             {loading ? (
                 <div className="flex justify-center items-center py-12">
@@ -167,7 +170,8 @@ const UpdateEmployeeInformation = ({ employeeId, isOpen, onClose, onSubmit, isSu
             ) : employeeData ? (
                 <form onSubmit={handleSubmit(handleSubmitForm)} className="space-y-6">
 
-                    <div className="flex items-center gap-6 pb-4 border-b">
+                    {/* Avatar( nếu có thì hiển thị) */}
+                    {/* <div className="flex items-center gap-6 pb-4 border-b">
                         <div className="shrink-0">
                             <img
                                 className="h-24 w-24 rounded-full object-cover border-2 border-gray-200"
@@ -176,9 +180,9 @@ const UpdateEmployeeInformation = ({ employeeId, isOpen, onClose, onSubmit, isSu
                             />
                         </div>
 
-                        {/* Input Upload Avatar */}
+                        {/* Input Upload Avatar 
                         <Controller
-                            name="avatar" // Tên này sẽ không được RHF sử dụng trực tiếp, nhưng cần thiết cho Controller
+                            name="avatar"
                             control={control}
                             defaultValue={''} // Giữ lại avatar cũ
                             render={({ field: { onChange, ...field } }) => (
@@ -192,14 +196,13 @@ const UpdateEmployeeInformation = ({ employeeId, isOpen, onClose, onSubmit, isSu
                                         {...field}
                                         value={undefined} // Để RHF không kiểm soát giá trị file, chỉ kiểm soát change
                                     // onChange={(e) => {
-                                    //     // Chúng ta không cần gọi onChange của RHF vì chúng ta tự quản lý file
                                     //     handleAvatarChange(e.target.files);
                                     // }}
                                     />
                                 </label>
                             )}
                         />
-                    </div>
+                    </div> */}
 
                     <p className="text-gray-500">Những thông tin không thể chỉnh sửa</p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -240,30 +243,6 @@ const UpdateEmployeeInformation = ({ employeeId, isOpen, onClose, onSubmit, isSu
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
-                                Ngày sinh
-                            </label>
-                            <input
-                                type="text"
-                                value={employeeData?.birthday || ''}
-                                readOnly
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none"
-                            />
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
-                                Trạng thái
-                            </label>
-                            <input
-                                type="text"
-                                value={employeeData?.status || ''}
-                                readOnly
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
                                 Vai trò
                             </label>
                             <input
@@ -273,6 +252,18 @@ const UpdateEmployeeInformation = ({ employeeId, isOpen, onClose, onSubmit, isSu
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none"
                             />
                         </div>
+
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                            Trạng thái
+                        </label>
+                        <input
+                            type="text"
+                            value={employeeData?.status || ''}
+                            readOnly
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none"
+                        />
                     </div>
                     <p className="text-gray-500">Những thông tin có thể chỉnh sửa</p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -303,6 +294,20 @@ const UpdateEmployeeInformation = ({ employeeId, isOpen, onClose, onSubmit, isSu
                                 <label className="block text-sm font-medium text-gray-700 mb-2 text-left">Số Điện Thoại (*)</label>
                                 <input {...field} type="tel" className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none" />
                                 {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>}
+                            </div>
+                        )}
+                    />
+
+                    <Controller
+                        name="birthday"
+                        defaultValue={employeeData?.birthday || ''}
+                        control={control}
+                        rules={{ required: 'Ngày sinh là bắt buộc.', pattern: { value: /^\d{10,11}$/, message: 'Ngày sinh không hợp lệ.' } }}
+                        render={({ field }) => (
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2 text-left">Ngày Sinh (*)</label>
+                                <input {...field} type="date" className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none" />
+                                {errors.birthday && <p className="text-red-500 text-sm mt-1">{errors.birthday.message}</p>}
                             </div>
                         )}
                     />
