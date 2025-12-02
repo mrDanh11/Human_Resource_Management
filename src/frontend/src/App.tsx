@@ -1,8 +1,8 @@
-import './App.css'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import EmployeeList from './pages/profile/EmployeeList'
 import CreateEmployee from './pages/profile/CreateEmployee'
 import AdminDashboard from './pages/AdminDashboard'
+import RewardDashboard from './pages/rewards/RewardDashboard'
 
 const App = () => {
   return (
@@ -11,6 +11,7 @@ const App = () => {
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="/employee/list" element={<EmployeeList />} />
         <Route path="/create/employee" element={<CreateEmployee />} />
+        <Route path="/rewards/points" element={<RewardDashboard />} />
         <Route path="/" element={<Navigate to="/employee/list" replace />} />
       </Routes>
     </BrowserRouter>
