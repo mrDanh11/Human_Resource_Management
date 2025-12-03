@@ -1,9 +1,14 @@
 // src/pages/landing/components/Hero.tsx
-import React from "react";
 import { motion } from "framer-motion";
 import { THEME_COLORS } from "../common/THEME_COLORS";
 
+import React, { useEffect, useState } from "react";
+
 export default function Hero() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  useEffect(() => {
+    setIsLoggedIn(!!localStorage.getItem("userId"));
+  }, []);
   return (
     <section
       className="relative min-h-[85vh] w-full flex items-center justify-center text-center px-6"
@@ -39,13 +44,15 @@ export default function Hero() {
           transition={{ delay: 0.45 }}
           className="mt-8 flex justify-center gap-4"
         >
-          <a
-            href="/login"
-            className="px-6 py-3 rounded-lg font-medium shadow"
-            style={{ background: THEME_COLORS.primary[600], color: "white" }}
-          >
-            Đăng nhập hệ thống
-          </a>
+          {!isLoggedIn && (
+            <a
+              href="/login"
+              className="px-6 py-3 rounded-lg font-medium shadow"
+              style={{ background: THEME_COLORS.primary[600], color: "white" }}
+            >
+              Đăng nhập hệ thống
+            </a>
+          )}
 
           <a
             href="#features"

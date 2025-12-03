@@ -5,10 +5,26 @@ import { Link } from "react-router-dom";
 // import đúng theo cấu trúc bạn gửi
 import logoImg from "../../assets/logo.jpg";
 
+import { useEffect, useState } from "react";
+import { logout } from "../../services/authService";
+
 export default function Header() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    setIsLoggedIn(!!localStorage.getItem("userId"));
+  }, []);
+
+  const handleLogout = async () => {
+    const refreshToken = localStorage.getItem("refreshToken");
+    
+    if(refreshToken){
+      await logout(refreshToken);
+    }
   };
 
   return (
@@ -17,7 +33,7 @@ export default function Header() {
       style={{ background: THEME_COLORS.secondary[50] }}
     >
       {/* Logo */}
-      <div className="flex items-center gap-3">
+      <Link to="/landing" className="flex items-center gap-3 cursor-pointer" style={{ textDecoration: 'none' }}>
         <img
           src={logoImg}
           alt="logo"
@@ -35,7 +51,7 @@ export default function Header() {
             Enterprise HR • AI driven
           </div>
         </div>
-      </div>
+      </Link>
 
       {/* Navigation */}
       <nav className="flex items-center gap-6">
@@ -53,13 +69,22 @@ export default function Header() {
           Thư viện
         </button>
 
-        <Link
-          to="/login"
-          className="ml-4 px-4 py-2 rounded-lg text-sm font-medium"
-          style={{ background: THEME_COLORS.primary[500], color: "white" }}
-        >
-          Đăng nhập
-        </Link>
+        {isLoggedIn ? (
+          <button
+            onClick={handleLogout}
+            className="ml-4 px-4 py-2 rounded-lg text-sm font-medium bg-red-500 text-white hover:bg-red-600 transition"
+          >
+            Đăng xuất
+          </button>
+        ) : (
+          <Link
+            to="/login"
+            className="ml-4 px-4 py-2 rounded-lg text-sm font-medium"
+            style={{ background: THEME_COLORS.primary[500], color: "white" }}
+          >
+            Đăng nhập
+          </Link>
+        )}
       </nav>
     </header>
   );
