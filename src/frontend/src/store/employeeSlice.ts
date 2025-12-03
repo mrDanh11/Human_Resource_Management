@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { PaginationParams } from '../types/pagination';
+import { employeeService } from '../services/employeeService';
 import api from '../services/api';
 
 // Response type từ API
@@ -35,14 +36,31 @@ export interface EmployeeDetailData {
   updatedAt: string;
 }
 
+export interface CreateEmployeeData {
+  fullName: string;
+  birthday: string;
+  phone: string;
+  Cccd: string;
+  taxCode?: string | null;
+  address: string;
+  email: string;
+  joinDate: string;
+  gender: string;
+  departmentId: number;
+  roleId: number;
+  bankAccount: string;
+}
+
 interface EmployeeState {
   employees: EmployeeListItem[];
   selectedEmployee: EmployeeDetailData | null;
   loading: boolean;
   detailLoading: boolean;
+  createLoading: boolean;
   updateLoading: boolean;
   error: string | null;
   detailError: string | null;
+  createError: string | null;
   updateError: string | null;
 }
 
@@ -51,53 +69,13 @@ const initialState: EmployeeState = {
   selectedEmployee: null,
   loading: false,
   detailLoading: false,
+  createLoading: false,
   updateLoading: false,
   error: null,
   detailError: null,
+  createError: null,
   updateError: null,
 };
-
-// Async thunk để fetch danh sách nhân viên
-export const fetchEmployees = createAsyncThunk(
-  'employee/fetchEmployees',
-  async (params: PaginationParams, { rejectWithValue }) => {
-    try {
-      const response = await api.get<{ items: EmployeeListItem[] }>('/Employee', {
-        params: {
-          PageNumber: params.pageNumber || 1,
-          PageSize: params.pageSize || 1000,
-        },
-      });
-      return response.data.items;
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to fetch employees';
-      return rejectWithValue(message);
-    }
-  }
-);
-
-// Async thunk để fetch chi tiết nhân viên
-export const fetchEmployeeDetail = createAsyncThunk(
-  'employee/fetchEmployeeDetail',
-  async (id: number, { rejectWithValue }) => {
-    try {
-      const response = await api.get<{
-        success: boolean;
-        message: string;
-        data: EmployeeDetailData;
-        errors: string[];
-      }>(`/Employee/${id}`);
-      if (response.data.success) {
-        return response.data.data;
-      } else {
-        return rejectWithValue(response.data.message || 'Failed to fetch employee details');
-      }
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to fetch employee details';
-      return rejectWithValue(message);
-    }
-  }
-);
 
 //Interface cho update employee
 export interface UpdateEmployeeRequest {
@@ -238,6 +216,42 @@ export const updateEmployeeWorkingInfo = createAsyncThunk(
   }
 );
 
+// Async thunk để fetch danh sách nhân viên
+export const fetchEmployees = createAsyncThunk(
+  'employee/fetchEmployees',
+  async (params: PaginationParams, { rejectWithValue }) => {
+    try {
+      return await employeeService.getEmployees(params);
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+// Async thunk để fetch chi tiết nhân viên
+export const fetchEmployeeDetail = createAsyncThunk(
+  'employee/fetchEmployeeDetail',
+  async (id: number, { rejectWithValue }) => {
+    try {
+      return await employeeService.getEmployeeById(id);
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+// Async thunk để tạo nhân viên mới
+export const createEmployee = createAsyncThunk(
+  'employee/createEmployee',
+  async (employeeData: CreateEmployeeData, { rejectWithValue }) => {
+    try {
+      return await employeeService.createEmployee(employeeData);
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 const employeeSlice = createSlice({
   name: 'employee',
   initialState,
@@ -247,6 +261,9 @@ const employeeSlice = createSlice({
     },
     clearDetailError: (state) => {
       state.detailError = null;
+    },
+    clearCreateError: (state) => {
+      state.createError = null;
     },
     clearSelectedEmployee: (state) => {
       state.selectedEmployee = null;
@@ -267,6 +284,7 @@ const employeeSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
+      
       // Fetch employee detail
       .addCase(fetchEmployeeDetail.pending, (state) => {
         state.detailLoading = true;
@@ -279,6 +297,19 @@ const employeeSlice = createSlice({
       .addCase(fetchEmployeeDetail.rejected, (state, action) => {
         state.detailLoading = false;
         state.detailError = action.payload as string;
+      })
+      
+      // Create employee
+      .addCase(createEmployee.pending, (state) => {
+        state.createLoading = true;
+        state.createError = null;
+      })
+      .addCase(createEmployee.fulfilled, (state) => {
+        state.createLoading = false;
+      })
+      .addCase(createEmployee.rejected, (state, action) => {
+        state.createLoading = false;
+        state.createError = action.payload as string;
       })
       // Update employee working info
       .addCase(updateEmployeeWorkingInfo.pending, (state) => {
@@ -305,6 +336,6 @@ const employeeSlice = createSlice({
   },
 });
 
-export const { clearError, clearDetailError, clearSelectedEmployee } = employeeSlice.actions;
+export const { clearError, clearDetailError, clearCreateError, clearSelectedEmployee } = employeeSlice.actions;
 
 export default employeeSlice.reducer;
