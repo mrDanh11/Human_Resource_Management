@@ -23,8 +23,6 @@ export default function ProfilePage() {
   const { id } = useParams();
   const { data, loading, err } = useEmployeeProfile(id);
   const [show, setShow] = useState<Record<string, boolean>>({});
-  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (loading)
     return (
