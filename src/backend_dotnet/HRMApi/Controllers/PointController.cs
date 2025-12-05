@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace HRMApi.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v1/[controller]")]
 public class PointController : ControllerBase
 {
     private readonly IPointService _pointService;
