@@ -8,8 +8,10 @@ import SecureRow from "../../components/profile/SecureField";
 import ProfileSidebar from "../../components/profile/ProfileSidebar";
 import ProfileSkeleton from "../../components/profile/ProfileSkeleton";
 
-import { HiOutlineUser, HiOutlineMail, HiOutlinePhone, HiOutlineLocationMarker,
-         HiOutlineOfficeBuilding, HiOutlineCalendar } from "react-icons/hi";
+import {
+  HiOutlineUser, HiOutlineMail, HiOutlinePhone, HiOutlineLocationMarker,
+  HiOutlineOfficeBuilding, HiOutlineCalendar
+} from "react-icons/hi";
 
 import { THEME_COLORS } from "../../components/common/THEME_COLORS";
 import { useEmployeeProfile } from "../../hooks/useEmployeeProfile";
