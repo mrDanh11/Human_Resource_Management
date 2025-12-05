@@ -2,6 +2,7 @@
 [Oo]bj/
 *.pdb
 *.suo
+*.obj
 
 *.user
 *.userosscfg
@@ -14,3 +15,5 @@ appsettings.Staging.json
 
 log/
 temp/
+
+.env
