@@ -9,7 +9,7 @@ const RewardDashboard: React.FC = () => {
   const rewardItems = mockRewardItems;
 
   const progressPercentage = (nextReward.currentProgress / nextReward.maxProgress) * 100;
-  
+
   // Phân loại phần thưởng
   const availableRewards = rewardItems.filter(item => item.pointsRequired <= stats.currentPoints);
   const upcomingRewards = rewardItems.filter(item => item.pointsRequired > stats.currentPoints);
@@ -88,11 +88,11 @@ const RewardDashboard: React.FC = () => {
               <span className="text-sm font-medium text-blue-600">{nextReward.daysRemaining} điểm nữa</span>
             </div>
           </div>
-          
+
           {/* Progress Bar */}
           <div className="relative">
             <div className="w-full bg-gray-200 rounded-full h-3">
-              <div 
+              <div
                 className="bg-linear-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-300"
                 style={{ width: `${progressPercentage}%` }}
               ></div>
@@ -110,11 +110,10 @@ const RewardDashboard: React.FC = () => {
         <div className="flex justify-around border-b border-gray-200 px-2 sm:px-6">
           <button
             onClick={() => setRewardTab('available')}
-            className={`py-3 sm:py-4 px-2 sm:px-4 font-medium text-sm sm:text-base transition-colors relative ${
-              rewardTab === 'available'
+            className={`py-3 sm:py-4 px-2 sm:px-4 font-medium text-sm sm:text-base transition-colors relative ${rewardTab === 'available'
                 ? 'text-gray-900'
                 : 'text-gray-500 hover:text-gray-700'
-            }`}
+              }`}
           >
             <div className="flex items-center gap-2">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -128,11 +127,10 @@ const RewardDashboard: React.FC = () => {
           </button>
           <button
             onClick={() => setRewardTab('history')}
-            className={`py-3 sm:py-4 px-2 sm:px-4 font-medium text-sm sm:text-base transition-colors relative ${
-              rewardTab === 'history'
+            className={`py-3 sm:py-4 px-2 sm:px-4 font-medium text-sm sm:text-base transition-colors relative ${rewardTab === 'history'
                 ? 'text-gray-900'
                 : 'text-gray-500 hover:text-gray-700'
-            }`}
+              }`}
           >
             <div className="flex items-center gap-2">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -244,9 +242,8 @@ const RewardDashboard: React.FC = () => {
                   className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors gap-3 sm:gap-0"
                 >
                   <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                      transaction.type === 'earn' ? 'bg-green-100' : 'bg-red-100'
-                    }`}>
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${transaction.type === 'earn' ? 'bg-green-100' : 'bg-red-100'
+                      }`}>
                       {transaction.type === 'earn' ? (
                         <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -263,16 +260,14 @@ const RewardDashboard: React.FC = () => {
                     </div>
                   </div>
                   <div className="text-left sm:text-right w-full sm:w-auto">
-                    <div className={`text-base sm:text-lg font-semibold ${
-                      transaction.type === 'earn' ? 'text-green-600' : 'text-red-600'
-                    }`}>
+                    <div className={`text-base sm:text-lg font-semibold ${transaction.type === 'earn' ? 'text-green-600' : 'text-red-600'
+                      }`}>
                       {transaction.type === 'earn' ? '+' : ''}{transaction.amount} điểm
                     </div>
-                    <div className={`text-xs px-2 py-1 rounded-full inline-block ${
-                      transaction.status === 'completed' 
-                        ? 'bg-green-100 text-green-700' 
+                    <div className={`text-xs px-2 py-1 rounded-full inline-block ${transaction.status === 'completed'
+                        ? 'bg-green-100 text-green-700'
                         : 'bg-yellow-100 text-yellow-700'
-                    }`}>
+                      }`}>
                       {transaction.status === 'completed' ? 'Hoàn thành' : 'Đang xử lý'}
                     </div>
                   </div>
