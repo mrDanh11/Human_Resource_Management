@@ -1,0 +1,9 @@
+STT	MSSV		Họ tên
+1	22120048	Nguyễn Chí Danh
+2	22120100	Phạm Trần Trung Hậu
+3	22120121	Lê Viết Hưng
+4	22120289	Hồ Ngọc Trung Quân
+5	22120402	Trương Dương Anh Tú
+
+Link Google Drive video meeting ngày 24/11/2025:
+https://drive.google.com/file/d/1gR4z0PWFP-6iUH4iy8wptxXt4qcsZXe1/view?usp=sharing
