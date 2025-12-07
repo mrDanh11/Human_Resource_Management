@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const API_PORT = import.meta.env.VITE_API_PORT || '5258';
+const API_PORT_SPRING = import.meta.env.VITE_API_PORT_SPRING || '8080';
 const api = axios.create({
   baseURL: `http://localhost:${API_PORT}/api/v1`,
   headers: {

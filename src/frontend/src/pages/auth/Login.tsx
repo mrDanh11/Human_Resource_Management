@@ -30,6 +30,12 @@ const Login: React.FC = () => {
       else if(res.role === "admin"){
         window.location.href = "/admin/dashboard";
       }
+      else if(res.role === "hr"){
+        window.location.href = "/";
+      }
+      else if(res.role === "manager"){
+        window.location.href = "/";
+      }
       
     } catch {
       setError("Sai tài khoản hoặc mật khẩu!");

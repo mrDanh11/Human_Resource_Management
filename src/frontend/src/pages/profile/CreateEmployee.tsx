@@ -27,10 +27,10 @@ const CreateEmployee = () => {
     const { createLoading } = useAppSelector((state) => state.employee);
 
     const [formData, setFormData] = useState({
-        fullName: '',
+        fullname: '',
         birthday: '',
         phone: '',
-        Cccd: '',
+        cccd: '',
         taxCode: '',
         address: '',
         email: '',
@@ -43,7 +43,7 @@ const CreateEmployee = () => {
 
     const [errors, setErrors] = useState({
         phone: '',
-        Cccd: '',
+        cccd: '',
         taxCode: '',
         email: '',
         bankAccount: '',
@@ -73,7 +73,7 @@ const CreateEmployee = () => {
                     error = 'Số điện thoại chứa chữ hoặc không đủ 10 chữ số';
                 }
                 break;
-            case 'Cccd':
+            case 'cccd':
                 if (value && !/^[0-9]{12}$/.test(value)) {
                     error = 'Số CCCD chứa chữ hoặc không đủ 10 chữ số';
                 }
@@ -131,10 +131,10 @@ const CreateEmployee = () => {
         
         try {
             const result = await dispatch(createEmployee({
-                fullName: formData.fullName,
+                fullname: formData.fullname,
                 birthday: formData.birthday,
                 phone: formData.phone,
-                Cccd: formData.Cccd,
+                cccd: formData.cccd,
                 taxCode: formData.taxCode || null,
                 address: formData.address,
                 email: formData.email,
@@ -145,13 +145,13 @@ const CreateEmployee = () => {
                 bankAccount: formData.bankAccount,
             })).unwrap();
 
-            if (result.success) {
-                alert('Tạo hồ sơ nhân viên thành công!');
-                navigate('/employee/list');
-            } else {
-                console.log(result);
-                alert(result.message || 'Có sự cố xảy ra khi tạo hồ sơ!');
+            if (!result || !result.employee) {
+                alert('Có sự cố xảy ra khi tạo hồ sơ!');
+                return;
             }
+            // ...existing code xử lý thành công...
+            alert('Tạo hồ sơ nhân viên thành công!');
+            navigate('/employee/list');
         } catch (error: any) {
             const errorMessage = error.message ? error.message : 'Có lỗi xảy ra khi tạo hồ sơ nhân viên!';
             alert(errorMessage);
@@ -160,10 +160,10 @@ const CreateEmployee = () => {
 
     const handleReset = () => {
         setFormData({
-            fullName: '',
+            fullname: '',
             birthday: '',
             phone: '',
-            Cccd: '',
+            cccd: '',
             taxCode: '',
             address: '',
             email: '',
@@ -175,7 +175,7 @@ const CreateEmployee = () => {
         });
         setErrors({
             phone: '',
-            Cccd: '',
+            cccd: '',
             taxCode: '',
             email: '',
             bankAccount: '',
@@ -221,8 +221,8 @@ const CreateEmployee = () => {
                                     </label>
                                     <input
                                         type="text"
-                                        name="fullName"
-                                        value={formData.fullName}
+                                        name="fullname"
+                                        value={formData.fullname}
                                         onChange={handleChange}
                                         placeholder="Nhập họ và tên"
                                         required
@@ -275,17 +275,17 @@ const CreateEmployee = () => {
                                     </label>
                                     <input
                                         type="text"
-                                        name="Cccd"
-                                        value={formData.Cccd}
+                                        name="cccd"
+                                        value={formData.cccd}
                                         onChange={handleChange}
                                         placeholder="Nhập số căn cước công dân"
                                         required
                                         maxLength={12}
                                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent focus:outline-none ${
-                                            errors.Cccd ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                                            errors.cccd ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
                                         }`}
                                     />
-                                    {errors.Cccd && <p className="text-red-500 text-xs mt-1 text-left">{errors.Cccd}</p>}
+                                    {errors.cccd && <p className="text-red-500 text-xs mt-1 text-left">{errors.cccd}</p>}
                                 </div>
 
                                 <div>

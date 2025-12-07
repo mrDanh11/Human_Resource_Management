@@ -36,10 +36,10 @@ export interface EmployeeDetailData {
 }
 
 export interface CreateEmployeeData {
-  fullName: string;
+  fullname: string;
   birthday: string;
   phone: string;
-  Cccd: string;
+  cccd: string;
   taxCode?: string | null;
   address: string;
   email: string;
