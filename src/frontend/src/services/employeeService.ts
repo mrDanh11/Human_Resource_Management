@@ -1,7 +1,4 @@
-/**
- * employeeService.ts - Service cho quản lý nhân viên
- * Các API calls: CRUD nhân viên, tìm kiếm, cập nhật profile
- */
+import axios from 'axios';
 
 import api from './api';
 import type { PaginationParams } from '../types/pagination';
