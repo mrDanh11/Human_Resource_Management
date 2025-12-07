@@ -1,7 +1,4 @@
-/**
- * employeeService.ts - Service cho quản lý nhân viên
- * Các API calls: CRUD nhân viên, tìm kiếm, cập nhật profile
- */
+import axios from 'axios';
 
 import api from './api';
 import type { PaginationParams } from '../types/pagination';
@@ -32,13 +29,18 @@ export const employeeService = {
 
   // Tạo nhân viên mới
   createEmployee: async (data: CreateEmployeeData) => {
-    const response = await api.post('/Employee', data);
-
-    if (response.data.success) {
-      return response.data;
-    } else {
-      throw new Error(response.data || 'Something went wrong while creating employee');
-    }
+    const API_PORT_SPRING = import.meta.env.VITE_API_PORT_SPRING || '8080';
+    const response = await axios.post(
+      `http://localhost:${API_PORT_SPRING}/api/v1/employee`,
+      data,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+        },
+      }
+    );
+    return response.data; // Trả về object { employee, account, initialPassword }
   },
 
   // Cập nhật thông tin nhân viên

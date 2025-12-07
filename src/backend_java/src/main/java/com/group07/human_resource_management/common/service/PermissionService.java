@@ -13,11 +13,17 @@ public class PermissionService {
                     "employee:create",
                     "employee:update",
                     "employee:delete",
+                    "employee:list",
+                    "employee:view",
+                    "employee:statistics",
+
                     "department:create",
                     "department:update",
                     "department:view",
+
                     "point:view",
-                    "point:update"
+                    "point:update",
+                    "point:list"
             );
 
             case "hr" -> List.of(
@@ -25,7 +31,14 @@ public class PermissionService {
                     "employee:view",
                     "employee:create",
                     "employee:delete",
-                    "department:view"
+                    "employee:statistics",
+                    "employee:list",
+
+                    "department:view",
+
+                    "point:view",
+                    "point:update",
+                    "point:list"
             );
 
             case "manager" -> List.of(
@@ -33,10 +46,19 @@ public class PermissionService {
                     "employee:create",
                     "employee:update",
                     "employee:delete",
-                    "department:view"
+                    "employee:list",
+
+                    "department:view",
+
+                    "point:view",
+                    "point:update",
+                    "point:list"
             );
 
-            default -> List.of("employee:view");
+            default -> List.of(
+                    "employee:view",
+                    "point:view"
+                    );
         };
     }
 }

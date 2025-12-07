@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const API_PORT = import.meta.env.VITE_API_PORT || '5258';
+const API_PORT_SPRING = import.meta.env.VITE_API_PORT_SPRING || '8080';
 const api = axios.create({
   baseURL: `http://localhost:${API_PORT}/api/v1`,
   headers: {
@@ -11,7 +12,7 @@ const api = axios.create({
 // Request interceptor để thêm auth token
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accessToken'); // Sửa lại đúng key accessToken
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -28,8 +29,12 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       // Handle unauthorized access
-      localStorage.removeItem('token');
+      localStorage.removeItem('accessToken');
       window.location.href = '/login';
+    }
+    else if(error.response?.status === 403){
+      // Handle forbidden access
+      window.location.href = '/forbidden';
     }
     return Promise.reject(error);
   }
