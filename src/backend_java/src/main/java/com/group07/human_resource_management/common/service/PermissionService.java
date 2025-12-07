@@ -32,6 +32,7 @@ public class PermissionService {
                     "employee:create",
                     "employee:delete",
                     "employee:statistics",
+                    "employee:list",
 
                     "department:view",
 
@@ -45,6 +46,7 @@ public class PermissionService {
                     "employee:create",
                     "employee:update",
                     "employee:delete",
+                    "employee:list",
 
                     "department:view",
 
