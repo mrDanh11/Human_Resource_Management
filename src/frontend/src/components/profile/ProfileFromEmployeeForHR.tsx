@@ -27,6 +27,15 @@ interface UpdateEmployeeWorkingInformationModalProps {
     isSubmitting: boolean;
 }
 
+const departments = [
+    { id: 1, name: "Phòng Kỹ thuật (1)" },
+    { id: 2, name: "Phòng Nhân sự (2)" },
+    { id: 3, name: "Phòng Kinh doanh (3)" },
+    { id: 4, name: "Phòng Marketing (4)" },
+    { id: 5, name: "Phòng Kế toán (5)" },
+];
+
+
 const UpdateEmployeeWorkingInformation = ({ employeeId, isOpen, onClose, onSubmit, isSubmitting }: UpdateEmployeeWorkingInformationModalProps) => {
     const dispatch = useAppDispatch();
     const { selectedEmployee: employeeData, detailLoading: loading, detailError: error } = useAppSelector(
@@ -94,7 +103,7 @@ const UpdateEmployeeWorkingInformation = ({ employeeId, isOpen, onClose, onSubmi
             employeeId: employeeId,
         };
 
-        if (data.status === 'terminated' && employeeData?.status !== 'terminated') {
+        if (data.status === 'suspended' && employeeData?.status !== 'suspended') {
             setFormDataToSubmit(payload);
             setIsDeactivationConfirmOpen(true);
         } else {
@@ -129,7 +138,7 @@ const UpdateEmployeeWorkingInformation = ({ employeeId, isOpen, onClose, onSubmi
         setIsDeactivationConfirmOpen(false);
         setFormDataToSubmit(null);
         // Quan trọng: Set lại trường status về giá trị cũ (hoặc giá trị hợp lệ khác)
-        setValue('status', employeeData?.status || 'terminated');
+        setValue('status', employeeData?.status || 'suspended');
         setValue('departmentId', employeeData?.departmentId || 0);
     };
 
@@ -267,42 +276,56 @@ const UpdateEmployeeWorkingInformation = ({ employeeId, isOpen, onClose, onSubmi
                                 control={control}
                                 rules={{
                                     required: 'Nhân viên phải có bộ phận',
-                                    validate: (value) => value > 0 || 'Vui lòng nhập ID bộ phận hợp lệ'
+                                    validate: (value) => value > 0 || 'Vui lòng chọn bộ phận hợp lệ'
                                 }}
                                 render={({ field }) => (
                                     <div>
                                         <label className="block text-sm font-light text-gray-700 mb-2 text-left">
                                             Bộ phận (*)
                                             {employeeData?.departmentName && (
-                                                <span className="text-gray-500 text-xs ml-2">(Hiện tại: {employeeData.departmentName})</span>
+                                                <span className="text-gray-500 text-xs ml-2">
+                                                    (Hiện tại: {employeeData.departmentName})
+                                                </span>
                                             )}
                                         </label>
-                                        <input
+
+                                        <select
                                             {...field}
-                                            type="number"
-                                            min="1"
-                                            value={field.value || ''}
-                                            onChange={(e) => field.onChange(Number(e.target.value) || 0)}
-                                            placeholder="Nhập ID bộ phận"
+                                            value={field.value || ""}
+                                            onChange={(e) => field.onChange(Number(e.target.value))}
                                             className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        />
-                                        {errors.departmentId && <p className="text-red-500 text-sm mt-1">{errors.departmentId.message}</p>}
+                                        >
+                                            <option value="">-- Chọn bộ phận --</option>
+
+                                            {departments.map((dept) => (
+                                                <option key={dept.id} value={dept.id}>
+                                                    {dept.name}
+                                                </option>
+                                            ))}
+                                        </select>
+
+                                        {errors.departmentId && (
+                                            <p className="text-red-500 text-sm mt-1">
+                                                {errors.departmentId.message}
+                                            </p>
+                                        )}
                                     </div>
                                 )}
                             />
+
                             {/* Trạng thái */}
                             <Controller
                                 name="status"
                                 defaultValue={employeeData?.status}
                                 control={control}
-                                rules={{ required: 'Nhân viên phải có trạng hái làm việc', pattern: { value: /^(active|inactive|terminated)$/, message: 'Trạng thái không hợp lệ' } }}
+                                rules={{ required: 'Nhân viên phải có trạng hái làm việc', pattern: { value: /^(active|inactive|suspended)$/, message: 'Trạng thái không hợp lệ' } }}
                                 render={({ field }) => (
                                     <div>
                                         <label className="block text-sm font-light text-gray-700 mb-2 text-left">Trạng thái (*)</label>
                                         <select {...field} className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none">
                                             <option value="active">Đang làm việc</option>
                                             <option value="inactive">Tạm nghỉ</option>
-                                            <option value="terminated">Đã thôi việc (Vô hiệu hóa)</option>
+                                            <option value="suspended">Đã thôi việc (Vô hiệu hóa)</option>
                                         </select>
                                         {errors.status && <p className="text-red-500 text-sm mt-1">{errors.status.message}</p>}
                                     </div>

@@ -1,9 +1,8 @@
-import { DocumentTextIcon, CloudArrowUpIcon } from '@heroicons/react/24/outline';
+import { DocumentTextIcon } from '@heroicons/react/24/outline';
 
 import Modal from '../common/Modal';
 import { useForm, Controller } from 'react-hook-form';
 import { useState, useEffect } from 'react';
-import { fileToBase64 } from '../../utils/imgconverter';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { fetchEmployeeDetail, clearSelectedEmployee } from '../../store/employeeSlice';
 
@@ -18,7 +17,6 @@ interface DataEmployeeProps {
     birthday: string;
     gender: string;
     departmentId: number;
-    //avatar: string;
 }
 
 interface UpdateEmployeeInformationModalProps {
@@ -28,6 +26,14 @@ interface UpdateEmployeeInformationModalProps {
     onSubmit: (data: DataEmployeeProps) => Promise<void>;
     isSubmitting: boolean;
 }
+
+const departments = [
+    { id: 1, name: "Phòng Kỹ thuật (1)" },
+    { id: 2, name: "Phòng Nhân sự (2)" },
+    { id: 3, name: "Phòng Kinh doanh (3)" },
+    { id: 4, name: "Phòng Marketing (4)" },
+    { id: 5, name: "Phòng Kế toán (5)" },
+];
 
 const UpdateEmployeeInformation = ({ employeeId, isOpen, onClose, onSubmit, isSubmitting }: UpdateEmployeeInformationModalProps) => {
     const dispatch = useAppDispatch();
@@ -83,10 +89,6 @@ const UpdateEmployeeInformation = ({ employeeId, isOpen, onClose, onSubmit, isSu
         });
     };
 
-    // Sử dụng React Hook Form
-    const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
-    const [selectedFile, setSelectedFile] = useState<File | null>(null);
-
     const getGenderText = (gender: string) => {
         switch (gender) {
             case 'male':
@@ -99,33 +101,6 @@ const UpdateEmployeeInformation = ({ employeeId, isOpen, onClose, onSubmit, isSu
                 return '';
         }
     };
-
-    // useEffect(() => {
-    //     if (employee) {
-    //         // Khởi tạo avatar preview từ dữ liệu entity nếu có
-    //         setAvatarPreview(employee.avatar || null);
-    //     } else {
-    //         // Đảm bảo form sạch nếu không có nhân viên
-    //         reset();
-    //         setAvatarPreview(null);
-    //     }
-    // }, [employee, reset]);
-
-    // const handleAvatarChange = (files: FileList | null) => {
-    //     if (files && files.length > 0) {
-    //         const file = files[0];
-    //         setSelectedFile(file); // <--- Cập nhật state file
-
-    //         const reader = new FileReader();
-    //         reader.onloadend = () => {
-    //             setAvatarPreview(reader.result as string);
-    //         };
-    //         reader.readAsDataURL(file);
-    //     } else {
-    //         setSelectedFile(null); // <--- Đặt lại file
-    //         setAvatarPreview(employee?.avatar || null);
-    //     }
-    // }
 
     const handleSubmitForm = async (data: Omit<DataEmployeeProps, 'employeeId'>) => {
         if (!employeeId) return;
@@ -141,7 +116,6 @@ const UpdateEmployeeInformation = ({ employeeId, isOpen, onClose, onSubmit, isSu
     const handleClose = () => {
         onClose();
         reset(); // Reset form khi đóng
-        //setAvatarPreview(employee?.avatar || null);
     };
 
     return (
@@ -169,42 +143,7 @@ const UpdateEmployeeInformation = ({ employeeId, isOpen, onClose, onSubmit, isSu
                 </div>
             ) : employeeData ? (
                 <form onSubmit={handleSubmit(handleSubmitForm)} className="space-y-6">
-
-                    {/* Avatar( nếu có thì hiển thị) */}
-                    {/* <div className="flex items-center gap-6 pb-4 border-b">
-                        <div className="shrink-0">
-                            <img
-                                className="h-24 w-24 rounded-full object-cover border-2 border-gray-200"
-                                src={avatarPreview || 'https://via.placeholder.com/96'}
-                                alt="Avatar Preview"
-                            />
-                        </div>
-
-                        {/* Input Upload Avatar 
-                        <Controller
-                            name="avatar"
-                            control={control}
-                            defaultValue={''} // Giữ lại avatar cũ
-                            render={({ field: { onChange, ...field } }) => (
-                                <label className="cursor-pointer inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors">
-                                    <CloudArrowUpIcon className="-ml-1 mr-2 h-5 w-5" aria-hidden="true" />
-                                    Tải ảnh mới
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        className="sr-only"
-                                        {...field}
-                                        value={undefined} // Để RHF không kiểm soát giá trị file, chỉ kiểm soát change
-                                    // onChange={(e) => {
-                                    //     handleAvatarChange(e.target.files);
-                                    // }}
-                                    />
-                                </label>
-                            )}
-                        />
-                    </div> */}
-
-                    <p className="text-gray-500">Những thông tin không thể chỉnh sửa</p>
+                    <p className="text-gray-500">Thông tin làm việc( không thể chỉnh sửa)</p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
@@ -236,7 +175,7 @@ const UpdateEmployeeInformation = ({ employeeId, isOpen, onClose, onSubmit, isSu
                             </label>
                             <input
                                 type="text"
-                                value={employeeData?.departmentName || ''}
+                                value={departments.find(dept => dept.id === employeeData?.departmentId)?.name || ''}
                                 readOnly
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none"
                             />
@@ -265,80 +204,82 @@ const UpdateEmployeeInformation = ({ employeeId, isOpen, onClose, onSubmit, isSu
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none"
                         />
                     </div>
-                    <p className="text-gray-500">Những thông tin có thể chỉnh sửa</p>
+                    <p className="text-gray-500">Thông tin cá nhân( có thể chỉnh sửa)</p>
+                    {/* Họ tên */}
+                    <Controller
+                        name="fullname"
+                        defaultValue={employeeData?.fullname || ''}
+                        control={control}
+                        rules={{ required: 'Họ tên là bắt buộc.' }}
+                        render={({ field }) => (
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2 text-left">Họ và Tên (*)</label>
+                                <input {...field} type="text" className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none" />
+                                {errors.fullname && <p className="text-red-500 text-sm mt-1">{errors.fullname.message}</p>}
+                            </div>
+                        )}
+                    />
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {/* Họ tên */}
+                        {/* SĐT , Email*/}
                         <Controller
-                            name="fullname"
-                            defaultValue={employeeData?.fullname || ''}
+                            name="phone"
+                            defaultValue={employeeData?.phone || ''}
                             control={control}
-                            rules={{ required: 'Họ tên là bắt buộc.' }}
+                            rules={{ required: 'SĐT là bắt buộc.', pattern: { value: /^\d{10,11}$/, message: 'SĐT không hợp lệ.' } }}
                             render={({ field }) => (
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2 text-left">Họ và Tên (*)</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2 text-left">Số Điện Thoại (*)</label>
+                                    <input {...field} type="tel" className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none" />
+                                    {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>}
+                                </div>
+                            )}
+                        />
+
+                        <Controller
+                            name="email"
+                            defaultValue={employeeData?.email || ''}
+                            control={control}
+                            rules={{ required: 'Email là bắt buộc.', pattern: { value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i, message: 'Email không hợp lệ.' } }}
+                            render={({ field }) => (
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2 text-left">Email (*)</label>
+                                    <input {...field} type="email" className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none" />
+                                    {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
+                                </div>
+                            )}
+                        />
+
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <Controller
+                            name="birthday"
+                            defaultValue={employeeData?.birthday || ''}
+                            control={control}
+                            rules={{ required: 'Ngày sinh là bắt buộc.' }}
+                            render={({ field }) => (
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2 text-left">Ngày Sinh (*)</label>
+                                    <input {...field} type="date" className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none" />
+                                    {errors.birthday && <p className="text-red-500 text-sm mt-1">{errors.birthday.message}</p>}
+                                </div>
+                            )}
+                        />
+
+                        <Controller
+                            name="gender"
+                            defaultValue={getGenderText(employeeData?.gender || '')}
+                            control={control}
+                            rules={{ required: 'Giới tính là bắt buộc.' }}
+                            render={({ field }) => (
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2 text-left">Giới tính (*)</label>
                                     <input {...field} type="text" className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none" />
-                                    {errors.fullname && <p className="text-red-500 text-sm mt-1">{errors.fullname.message}</p>}
+                                    {errors.gender && <p className="text-red-500 text-sm mt-1">{errors.gender.message}</p>}
                                 </div>
                             )}
                         />
                     </div>
-
-                    {/* SĐT */}
-                    <Controller
-                        name="phone"
-                        defaultValue={employeeData?.phone || ''}
-                        control={control}
-                        rules={{ required: 'SĐT là bắt buộc.', pattern: { value: /^\d{10,11}$/, message: 'SĐT không hợp lệ.' } }}
-                        render={({ field }) => (
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2 text-left">Số Điện Thoại (*)</label>
-                                <input {...field} type="tel" className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none" />
-                                {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>}
-                            </div>
-                        )}
-                    />
-
-                    <Controller
-                        name="birthday"
-                        defaultValue={employeeData?.birthday || ''}
-                        control={control}
-                        rules={{ required: 'Ngày sinh là bắt buộc.', pattern: { value: /^\d{10,11}$/, message: 'Ngày sinh không hợp lệ.' } }}
-                        render={({ field }) => (
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2 text-left">Ngày Sinh (*)</label>
-                                <input {...field} type="date" className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none" />
-                                {errors.birthday && <p className="text-red-500 text-sm mt-1">{errors.birthday.message}</p>}
-                            </div>
-                        )}
-                    />
-
-                    <Controller
-                        name="email"
-                        defaultValue={employeeData?.email || ''}
-                        control={control}
-                        rules={{ required: 'Email là bắt buộc.', pattern: { value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i, message: 'Email không hợp lệ.' } }}
-                        render={({ field }) => (
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2 text-left">Email (*)</label>
-                                <input {...field} type="email" className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none" />
-                                {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
-                            </div>
-                        )}
-                    />
-
-                    <Controller
-                        name="gender"
-                        defaultValue={getGenderText(employeeData?.gender || '')}
-                        control={control}
-                        rules={{ required: 'Giới tính là bắt buộc.' }}
-                        render={({ field }) => (
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2 text-left">Giới tính (*)</label>
-                                <input {...field} type="text" className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none" />
-                                {errors.gender && <p className="text-red-500 text-sm mt-1">{errors.gender.message}</p>}
-                            </div>
-                        )}
-                    />
 
                     <Controller
                         name="address"
@@ -358,10 +299,10 @@ const UpdateEmployeeInformation = ({ employeeId, isOpen, onClose, onSubmit, isSu
                         name="bankAccount"
                         defaultValue={employeeData?.bankAccount || ''}
                         control={control}
-                        rules={{ required: 'Tên ngân hàng là bắt buộc.' }}
+                        rules={{ required: 'Tài khoản ngân hàng là bắt buộc.' }}
                         render={({ field }) => (
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2 text-left">Tên Ngân Hàng (*)</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-2 text-left">Tài khoản Ngân Hàng (*)</label>
                                 <input {...field} type="text" className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none" />
                                 {errors.bankAccount && <p className="text-red-500 text-sm mt-1">{errors.bankAccount.message}</p>}
                             </div>

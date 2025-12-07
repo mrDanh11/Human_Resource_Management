@@ -146,6 +146,7 @@ const EmployeeList = () => {
             case 'inactive':
                 return 'Tạm nghỉ';
             case 'terminated':
+            case 'suspended':
                 return 'Đã nghỉ việc';
             default:
                 return '';
@@ -360,20 +361,20 @@ const EmployeeList = () => {
                                                     </button>
                                                     <button
                                                         onClick={() => handleUpdate(employee.id)}
-                                                        className="bg-white hover:bg-gray-100 text-blue-700 px-4 py-2 rounded-lg transition-all"
+                                                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-all"
                                                         style={{
                                                             transition: 'all 0.3s ease'
                                                         }}
                                                         onMouseEnter={(e) => {
                                                             e.currentTarget.style.transform = 'translateY(-2px)';
-                                                            e.currentTarget.style.boxShadow = '0 5px 20px rgba(34, 197, 94, 0.4)';
+                                                            e.currentTarget.style.boxShadow = '0 5px 20px rgba(102, 126, 234, 0.4)';
                                                         }}
                                                         onMouseLeave={(e) => {
                                                             e.currentTarget.style.transform = 'translateY(0)';
                                                             e.currentTarget.style.boxShadow = 'none';
                                                         }}
                                                     >
-                                                        ✎
+                                                        Chỉnh sửa
                                                     </button>
                                                 </div>
                                             </td>

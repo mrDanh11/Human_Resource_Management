@@ -47,7 +47,7 @@ export interface UpdateEmployeeRequest extends Partial<CreateEmployeeRequest> {
   id: string;
   employeeCode: string;
   avatar: string;
-  status: 'active' | 'inactive' | 'terminated';
+  status: 'active' | 'inactive' | 'suspended';
   currentPoints: number,
   totalPoints: number,
 }

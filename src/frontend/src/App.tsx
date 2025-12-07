@@ -6,6 +6,8 @@ import ProfilePage from './pages/profile/ProfilePage'
 import LandingPage from "./pages/LandingPage/LandingPage";
 import PointExchange from './pages/rewards/PointExchange';
 import RewardDashboard from './pages/rewards/RewardDashboard'
+import RewardPointHR from './pages/rewards/RewardPointHR'
+import PointsAdmin from './pages/rewards/PointAdmin'
 import Login from './pages/auth/Login'
 
 const App = () => {
@@ -19,8 +21,10 @@ const App = () => {
         <Route path="/rewards/points" element={<RewardDashboard />} />
         <Route path="/" element={<Navigate to="/landing" replace />} />
         <Route path="/landing" element={<LandingPage />} />
-        <Route path="/login" element={ <Login /> } />
+        <Route path="/login" element={<Login />} />
         <Route path="/rewards/exchange" element={<PointExchange />} />
+        <Route path="/rewards/hr-reward" element={<RewardPointHR />} />
+        <Route path="/rewards" element={<PointsAdmin />} />
       </Routes>
     </BrowserRouter>
   )
