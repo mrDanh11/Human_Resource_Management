@@ -1,12 +1,29 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserPlus, ArrowLeft, User, Phone, CreditCard, Hash, MapPin, Mail, Calendar, UserCircle, Building2, Wallet, RotateCcw, Save, Loader2, Briefcase } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { createEmployee } from '../../store/employeeSlice';
+import { jwtDecode } from "jwt-decode";
 
 const CreateEmployee = () => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
+
+    // decode token 
+    useEffect(() => {
+        const token = localStorage.getItem("accessToken");
+        if (token) {
+        const decoded: any = jwtDecode(token);
+        console.log('check jwt decode: ', decoded)
+        const permissions = decoded.permissions || [];
+        if (!permissions.includes("employee:create")) {
+            navigate("/forbidden");
+        }
+        } else {
+        navigate("/forbidden");
+        }
+    }, [navigate]);
+
     const { createLoading } = useAppSelector((state) => state.employee);
 
     const [formData, setFormData] = useState({
