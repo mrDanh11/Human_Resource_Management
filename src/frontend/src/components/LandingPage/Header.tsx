@@ -1,6 +1,6 @@
 // src/frontend/src/components/LandingPage/Header.tsx
 import { THEME_COLORS } from "../common/THEME_COLORS";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
 // import đúng theo cấu trúc bạn gửi
 import logoImg from "../../assets/logo.jpg";
@@ -9,7 +9,11 @@ import { useEffect, useState } from "react";
 import { logout } from "../../services/authService";
 
 export default function Header() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const isLandingPage = location.pathname === "/landing" || location.pathname === "/";
+  
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth" });
@@ -25,6 +29,7 @@ export default function Header() {
     if(refreshToken){
       await logout(refreshToken);
     }
+    navigate("/login");
   };
 
   return (
@@ -55,19 +60,32 @@ export default function Header() {
 
       {/* Navigation */}
       <nav className="flex items-center gap-6">
-        <button
-          onClick={() => scrollToSection("activities")}
-          className="text-sm text-gray-700 hover:text-gray-900 transition"
-        >
-          Hoạt động
-        </button>
+        {isLoggedIn && (
+          <Link
+            to="/admin/dashboard"
+            className="text-sm hover:text-gray-900 transition"
+          >
+            Dashboard
+          </Link>
+        )}
 
-        <button
-          onClick={() => scrollToSection("gallery")}
-          className="text-sm text-gray-700 hover:text-gray-900 transition"
-        >
-          Thư viện
-        </button>
+        {isLandingPage && (
+          <>
+            <button
+              onClick={() => scrollToSection("activities")}
+              className="text-sm text-gray-700 hover:text-gray-900 transition"
+            >
+              Hoạt động
+            </button>
+
+            <button
+              onClick={() => scrollToSection("gallery")}
+              className="text-sm text-gray-700 hover:text-gray-900 transition"
+            >
+              Thư viện
+            </button>
+          </>
+        )}
 
         {isLoggedIn ? (
           <button

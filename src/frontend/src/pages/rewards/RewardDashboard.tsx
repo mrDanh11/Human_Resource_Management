@@ -106,16 +106,17 @@ const RewardDashboard: React.FC = () => {
   }
 
   return (
-    <div className="w-full p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-screen">
-      {/* Page Header */}
-      <div className="mb-6 sm:mb-8 text-center">
-        <h1 className="text-blue-600 text-xl sm:text-2xl lg:text-3xl font-semibold mb-2 sm:mb-3">
-          Điểm thưởng của tôi
-        </h1>
-        <p className="text-gray-600 text-sm sm:text-base px-4">
-          Xin chào {employeePoint?.employeeName || 'Nhân viên'}, đây là thông tin điểm thưởng của bạn
-        </p>
-      </div>
+    <div className="w-full p-4 sm:p-6 lg:p-8 min-h-screen">
+      <div className="max-w-6xl mx-auto">
+        {/* Page Header */}
+        <div className="mb-6 sm:mb-8 text-center">
+          <h1 className="text-blue-600 text-xl sm:text-2xl lg:text-3xl font-semibold mb-2 sm:mb-3">
+            Điểm thưởng của tôi
+          </h1>
+          <p className="text-gray-600 text-sm sm:text-base px-4">
+            Xin chào {employeePoint?.employeeName || 'Nhân viên'}, đây là thông tin điểm thưởng của bạn
+          </p>
+        </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
@@ -189,7 +190,18 @@ const RewardDashboard: React.FC = () => {
               {stats.currentPoints >= 100 && (
                 <button
                   onClick={() => window.location.href = '/rewards/exchange'}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  className="px-4 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-all"
+                  style={{
+                    transition: 'all 0.3s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.boxShadow = '0 5px 20px rgba(102, 126, 234, 0.4)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
                 >
                   Quy đổi ngay
                 </button>
@@ -200,7 +212,7 @@ const RewardDashboard: React.FC = () => {
             <div className="relative">
               <div className="w-full bg-gray-200 rounded-full h-3">
                 <div 
-                  className="bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-300"
+                  className="bg-linear-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-300"
                   style={{ width: `${progressPercentage}%` }}
                 ></div>
               </div>
@@ -276,7 +288,18 @@ const RewardDashboard: React.FC = () => {
                 <div className="text-center">
                   <button
                     onClick={() => window.location.href = '/rewards/exchange'}
-                    className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+                    className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-bold"
+                    style={{
+                      transition: 'all 0.3s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'translateY(-2px)';
+                      e.currentTarget.style.boxShadow = '0 5px 20px rgba(102, 126, 234, 0.4)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      e.currentTarget.style.boxShadow = 'none';
+                    }}
                   >
                     Quy đổi điểm sang tiền
                   </button>
@@ -333,6 +356,7 @@ const RewardDashboard: React.FC = () => {
             </div>
           )}
         </div>
+      </div>
       </div>
     </div>
   );

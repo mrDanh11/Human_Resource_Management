@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
-import { Search, Plus, Edit2, Trash2, Save, X, Users, Calendar, TrendingUp, Settings } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Search, Plus, Edit2, Save, X, Users, Calendar, TrendingUp, Settings, Loader2, AlertCircle } from 'lucide-react';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { fetchAllEmployeePoints } from '../../store/pointSlice';
 
 interface Role {
     id: string;
@@ -10,13 +12,13 @@ interface Role {
     description: string;
 }
 
-interface EmployeePoints { //Join 3 bảng employee, role, points
-    id: string;
-    name: string;
-    role: string;
-    department: string;
-    avatar: string;
-    currentPoints: number;
+interface EmployeePoints { //Dữ liệu từ API
+    id: number;
+    employeeId: number;
+    employeeName: string;
+    email: string;
+    pointTotal: number;
+    lastUpdate: string;
 }
 
 interface DistributionHistory {
@@ -33,6 +35,8 @@ export default function PointsAdmin() {
     const [isAddingRole, setIsAddingRole] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [showToast, setShowToast] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 5;
 
     // Mock data - thay bằng danh sách vai trò từ API
     const [roles, setRoles] = useState<Role[]>([
@@ -70,14 +74,14 @@ export default function PointsAdmin() {
         },
     ]);
 
-    // Mock data - thay bằng danh sách nhân viên từ API
-    const employees: EmployeePoints[] = [
-        { id: '1', name: 'Nguyễn Văn An', role: 'Senior Developer', department: 'Engineering', avatar: 'NVA', currentPoints: 1250 },
-        { id: '2', name: 'Trần Thị Bình', role: 'Developer', department: 'Engineering', avatar: 'TTB', currentPoints: 890 },
-        { id: '3', name: 'Lê Văn Cường', role: 'UI/UX Designer', department: 'Design', avatar: 'LVC', currentPoints: 7600 },
-        { id: '4', name: 'Phạm Thị Dung', role: 'Business Analyst', department: 'Product', avatar: 'PTD', currentPoints: 920 },
-        { id: '5', name: 'Hoàng Minh Tuấn', role: 'Junior Developer', department: 'Engineering', avatar: 'HMT', currentPoints: 4500 },
-    ];
+    // Redux
+    const dispatch = useAppDispatch();
+    const { employees, totalCount, loading: loadingEmployees, error: employeesError } = useAppSelector((state) => state.point);
+
+    // Fetch employees data khi component mount hoặc khi chuyển sang tab employees
+    useEffect(() => {
+        dispatch(fetchAllEmployeePoints({ pageNumber: 1, pageSize: 100 }));
+    }, [dispatch]);
 
     // Mock data - thay bằng lịch sử phân phối điểm từ API
     const history: DistributionHistory[] = [
@@ -87,7 +91,7 @@ export default function PointsAdmin() {
     ];
 
     const totalMonthlyBudget = roles.reduce((sum, role) => sum + (role.monthlyPoints * role.employeeCount), 0);
-    const totalEmployees = roles.reduce((sum, role) => sum + role.employeeCount, 0); //Tổng employees trong DB(sau khi gọi API cho bảng EmployeePoints trên, tính length mảng đó)
+    const totalEmployees = totalCount; // Tổng số nhân viên từ API
 
     const updateRolePoints = (roleId: string, newPoints: number) => {
         setRoles(roles.map(role =>
@@ -114,10 +118,20 @@ export default function PointsAdmin() {
     };
 
     const filteredEmployees = employees.filter(emp =>
-        emp.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        emp.role.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        emp.department.toLowerCase().includes(searchTerm.toLowerCase())
+        emp.employeeName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        emp.email?.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    // Pagination
+    const totalPages = Math.ceil(filteredEmployees.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const currentEmployees = filteredEmployees.slice(startIndex, endIndex);
+
+    // Reset về trang 1 khi search thay đổi
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm]);
 
     return (
         <div className="min-h-screen bg-gray-50 p-6">
@@ -161,7 +175,7 @@ export default function PointsAdmin() {
                 </div>
 
                 {/* Tabs */}
-                <div className="flex gap-6 mb-6 border-b bg-white rounded-t-lg px-6">
+                <div className="flex justify-around mb-6 border-b bg-white rounded-t-lg px-6">
                     <button
                         onClick={() => setActiveTab('roles')}
                         className={`py-4 px-2 font-medium transition-colors relative ${activeTab === 'roles' ? 'text-blue-600' : 'text-gray-500 hover:text-gray-700'
@@ -337,55 +351,137 @@ export default function PointsAdmin() {
                         </div>
 
                         <div className="overflow-x-auto">
-                            <table className="w-full">
-                                <thead className="bg-gray-50 border-b">
-                                    <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Nhân viên
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Vai trò
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Phòng ban
-                                        </th>
-                                        <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Điểm hiện tại
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody className="bg-white divide-y divide-gray-200">
-                                    {filteredEmployees.map((employee) => (
-                                        <tr key={employee.id} className="hover:bg-gray-50">
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="flex items-center">
-                                                    <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-medium">
-                                                        {employee.avatar}
-                                                    </div>
-                                                    <div className="ml-4">
-                                                        <div className="text-sm font-medium text-gray-900">{employee.name}</div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                                                    {employee.role}
-                                                </span>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                                {employee.department}
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-center">
-                                                <div className="text-lg font-bold text-gray-900">
-                                                    {employee.currentPoints}
-                                                </div>
-                                                <div className="text-xs text-gray-500">điểm</div>
-                                            </td>
+                            {loadingEmployees ? (
+                                <div className="flex justify-center items-center py-12">
+                                    <Loader2 className="h-8 w-8 text-blue-600 animate-spin" />
+                                    <span className="ml-3 text-gray-600">Đang tải dữ liệu...</span>
+                                </div>
+                            ) : employeesError ? (
+                                <div className="flex flex-col items-center py-12 text-red-600">
+                                    <AlertCircle className="h-12 w-12 mb-4" />
+                                    <p className="font-medium">{employeesError}</p>
+                                    <button
+                                        onClick={() => dispatch(fetchAllEmployeePoints({ pageNumber: 1, pageSize: 100 }))}
+                                        className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                    >
+                                        Thử lại
+                                    </button>
+                                </div>
+                            ) : (
+                                <table className="w-full">
+                                    <thead className="bg-gray-50 border-b">
+                                        <tr>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Nhân viên
+                                            </th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Email
+                                            </th>
+                                            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Điểm hiện tại
+                                            </th>
+                                            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Cập nhật lần cuối
+                                            </th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody className="bg-white divide-y divide-gray-200">
+                                        {currentEmployees.length === 0 ? (
+                                            <tr>
+                                                <td colSpan={4} className="px-6 py-12 text-center text-gray-500">
+                                                    Không tìm thấy nhân viên nào
+                                                </td>
+                                            </tr>
+                                        ) : (
+                                            currentEmployees.map((employee) => (
+                                                <tr key={employee.id} className="hover:bg-gray-50">
+                                                    <td className="px-6 py-4 whitespace-nowrap">
+                                                        <div className="flex items-center">
+                                                            <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-medium">
+                                                                {employee.employeeName.charAt(0).toUpperCase()}
+                                                            </div>
+                                                            <div className="ml-4">
+                                                                <div className="text-sm font-medium text-gray-900">{employee.employeeName}</div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                                        {employee.email}
+                                                    </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                                                        <div className="text-lg font-bold text-gray-900">
+                                                            {employee.pointTotal}
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-600">
+                                                        {new Date(employee.lastUpdate).toLocaleDateString('vi-VN')}
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        )}
+                                    </tbody>
+                                </table>
+                            )}
                         </div>
+
+                        {/* Pagination */}
+                        {!loadingEmployees && !employeesError && filteredEmployees.length > 0 && (
+                            <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+                                <div className="flex-1 flex justify-between sm:hidden">
+                                    <button
+                                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                        disabled={currentPage === 1}
+                                        className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                                    >
+                                        Trước
+                                    </button>
+                                    <button
+                                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                        disabled={currentPage === totalPages}
+                                        className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                                    >
+                                        Sau
+                                    </button>
+                                </div>
+                                <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                                    <div>
+                                        <p className="text-sm text-gray-700">
+                                            Hiển thị <span className="font-medium">{startIndex + 1}</span> - <span className="font-medium">{Math.min(endIndex, filteredEmployees.length)}</span> trong tổng số <span className="font-medium">{filteredEmployees.length}</span> nhân viên
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <nav className="relative z-0 inline-flex gap-1.5" aria-label="Pagination">
+                                            <button
+                                                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                                disabled={currentPage === 1}
+                                                className="relative inline-flex items-center px-3 py-1.5 rounded border border-gray-400 bg-white text-xs font-medium text-black hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed justify-center"
+                                            >
+                                                ‹
+                                            </button>
+                                            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                                                <button
+                                                    key={page}
+                                                    onClick={() => setCurrentPage(page)}
+                                                    className={`relative inline-flex items-center px-3 py-1.5 rounded border text-xs font-medium justify-center ${currentPage === page
+                                                        ? 'bg-blue-600 border-blue-600 text-white'
+                                                        : 'bg-white border-gray-400 text-black hover:bg-gray-50'
+                                                        }`}
+                                                >
+                                                    {page}
+                                                </button>
+                                            ))}
+                                            <button
+                                                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                                disabled={currentPage === totalPages}
+                                                className="relative inline-flex items-center px-3 py-1.5 rounded border border-gray-400 bg-white text-xs font-bold text-black hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed justify-center"
+                                            >
+                                                ›
+                                            </button>
+                                        </nav>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 )}
 

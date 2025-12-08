@@ -1,10 +1,8 @@
 // src/pages/landing/components/Footer.tsx
-import { THEME_COLORS } from "../common/THEME_COLORS";
-
 export default function Footer() {
   return (
     <footer
-      className="w-full border-t-2 border-blue-300 bg-gradient-to-r from-blue-50 via-white to-blue-50 shadow-inner"
+      className="w-full border-t-2 border-blue-300 bg-linear-to-r from-blue-50 via-white to-blue-50 shadow-inner"
     >
       <div className="max-w-6xl mx-auto py-10 px-6 grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Logo & Slogan */}
