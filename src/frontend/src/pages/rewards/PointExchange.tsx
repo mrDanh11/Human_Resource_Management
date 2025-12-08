@@ -122,33 +122,35 @@ export default function PointExchange() {
   const EXCHANGE_RATE = conversionRule.moneyValue / conversionRule.pointValue * 100;
 
   return (
-    <div
-      className="w-full min-h-screen p-4"
-      style={{
-        backgroundColor: THEME_COLORS.primary[50],
-        textAlign: "left",
-      }}
-    >
-      <div className="w-full max-w-xl mx-auto">
-        <ExchangePointHeader />
+    <div className="w-full p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-screen">
+      {/* Page Header */}
+      <div className="mb-6 sm:mb-8 text-center">
+        <h1 className="text-blue-600 text-xl sm:text-2xl lg:text-3xl font-semibold mb-2 sm:mb-3">
+          Quy đổi điểm thưởng
+        </h1>
+        <p className="text-gray-600 text-sm sm:text-base px-4">
+          Chuyển đổi điểm thưởng của bạn thành tiền mặt
+        </p>
+      </div>
 
-        {/* *** THÊM: Pending Request Alert *** */}
+      <div className="w-full max-w-4xl mx-auto">
+        {/* Pending Request Alert */}
         {hasPendingRequest && (
-          <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3 mb-3">
-            <div className="flex items-start gap-2">
+          <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 sm:p-6 mb-6">
+            <div className="flex items-start gap-3">
               <Clock className="w-5 h-5 text-yellow-600 shrink-0 mt-0.5" />
               <div className="flex-1">
-                <h3 className="font-semibold text-yellow-800 text-sm">
-                  ⏳ Yêu cầu đang chờ xử lý
+                <h3 className="font-semibold text-yellow-800 text-base sm:text-lg mb-2">
+                  Yêu cầu đang chờ xử lý
                 </h3>
-                <p className="text-xs text-yellow-700 mt-1">
+                <p className="text-sm text-yellow-700 mb-3">
                   Bạn có {pendingRequests.length} yêu cầu quy đổi đang chờ admin duyệt. 
                   Vui lòng đợi trước khi gửi yêu cầu mới.
                 </p>
-                <div className="mt-2 space-y-1">
+                <div className="space-y-2">
                   {pendingRequests.map((req) => (
-                    <div key={req.id} className="text-xs bg-yellow-100 rounded px-2 py-1">
-                      • {req.pointRequested} điểm → {req.moneyReceived.toLocaleString('vi-VN')}đ 
+                    <div key={req.id} className="bg-yellow-100 rounded-lg px-3 py-2 text-sm">
+                      <span className="font-medium">{req.pointRequested} điểm</span> → {req.moneyReceived.toLocaleString('vi-VN')}đ
                       <span className="text-gray-600 ml-2">
                         ({new Date(req.createdAt).toLocaleDateString('vi-VN')})
                       </span>
@@ -160,28 +162,49 @@ export default function PointExchange() {
           </div>
         )}
 
-        <ExchangePointCurrent
-          current={CURRENT_POINTS}
-          rate={EXCHANGE_RATE}
-        />
+        {/* Current Points Card */}
+        <div className="bg-white border border-gray-200 rounded-xl p-4 sm:p-6 mb-6">
+          <h3 className="text-gray-600 text-sm mb-3">Điểm hiện có</h3>
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+              <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div>
+              <div className="text-3xl sm:text-4xl font-bold text-blue-600">{CURRENT_POINTS}</div>
+              <div className="text-sm text-gray-500">điểm</div>
+            </div>
+          </div>
+          <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+            <p className="text-sm text-gray-700">
+              <span className="font-medium">Tỷ lệ quy đổi:</span> 100 điểm = {EXCHANGE_RATE.toLocaleString('vi-VN')}đ
+            </p>
+          </div>
+        </div>
 
-        {/* *** SỬA: Disable form nếu có pending request *** */}
+        {/* Exchange Form or Disabled Message */}
         {hasPendingRequest ? (
-          <div className="bg-white p-4 rounded-md shadow mb-3 text-center">
-            <Clock className="w-12 h-12 text-yellow-500 mx-auto mb-2" />
-            <h3 className="text-sm font-semibold text-gray-800 mb-1">
+          <div className="bg-white border border-gray-200 rounded-xl p-6 sm:p-8 text-center">
+            <Clock className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">
               Không thể gửi yêu cầu mới
             </h3>
-            <p className="text-xs text-gray-600">
+            <p className="text-sm text-gray-600">
               Vui lòng đợi admin xử lý yêu cầu hiện tại trước khi gửi yêu cầu mới
             </p>
           </div>
         ) : (
-          <ExchangePointForm
-            current={CURRENT_POINTS}
-            rate={EXCHANGE_RATE}
-            openConfirm={openConfirm}
-          />
+          <div className="bg-white border border-gray-200 rounded-xl p-4 sm:p-6">
+            <h3 className="text-gray-800 font-semibold text-base sm:text-lg mb-4">
+              Nhập số điểm cần quy đổi
+            </h3>
+            <ExchangePointForm
+              current={CURRENT_POINTS}
+              rate={EXCHANGE_RATE}
+              openConfirm={openConfirm}
+            />
+          </div>
         )}
 
         <ExchangePointConfirmModal
@@ -195,10 +218,10 @@ export default function PointExchange() {
         <ExchangePointSuccessToast show={toast} />
 
         {submitting && (
-          <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
-            <div className="bg-white p-6 rounded-lg shadow-xl flex flex-col items-center">
-              <Loader2 className="h-8 w-8 text-blue-600 animate-spin mb-3" />
-              <p className="text-gray-700">Đang gửi yêu cầu quy đổi...</p>
+          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-xl shadow-xl flex flex-col items-center">
+              <Loader2 className="h-10 w-10 text-blue-600 animate-spin mb-3" />
+              <p className="text-gray-700 font-medium">Đang gửi yêu cầu quy đổi...</p>
             </div>
           </div>
         )}

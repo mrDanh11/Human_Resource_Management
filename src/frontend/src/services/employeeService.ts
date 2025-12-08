@@ -1,13 +1,11 @@
-import axios from 'axios';
-
-import api from './api';
+import { apiDotNet, apiSpring } from './api';
 import type { PaginationParams } from '../types/pagination';
 import type { EmployeeListItem, EmployeeDetailData, CreateEmployeeData } from '../store/employeeSlice';
 
 export const employeeService = {
   // Lấy danh sách nhân viên với pagination
   getEmployees: async (params: PaginationParams): Promise<EmployeeListItem[]> => {
-    const response = await api.get<{ items: EmployeeListItem[] }>('/Employee', {
+    const response = await apiDotNet.get<{ items: EmployeeListItem[] }>('/Employee', {
       params: {
         pageNumber: params.pageNumber || 1,
         pageSize: params.pageSize || 1000,
@@ -18,7 +16,7 @@ export const employeeService = {
 
   // Lấy thông tin chi tiết nhân viên
   getEmployeeById: async (id: number): Promise<EmployeeDetailData> => {
-    const response = await api.get(`/Employee/${id}`);
+    const response = await apiDotNet.get(`/Employee/${id}`);
 
     if (response.data.success) {
       return response.data.data;
@@ -29,23 +27,17 @@ export const employeeService = {
 
   // Tạo nhân viên mới
   createEmployee: async (data: CreateEmployeeData) => {
-    const API_PORT_SPRING = import.meta.env.VITE_API_PORT_SPRING || '8080';
-    const response = await axios.post(
-      `http://localhost:${API_PORT_SPRING}/api/v1/employee`,
-      data,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-        },
-      }
-    );
-    return response.data; // Trả về object { employee, account, initialPassword }
+    const response = await apiSpring.post('/v1/employee', data, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+    });
+    return response.data;
   },
 
   // Cập nhật thông tin nhân viên
   updateEmployee: async (id: number, data: Partial<CreateEmployeeData>): Promise<EmployeeDetailData> => {
-    const response = await api.put(`/Employee/${id}`, data);
+    const response = await apiDotNet.put(`/Employee/${id}`, data);
 
     if (response.data.success) {
       return response.data;
@@ -56,7 +48,7 @@ export const employeeService = {
 
   // Xóa nhân viên
   deleteEmployee: async (id: number): Promise<void> => {
-    const response = await api.delete(`/Employee/${id}`);
+    const response = await apiDotNet.delete(`/Employee/${id}`);
 
     if (!response.data.success) {
       throw new Error(response.data || 'Something went wrong while deleting employee');

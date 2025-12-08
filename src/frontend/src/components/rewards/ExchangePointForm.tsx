@@ -35,35 +35,30 @@ export default function ExchangePointForm({
   };
 
   return (
-    <div className="bg-white p-3 rounded-md shadow mb-3">
-      <h2 className="text-[13px] font-semibold mb-2">Thực hiện quy đổi</h2>
-
-      <label className="text-[11px] font-medium">Số điểm muốn quy đổi</label>
+    <div className="bg-white rounded-md">
+      <label className="text-sm font-medium block mb-2">Số điểm muốn quy đổi</label>
 
       <input
         value={points}
         onChange={(e) => handleInput(e.target.value)}
-        className="w-full border p-2 rounded-md text-[12px] mt-1"
+        className="w-full border-2 p-3 rounded-md text-base mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
         style={{ borderColor: THEME_COLORS.primary[400] }}
       />
 
-      <div className="flex justify-between text-[10px] text-gray-500 mt-1">
+      <div className="flex justify-between text-xs text-gray-500 mt-2">
         <p>Tối thiểu: 100</p>
         <p>Tối đa: {current}</p>
       </div>
 
-      <div
-        className="mt-3 p-2 rounded-md flex justify-between text-[12px] text-white"
-        style={{ backgroundColor: THEME_COLORS.primary[800] }}
-      >
-        <span>Số tiền nhận:</span>
-        <span className="font-bold text-[13px]">{formatCurrency(money())}</span>
+      <div className="mt-3 p-3 rounded-md flex justify-between items-center bg-green-100 border-2 border-green-300">
+        <span className="text-green-700 font-medium text-sm">Số tiền nhận:</span>
+        <span className="font-bold text-green-700 text-lg">{formatCurrency(money())}</span>
       </div>
 
-      {error && <p className="text-red-600 text-[11px] mt-1">{error}</p>}
+      {error && <p className="text-red-600 text-sm mt-2">{error}</p>}
 
       <button
-        className="w-full mt-3 p-2 text-white rounded-md text-[12px]"
+        className="w-full mt-4 p-3 text-white rounded-lg text-base font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
         style={{ backgroundColor: THEME_COLORS.primary[600] }}
         onClick={() => openConfirm(Number(points), money())}
         disabled={!!error}

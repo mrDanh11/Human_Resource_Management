@@ -2,7 +2,7 @@ import { DocumentTextIcon } from '@heroicons/react/24/outline';
 
 import Modal from '../common/Modal';
 import { useForm, Controller } from 'react-hook-form';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { fetchEmployeeDetail, clearSelectedEmployee } from '../../store/employeeSlice';
 

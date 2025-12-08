@@ -189,19 +189,9 @@ const CreateEmployee = () => {
                 <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl overflow-hidden">
                     {/* Header */}
                     <div className="p-6 bg-linear-to-r from-blue-600 to-blue-700">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-3">
-                                <UserPlus className="w-8 h-8 text-white" />
-                                <div className="text-2xl font-bold text-white">Thêm Hồ sơ Nhân viên Mới</div>
-                            </div>
-                            <button
-                                type="button"
-                                onClick={() => navigate('/employee/list')}
-                                className="px-4 py-2 bg-white text-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition-all flex items-center gap-2"
-                            >
-                                <ArrowLeft className="w-4 h-4" />
-                                <span>Quay lại</span>
-                            </button>
+                        <div className="flex items-center space-x-3">
+                            <UserPlus className="w-8 h-8 text-white" />
+                            <div className="text-2xl font-bold text-white">Thêm Hồ sơ Nhân viên Mới</div>
                         </div>
                     </div>
 

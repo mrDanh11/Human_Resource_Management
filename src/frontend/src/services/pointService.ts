@@ -3,7 +3,7 @@
  * API calls: xem điểm, lịch sử giao dịch, quy đổi điểm
  */
 
-import api from './api';
+import { apiDotNet } from './api';
 
 // ============================================
 // TYPES & INTERFACES
@@ -81,7 +81,7 @@ export const pointService = {
    * GET /api/Point/employee/{employeeId}
    */
   getEmployeePoint: async (employeeId: number): Promise<EmployeePointDto> => {
-    const response = await api.get<ApiResponse<EmployeePointDto>>(
+    const response = await apiDotNet.get<ApiResponse<EmployeePointDto>>(
       `/Point/employee/${employeeId}`
     );
     
@@ -100,7 +100,7 @@ export const pointService = {
     employeeId: number,
     limit?: number
   ): Promise<PointTransactionDto[]> => {
-    const response = await api.get<ApiResponse<PointTransactionDto[]>>(
+    const response = await apiDotNet.get<ApiResponse<PointTransactionDto[]>>(
       `/Point/transactions/employee/${employeeId}`,
       { params: { limit } }
     );
@@ -124,7 +124,7 @@ export const pointService = {
     fromDate?: string,
     toDate?: string
   ): Promise<PagedResult<PointTransactionDto>> => {
-    const response = await api.get<PagedResult<PointTransactionDto>>(
+    const response = await apiDotNet.get<PagedResult<PointTransactionDto>>(
       '/Point/transactions',
       {
         params: {
@@ -146,7 +146,7 @@ export const pointService = {
    * GET /api/Point/conversion-rules/active
    */
   getActiveConversionRule: async (): Promise<PointConversionRuleDto> => {
-    const response = await api.get<ApiResponse<PointConversionRuleDto>>(
+    const response = await apiDotNet.get<ApiResponse<PointConversionRuleDto>>(
       '/Point/conversion-rules/active'
     );
     
@@ -165,7 +165,7 @@ export const pointService = {
     employeeId: number,
     pointRequested: number
   ): Promise<PointToMoneyHistoryDto> => {
-    const response = await api.post<ApiResponse<PointToMoneyHistoryDto>>(
+    const response = await apiDotNet.post<ApiResponse<PointToMoneyHistoryDto>>(
       `/Point/employee/${employeeId}/convert`,
       { pointRequested }
     );
@@ -187,7 +187,7 @@ export const pointService = {
     employeeId?: number,
     status?: string
   ): Promise<PagedResult<PointToMoneyHistoryDto>> => {
-    const response = await api.get<PagedResult<PointToMoneyHistoryDto>>(
+    const response = await apiDotNet.get<PagedResult<PointToMoneyHistoryDto>>(
       '/Point/conversion-history',
       {
         params: {
@@ -207,12 +207,33 @@ export const pointService = {
    * GET /api/Point/statistics
    */
   getPointStatistics: async (): Promise<any> => {
-    const response = await api.get<ApiResponse<any>>('/Point/statistics');
+    const response = await apiDotNet.get<ApiResponse<any>>('/Point/statistics');
     
     if (response.data.success) {
       return response.data.data;
     }
     
     throw new Error(response.data.message || 'Lỗi khi lấy thống kê');
+  },
+
+  /**
+   * Lấy danh sách điểm của tất cả nhân viên
+   * GET /api/Point/employees
+   */
+  getAllEmployeePoints: async (
+    pageNumber: number = 1,
+    pageSize: number = 100
+  ): Promise<PagedResult<EmployeePointDto>> => {
+    const response = await apiDotNet.get<PagedResult<EmployeePointDto>>(
+      '/Point',
+      {
+        params: {
+          pageNumber,
+          pageSize,
+        },
+      }
+    );
+    
+    return response.data;
   },
 };

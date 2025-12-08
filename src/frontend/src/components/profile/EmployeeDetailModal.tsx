@@ -59,7 +59,7 @@ const EmployeeDetailModal = ({ employeeId, isOpen, onClose }: EmployeeDetailModa
             onClose={onClose} 
             title="Thông Tin Nhân Viên" 
             titleIcon={<FileText className="w-7 h-7" />}
-            size="lg"
+            size="xl"
         >
             {loading ? (
                 <div className="flex justify-center items-center py-12">
@@ -84,7 +84,7 @@ const EmployeeDetailModal = ({ employeeId, isOpen, onClose }: EmployeeDetailModa
                 <div className="space-y-4">
                     {/* Họ và Tên */}
                     <div>
-                        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                        <label className="flex items-center gap-2 text-sm font-medium text-blue-600 mb-2">
                             <User className="w-4 h-4" />
                             Họ và Tên
                         </label>
@@ -99,7 +99,7 @@ const EmployeeDetailModal = ({ employeeId, isOpen, onClose }: EmployeeDetailModa
                     {/* CCCD và Mã Số Thuế */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                            <label className="flex items-center gap-2 text-sm font-medium text-purple-600 mb-2">
                                 <CreditCard className="w-4 h-4" />
                                 Căn cước công dân
                             </label>
@@ -111,7 +111,7 @@ const EmployeeDetailModal = ({ employeeId, isOpen, onClose }: EmployeeDetailModa
                             />
                         </div>
                         <div>
-                            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                            <label className="flex items-center gap-2 text-sm font-medium text-pink-600 mb-2">
                                 <Hash className="w-4 h-4" />
                                 Mã Số Thuế
                             </label>
@@ -127,7 +127,7 @@ const EmployeeDetailModal = ({ employeeId, isOpen, onClose }: EmployeeDetailModa
                     {/* Chức Vụ và Phòng Ban */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                            <label className="flex items-center gap-2 text-sm font-medium text-amber-600 mb-2">
                                 <Briefcase className="w-4 h-4" />
                                 Chức Vụ
                             </label>
@@ -139,7 +139,7 @@ const EmployeeDetailModal = ({ employeeId, isOpen, onClose }: EmployeeDetailModa
                             />
                         </div>
                         <div>
-                            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                            <label className="flex items-center gap-2 text-sm font-medium text-cyan-600 mb-2">
                                 <Building2 className="w-4 h-4" />
                                 Phòng Ban
                             </label>
@@ -154,7 +154,7 @@ const EmployeeDetailModal = ({ employeeId, isOpen, onClose }: EmployeeDetailModa
 
                     {/* Địa Chỉ */}
                     <div>
-                        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                        <label className="flex items-center gap-2 text-sm font-medium text-emerald-600 mb-2">
                             <MapPin className="w-4 h-4" />
                             Địa Chỉ
                         </label>
@@ -169,7 +169,7 @@ const EmployeeDetailModal = ({ employeeId, isOpen, onClose }: EmployeeDetailModa
                     {/* Tài Khoản Ngân Hàng và Giới Tính */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                            <label className="flex items-center gap-2 text-sm font-medium text-green-600 mb-2">
                                 <Wallet className="w-4 h-4" />
                                 Tài Khoản Ngân Hàng
                             </label>
@@ -181,7 +181,7 @@ const EmployeeDetailModal = ({ employeeId, isOpen, onClose }: EmployeeDetailModa
                             />
                         </div>
                         <div>
-                            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                            <label className="flex items-center gap-2 text-sm font-medium text-violet-600 mb-2">
                                 <UserCircle className="w-4 h-4" />
                                 Giới Tính
                             </label>
@@ -197,7 +197,7 @@ const EmployeeDetailModal = ({ employeeId, isOpen, onClose }: EmployeeDetailModa
                     {/* Ngày Vào Làm và Ngày Sinh */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                            <label className="flex items-center gap-2 text-sm font-medium text-orange-600 mb-2">
                                 <Calendar className="w-4 h-4" />
                                 Ngày Vào Làm
                             </label>
@@ -209,7 +209,7 @@ const EmployeeDetailModal = ({ employeeId, isOpen, onClose }: EmployeeDetailModa
                             />
                         </div>
                         <div>
-                            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                            <label className="flex items-center gap-2 text-sm font-medium text-sky-600 mb-2">
                                 <Calendar className="w-4 h-4" />
                                 Ngày Sinh
                             </label>
@@ -225,7 +225,7 @@ const EmployeeDetailModal = ({ employeeId, isOpen, onClose }: EmployeeDetailModa
                     {/* Email và Số Điện Thoại */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                            <label className="flex items-center gap-2 text-sm font-medium text-red-600 mb-2">
                                 <Mail className="w-4 h-4" />
                                 Email
                             </label>
@@ -237,7 +237,7 @@ const EmployeeDetailModal = ({ employeeId, isOpen, onClose }: EmployeeDetailModa
                             />
                         </div>
                         <div>
-                            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                            <label className="flex items-center gap-2 text-sm font-medium text-indigo-600 mb-2">
                                 <Phone className="w-4 h-4" />
                                 Số Điện Thoại
                             </label>
@@ -252,7 +252,7 @@ const EmployeeDetailModal = ({ employeeId, isOpen, onClose }: EmployeeDetailModa
 
                     {/* Trạng thái */}
                     <div>
-                        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                        <label className="flex items-center gap-2 text-sm font-medium text-teal-600 mb-2">
                             <Activity className="w-4 h-4" />
                             Trạng thái
                         </label>

@@ -1,13 +1,11 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Users, Search, UserPlus, Filter, Mail, Building2, Briefcase, Loader2, AlertCircle } from 'lucide-react';
+import { Users, Search, Filter, Mail, Building2, Briefcase, Loader2, AlertCircle } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { fetchEmployees, updateEmployeeWorkingInfo } from '../../store/employeeSlice';
 import EmployeeDetailModal from '../../components/profile/EmployeeDetailModal';
 import UpdateEmployeeWorkingInformation from '../../components/profile/ProfileFromEmployeeForHR';
 
 const EmployeeList = () => {
-    const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
     // Redux state
@@ -34,8 +32,7 @@ const EmployeeList = () => {
             pageSize: 100, // Lấy nhiều records để filter trên client
         }));
     }, [dispatch]);
-
-    console.log("Employees fetched:", employees);
+    
     // Filter danh sách nhân viên trên client
     const filteredEmployees = useMemo(() => {
         return employees.filter(employee => {
@@ -158,29 +155,9 @@ const EmployeeList = () => {
             <div className="max-w-6xl mx-auto rounded-2xl overflow-hidden shadow-xl">
                 {/* Header */}
                 <div className="bg-linear-to-r from-blue-600 to-blue-700 p-6 shadow-lg">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                            <Users className="w-8 h-8 text-white" />
-                            <div className="text-2xl font-bold text-white">Quản lý Hồ sơ Nhân viên</div>
-                        </div>
-                        <button
-                            onClick={() => navigate('/create/employee')}
-                            className="px-4 py-2 bg-white text-blue-600 rounded-lg font-semibold hover:bg-gray-100 transition-all flex items-center space-x-2"
-                            style={{
-                                transition: 'all 0.3s ease'
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.transform = 'translateY(-2px)';
-                                e.currentTarget.style.boxShadow = '0 5px 20px rgba(255, 255, 255, 0.3)';
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.transform = 'translateY(0)';
-                                e.currentTarget.style.boxShadow = 'none';
-                            }}
-                        >
-                            <UserPlus className="w-4 h-4" />
-                            <span>Thêm nhân viên</span>
-                        </button>
+                    <div className="flex items-center space-x-3">
+                        <Users className="w-8 h-8 text-white" />
+                        <div className="text-2xl font-bold text-white">Quản lý Hồ sơ Nhân viên</div>
                     </div>
                 </div>
 
