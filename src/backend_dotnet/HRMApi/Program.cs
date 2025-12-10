@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using HRMApi.BackgroundServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,9 +36,12 @@ builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IPointRepository, PointRepository>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IPointService, PointService>();
-
+builder.Services.AddScoped<IMonthlyPointRepository, MonthlyPointRepository>();
+builder.Services.AddScoped<IMonthlyPointService, MonthlyPointService>();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
+// Register Background Services
+builder.Services.AddHostedService<MonthlyPointAllocationWorker>();
 // ========== CORS ==========
 builder.Services.AddCors(options =>
 {
