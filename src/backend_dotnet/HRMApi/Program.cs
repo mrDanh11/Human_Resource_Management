@@ -100,6 +100,7 @@ builder.Services.AddAuthorization(options =>
     // Danh sách permission bạn muốn hỗ trợ
     var permissions = new[]
     {
+        // Employee permissions
         "employee:create",
         "employee:update",
         "employee:delete",
@@ -107,13 +108,20 @@ builder.Services.AddAuthorization(options =>
         "employee:view",
         "employee:statistics",
 
+        // Department permissions
         "department:create",
         "department:update",
         "department:view",
         
+        // Point permissions
         "point:view",
         "point:update",
-        "point:list"
+        "point:list",
+        
+        // Monthly Point permissions - THÊM MỚI
+        "monthly_point:view",      // Xem quy tắc và lịch sử
+        "monthly_point:manage",    // Tạo, sửa, xóa quy tắc
+        "monthly_point:allocate"   // Chạy job thủ công (admin only)
     };
 
     foreach (var permission in permissions)
