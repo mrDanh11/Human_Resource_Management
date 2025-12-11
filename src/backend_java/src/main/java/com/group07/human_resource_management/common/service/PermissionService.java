@@ -28,10 +28,13 @@ public class PermissionService {
                     "point:update",
                     "point:list",
                     
-                    // Monthly Point permissions - ADMIN có FULL quyền
-                    "monthly_point:view",      // Xem quy tắc và lịch sử
-                    "monthly_point:manage",    // Tạo, sửa, xóa quy tắc
-                    "monthly_point:allocate"   // Chạy job thủ công (CHỈ admin)
+                    // Monthly Point permissions
+                    "monthly-point:view",
+                    "monthly-point:create",
+                    "monthly-point:update",
+                    "monthly-point:delete",
+                    "monthly-point:allocate",
+                    "monthly-point:history"
             );
 
             case "hr" -> List.of(
@@ -51,10 +54,13 @@ public class PermissionService {
                     "point:update",
                     "point:list",
                     
-                    // Monthly Point permissions - HR có thể xem và quản lý, NHƯNG KHÔNG chạy job
-                    "monthly_point:view",      // Xem quy tắc và lịch sử
-                    "monthly_point:manage"     // Tạo, sửa, xóa quy tắc
-                    // KHÔNG có monthly_point:allocate
+                    // Monthly Point permissions
+                    "monthly-point:view",
+                    "monthly-point:create",
+                    "monthly-point:update",
+                    "monthly-point:delete",
+                    "monthly-point:allocate",
+                    "monthly-point:history"
             );
 
             case "manager" -> List.of(
@@ -73,17 +79,20 @@ public class PermissionService {
                     "point:update",
                     "point:list",
                     
-                    // Monthly Point permissions - Manager CHỈ xem
-                    "monthly_point:view"       // CHỈ xem, KHÔNG sửa
-                    // KHÔNG có monthly_point:manage
-                    // KHÔNG có monthly_point:allocate
+                    // Monthly Point permissions
+                    "monthly-point:view",
+                    "monthly-point:history"
             );
 
             default -> List.of(
-                    // Employee (basic role) - CHỈ xem thông tin của chính mình
+                    // Employee permissions
                     "employee:view",
-                    "point:view"
-                    // KHÔNG có bất kỳ monthly_point permission nào
+                    
+                    // Point permissions
+                    "point:view",
+                    
+                    // Monthly Point permissions
+                    "monthly-point:view"
             );
         };
     }
