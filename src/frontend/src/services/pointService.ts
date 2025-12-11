@@ -167,7 +167,7 @@ export const pointService = {
   ): Promise<PointToMoneyHistoryDto> => {
     const response = await apiDotNet.post<ApiResponse<PointToMoneyHistoryDto>>(
       `/Point/employee/${employeeId}/convert`,
-      { pointRequested }
+      { PointRequested: pointRequested }  // Backend .NET expects PascalCase
     );
     
     if (response.data.success) {
