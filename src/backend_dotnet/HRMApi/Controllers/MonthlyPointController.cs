@@ -24,7 +24,7 @@ public class MonthlyPointController : ControllerBase
     /// Lấy danh sách quy tắc cộng điểm hàng tháng
     /// </summary>
     [HttpGet("rules")]
-    [Authorize(Policy = "monthly_point:view")]
+    [Authorize(Policy = "monthly-point:view")]
     [ProducesResponseType(typeof(ApiResponse<List<MonthlyPointRuleDto>>), 200)]
     public async Task<ActionResult<ApiResponse<List<MonthlyPointRuleDto>>>> GetMonthlyPointRules()
     {
@@ -49,7 +49,7 @@ public class MonthlyPointController : ControllerBase
     /// Lấy quy tắc cộng điểm theo ID
     /// </summary>
     [HttpGet("rules/{id}")]
-    [Authorize(Policy = "monthly_point:view")]
+    [Authorize(Policy = "monthly-point:view")]
     [ProducesResponseType(typeof(ApiResponse<MonthlyPointRuleDto>), 200)]
     [ProducesResponseType(404)]
     public async Task<ActionResult<ApiResponse<MonthlyPointRuleDto>>> GetMonthlyPointRule(int id)
@@ -82,7 +82,7 @@ public class MonthlyPointController : ControllerBase
     /// Tạo hoặc cập nhật quy tắc cộng điểm cho một role
     /// </summary>
     [HttpPost("rules")]
-    [Authorize(Policy = "monthly_point:manage")]
+    [Authorize(Policy = "monthly-point:create")]
     [ProducesResponseType(typeof(ApiResponse<MonthlyPointRuleDto>), 200)]
     [ProducesResponseType(400)]
     public async Task<ActionResult<ApiResponse<MonthlyPointRuleDto>>> UpsertMonthlyPointRule(
@@ -123,7 +123,7 @@ public class MonthlyPointController : ControllerBase
     /// Xóa quy tắc cộng điểm
     /// </summary>
     [HttpDelete("rules/{id}")]
-    [Authorize(Policy = "monthly_point:manage")]
+    [Authorize(Policy = "monthly-point:delete")]
     [ProducesResponseType(typeof(ApiResponse<bool>), 200)]
     [ProducesResponseType(404)]
     public async Task<ActionResult<ApiResponse<bool>>> DeleteMonthlyPointRule(int id)
@@ -149,10 +149,10 @@ public class MonthlyPointController : ControllerBase
     }
 
     /// <summary>
-    /// Chạy job cộng điểm thủ công (manual trigger) - CHỈ ADMIN
+    /// Chạy job cộng điểm thủ công (manual trigger)
     /// </summary>
     [HttpPost("allocate")]
-    [Authorize(Policy = "monthly_point:allocate")]
+    [Authorize(Policy = "monthly-point:allocate")]
     [ProducesResponseType(typeof(ApiResponse<MonthlyPointAllocationResultDto>), 200)]
     public async Task<ActionResult<ApiResponse<MonthlyPointAllocationResultDto>>> AllocateMonthlyPoints()
     {
@@ -182,7 +182,7 @@ public class MonthlyPointController : ControllerBase
     /// Lấy lịch sử chạy job cộng điểm tự động
     /// </summary>
     [HttpGet("history")]
-    [Authorize(Policy = "monthly_point:view")]
+    [Authorize(Policy = "monthly-point:history")]
     [ProducesResponseType(typeof(ApiResponse<List<MonthlyPointAllocationHistoryDto>>), 200)]
     public async Task<ActionResult<ApiResponse<List<MonthlyPointAllocationHistoryDto>>>> GetAllocationHistory(
         [FromQuery] int limit = 12)

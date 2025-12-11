@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using HRMApi.BackgroundServices;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -42,6 +41,7 @@ builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 // Register Background Services
 builder.Services.AddHostedService<MonthlyPointAllocationWorker>();
+
 // ========== CORS ==========
 builder.Services.AddCors(options =>
 {
@@ -92,9 +92,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-
-// var builder = WebApplication.CreateBuilder(args);
-
+// ========== Authorization Policies ==========
 builder.Services.AddAuthorization(options =>
 {
     // Danh sách permission bạn muốn hỗ trợ
@@ -118,10 +116,13 @@ builder.Services.AddAuthorization(options =>
         "point:update",
         "point:list",
         
-        // Monthly Point permissions - THÊM MỚI
-        "monthly_point:view",      // Xem quy tắc và lịch sử
-        "monthly_point:manage",    // Tạo, sửa, xóa quy tắc
-        "monthly_point:allocate"   // Chạy job thủ công (admin only)
+        // Monthly Point permissions
+        "monthly-point:view",
+        "monthly-point:create",
+        "monthly-point:update",
+        "monthly-point:delete",
+        "monthly-point:allocate",
+        "monthly-point:history"
     };
 
     foreach (var permission in permissions)
