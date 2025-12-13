@@ -1,5 +1,5 @@
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
-
+use hrm_database;
 INSERT INTO user_accounts (
     employee_id,
     username,
