@@ -95,13 +95,15 @@ export default function Header() {
             Đăng xuất
           </button>
         ) : (
-          <Link
-            to="/login"
-            className="ml-4 px-4 py-2 rounded-lg text-sm font-medium"
-            style={{ background: THEME_COLORS.primary[500], color: "white" }}
-          >
-            Đăng nhập
-          </Link>
+          location.pathname !== "/login" && (
+            <Link
+              to="/login"
+              className="ml-4 px-4 py-2 rounded-lg text-sm font-medium"
+              style={{ background: THEME_COLORS.primary[500], color: "white" }}
+            >
+              Đăng nhập
+            </Link>
+          )
         )}
       </nav>
     </header>

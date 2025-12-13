@@ -2,51 +2,79 @@
 export default function Footer() {
   return (
     <footer
-      className="w-full border-t-2 border-blue-300 bg-linear-to-r from-blue-50 via-white to-blue-50 shadow-inner"
+      className="w-full border-t border-gray-200 bg-white"
+      style={{ fontFamily: 'Open Sans, sans-serif', fontWeight: 400 }}
     >
-      <div className="max-w-6xl mx-auto py-10 px-6 grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between py-2 px-8 gap-8 text-base text-gray-700">
         {/* Logo & Slogan */}
-        <div className="flex flex-col gap-2 items-start">
-          <div className="flex items-center gap-2">
-            <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="text-blue-600"><circle cx="12" cy="12" r="10" strokeWidth="2" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12l2 2 4-4" /></svg>
-            <span className="text-2xl font-bold text-blue-700">HRM System</span>
+        <div className="flex flex-col gap-2 items-center md:items-start flex-1 min-w-[220px]">
+          <div className="flex flex-col items-center md:items-start">
+            <div className="flex items-center gap-2">
+              {/* Heroicon CheckCircle */}
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12l2 2 4-4" />
+              </svg>
+              <span className="font-bold text-blue-700 text-lg">HRM System</span>
+            </div>
+            <span className="text-sm text-gray-500 italic">Empowering your workforce</span>
+            <span className="text-xs text-gray-400">© {new Date().getFullYear()} Group 07</span>
           </div>
-          <span className="text-base text-gray-500 italic">Empowering your workforce</span>
-          <span className="text-sm text-gray-400">© {new Date().getFullYear()} Group 07</span>
         </div>
 
-        {/* Contact Info */}
-        <div className="flex flex-col gap-3 text-base text-gray-700">
-          <div className="font-semibold text-blue-700 mb-1 text-lg">Liên hệ</div>
-          <div className="flex items-center gap-2">
-            <svg width="20" height="20" fill="currentColor" className="inline text-blue-500" viewBox="0 0 20 20"><path d="M2.94 6.94a1.5 1.5 0 0 1 2.12 0L10 11.88l4.94-4.94a1.5 1.5 0 1 1 2.12 2.12l-6 6a1.5 1.5 0 0 1-2.12 0l-6-6a1.5 1.5 0 0 1 0-2.12z" /></svg>
-            <a href="mailto:admin@company.com" className="hover:underline hover:text-blue-800 transition text-lg">admin@company.com</a>
-          </div>
-          <div className="flex items-center gap-2">
-            <svg width="20" height="20" fill="currentColor" className="inline text-blue-500" viewBox="0 0 20 20"><path d="M2 8.5A6.5 6.5 0 0115.5 8.5c0 3.59-2.91 6.5-6.5 6.5S2.5 12.09 2.5 8.5z" /></svg>
-            <span className="text-lg">Hotline: <a href="tel:0123456789" className="hover:underline hover:text-blue-800 transition">0123 456 789</a></span>
-          </div>
-          <div className="flex items-center gap-2">
-            <svg width="20" height="20" fill="currentColor" className="inline text-blue-500" viewBox="0 0 20 20"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zm1 11H9v-1h2v1zm0-2H9V7h2v4z" /></svg>
-            <span className="text-lg">Địa chỉ: 123 Đường HRM, Quận 1, TP.HCM</span>
+        {/* Contact & Company Info */}
+        <div className="flex flex-col items-center md:items-center text-sm text-gray-700 min-w-[320px] w-full flex-1 justify-center break-words text-center md:text-left">
+          <div className="font-bold text-blue-700 mb-1 tracking-wide">Liên hệ</div>
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2">
+              {/* Heroicon Envelope */}
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m-18 8V8a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+              </svg>
+              <a href="mailto:contact@hrmcompany.vn" className="hover:underline hover:text-blue-800 transition font-medium">contact@hrmcompany.vn</a>
+            </div>
+            <div className="flex items-center gap-2">
+              {/* Heroicon Phone */}
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H5a2 2 0 01-2-2V5zm0 10a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H5a2 2 0 01-2-2v-2zm10-10a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zm0 10a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+              </svg>
+              <a href="tel:02812345678" className="hover:underline hover:text-blue-800 transition font-medium">028 1234 5678</a>
+            </div>
+            <div className="flex items-center gap-2">
+              {/* Heroicon MapPin */}
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 11c1.104 0 2-.896 2-2s-.896-2-2-2-2 .896-2 2 .896 2 2 2zm0 8c-4.418 0-8-3.582-8-8 0-4.418 3.582-8 8-8s8 3.582 8 8c0 4.418-3.582 8-8 8z" />
+              </svg>
+              <span className="font-medium">Tầng 10, Tòa nhà HRM, 456 Nguyễn Huệ, Quận 1, TP.HCM</span>
+            </div>
           </div>
         </div>
 
         {/* Socials & More */}
-        <div className="flex flex-col gap-3 text-base text-gray-700 md:items-end items-start">
-          <div className="font-semibold text-blue-700 mb-1 text-lg">Kết nối với chúng tôi</div>
-          <div className="flex gap-4">
+        <div className="flex flex-col items-center md:items-end text-sm text-gray-700 min-w-[200px] flex-1 justify-center">
+          <div className="font-bold text-blue-700 mb-1 tracking-wide">Kết nối với chúng tôi</div>
+          <div className="flex gap-2">
             <a href="#" className="hover:text-blue-600" title="Facebook">
-              <svg width="24" height="24" fill="currentColor" className="inline" viewBox="0 0 24 24"><path d="M22 12c0-5.522-4.477-10-10-10S2 6.478 2 12c0 4.991 3.657 9.128 8.438 9.877v-6.987h-2.54v-2.89h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.242 0-1.632.771-1.632 1.562v1.875h2.773l-.443 2.89h-2.33v6.987C18.343 21.128 22 16.991 22 12z" /></svg>
+              {/* Facebook square frame icon, smaller */}
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7" fill="currentColor" viewBox="0 0 32 32">
+                <rect width="32" height="32" rx="5" fill="#1877F3" />
+                <path d="M22 17H18V26H14V17H12V14H14V12.5C14 10.5 15 9 18 9H22V12H19.5C19 12 18 12.2 18 13V14H22L22 17Z" fill="white" />
+              </svg>
             </a>
             <a href="#" className="hover:text-blue-600" title="LinkedIn">
-              <svg width="24" height="24" fill="currentColor" className="inline" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-10h3v10zm-1.5-11.268c-.966 0-1.75-.784-1.75-1.75s.784-1.75 1.75-1.75 1.75.784 1.75 1.75-.784 1.75-1.75 1.75zm13.5 11.268h-3v-5.604c0-1.337-.025-3.063-1.868-3.063-1.868 0-2.154 1.459-2.154 2.968v5.699h-3v-10h2.881v1.367h.041c.401-.761 1.381-1.563 2.841-1.563 3.039 0 3.6 2.001 3.6 4.601v5.595z" /></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7" fill="currentColor" viewBox="0 0 32 32">
+                <rect width="32" height="32" rx="5" fill="#0A66C2" />
+                <path d="M10 13H14V26H10V13ZM12 11C10.9 11 10 10.1 10 9C10 7.9 10.9 7 12 7C13.1 7 14 7.9 14 9C14 10.1 13.1 11 12 11ZM18 13H22V14.5H22.04C22.6 13.7 23.8 12.5 25 12.5C27.5 12.5 28 14 28 16.5V26H24V17.5C24 16 23.8 15 22.5 15C21 15 20.5 16 20.5 17.5V26H16.5V13H18Z" fill="white" />
+              </svg>
             </a>
             <a href="#" className="hover:text-blue-600" title="YouTube">
-              <svg width="24" height="24" fill="currentColor" className="inline" viewBox="0 0 24 24"><path d="M23.498 6.186a2.994 2.994 0 0 0-2.112-2.112C19.545 3.5 12 3.5 12 3.5s-7.545 0-9.386.574a2.994 2.994 0 0 0-2.112 2.112C0 8.027 0 12 0 12s0 3.973.502 5.814a2.994 2.994 0 0 0 2.112 2.112C4.455 20.5 12 20.5 12 20.5s7.545 0 9.386-.574a2.994 2.994 0 0 0 2.112-2.112C24 15.973 24 12 24 12s0-3.973-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" /></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7" fill="currentColor" viewBox="0 0 32 32">
+                <rect width="32" height="32" rx="5" fill="#FF5A5A" />
+                <path d="M23 16.5C23 15.295 22.205 14.5 21 14.5H11C9.795 14.5 9 15.295 9 16.5V21.5C9 22.705 9.795 23.5 11 23.5H21C22.205 23.5 23 22.705 23 21.5V16.5ZM14.5 20.5V17.5L18.5 19L14.5 20.5Z" fill="white" />
+              </svg>
             </a>
           </div>
-          <span className="text-sm text-gray-400 mt-2">All rights reserved.</span>
+          <span className="text-xs text-gray-400 mt-1">All rights reserved.</span>
         </div>
       </div>
     </footer>
