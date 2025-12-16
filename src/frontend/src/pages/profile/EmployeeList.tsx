@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Users, Search, Filter, Mail, Building2, Briefcase, Loader2, AlertCircle } from 'lucide-react';
+import { Users, Search, Filter, Mail, Building2, Briefcase, Loader2, AlertCircle, Eye, Pencil, Trash2 } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { fetchEmployees, updateEmployeeWorkingInfo } from '../../store/employeeSlice';
 import EmployeeDetailModal from '../../components/profile/EmployeeDetailModal';
@@ -321,7 +321,7 @@ const EmployeeList = () => {
                                                 <div className="flex gap-2">
                                                     <button
                                                         onClick={() => handleViewDetail(employee.id)}
-                                                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-all"
+                                                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-all flex items-center gap-2"
                                                         style={{
                                                             transition: 'all 0.3s ease'
                                                         }}
@@ -334,24 +334,49 @@ const EmployeeList = () => {
                                                             e.currentTarget.style.boxShadow = 'none';
                                                         }}
                                                     >
-                                                        Xem chi tiết
+                                                        <Eye className="w-4 h-4" />
+                                                        Chi tiết
                                                     </button>
                                                     <button
                                                         onClick={() => handleUpdate(employee.id)}
-                                                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-all"
+                                                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-all flex items-center gap-2"
                                                         style={{
                                                             transition: 'all 0.3s ease'
                                                         }}
                                                         onMouseEnter={(e) => {
                                                             e.currentTarget.style.transform = 'translateY(-2px)';
-                                                            e.currentTarget.style.boxShadow = '0 5px 20px rgba(102, 126, 234, 0.4)';
+                                                            e.currentTarget.style.boxShadow = '0 5px 20px rgba(34, 197, 94, 0.4)';
                                                         }}
                                                         onMouseLeave={(e) => {
                                                             e.currentTarget.style.transform = 'translateY(0)';
                                                             e.currentTarget.style.boxShadow = 'none';
                                                         }}
                                                     >
-                                                        Chỉnh sửa
+                                                        <Pencil className="w-4 h-4" />
+                                                        Sửa
+                                                    </button>
+                                                    <button
+                                                        onClick={() => {
+                                                            if (window.confirm('Bạn có chắc chắn muốn xóa nhân viên này?')) {
+                                                                console.log('Deleting employee:', employee.id);
+                                                                // TODO: Implement delete functionality
+                                                            }
+                                                        }}
+                                                        className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-all flex items-center gap-2"
+                                                        style={{
+                                                            transition: 'all 0.3s ease'
+                                                        }}
+                                                        onMouseEnter={(e) => {
+                                                            e.currentTarget.style.transform = 'translateY(-2px)';
+                                                            e.currentTarget.style.boxShadow = '0 5px 20px rgba(220, 38, 38, 0.4)';
+                                                        }}
+                                                        onMouseLeave={(e) => {
+                                                            e.currentTarget.style.transform = 'translateY(0)';
+                                                            e.currentTarget.style.boxShadow = 'none';
+                                                        }}
+                                                    >
+                                                        <Trash2 className="w-4 h-4" />
+                                                        Xóa
                                                     </button>
                                                 </div>
                                             </td>

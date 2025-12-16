@@ -12,15 +12,6 @@ interface Role {
     description: string;
 }
 
-interface EmployeePoints { //Dữ liệu từ API
-    id: number;
-    employeeId: number;
-    employeeName: string;
-    email: string;
-    pointTotal: number;
-    lastUpdate: string;
-}
-
 interface DistributionHistory {
     id: string;
     month: string;
