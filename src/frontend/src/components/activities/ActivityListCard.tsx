@@ -1,11 +1,12 @@
-import { Calendar, MapPin, Users, Eye, UserPlus, Trash2 } from 'lucide-react';
+import { Calendar, MapPin, Users, Eye, UserPlus, UserMinus } from 'lucide-react';
 import type { ActivityData } from '../../data/activityData';
 
 interface ActivityListCardProps {
   activity: ActivityData;
   onViewDetails: (activityId: string) => void;
   onRegister: (activityId: string) => void;
-  onDelete?: (activityId: string) => void;
+  onUnregister?: (activityId: string) => void;
+  isRegistered?: boolean;
 }
 
 const activityTypeLabels: Record<ActivityData['type'], string> = {
@@ -24,8 +25,13 @@ const activityTypeColors: Record<ActivityData['type'], string> = {
   volunteer: 'bg-orange-100 text-orange-800'
 };
 
-export default function ActivityListCard({ activity, onViewDetails, onRegister, onDelete }: ActivityListCardProps) {
-  const isEmployee = localStorage.getItem('role') === 'employee';
+export default function ActivityListCard({ 
+  activity, 
+  onViewDetails, 
+  onRegister, 
+  onUnregister,
+  isRegistered = false 
+}: ActivityListCardProps) {
   
   const formatDateTime = (dateString: string) => {
     const date = new Date(dateString);
@@ -88,7 +94,7 @@ export default function ActivityListCard({ activity, onViewDetails, onRegister, 
 
       <div className="p-6">
         {/* Header */}
-        <div className="flex items-start justify-between mb-3">
+        <div className="flex items-start justify-between mb-3 gap-1">
           <h3 className="text-xl font-bold text-gray-900 flex-1">
             {activity.name}
           </h3>
@@ -180,9 +186,9 @@ export default function ActivityListCard({ activity, onViewDetails, onRegister, 
             <span className="font-medium">Chi tiết</span>
           </button>
           
-          {!isEmployee ? (
+          {isRegistered ? (
             <button
-              onClick={() => onDelete?.(activity.id)}
+              onClick={() => onUnregister && onUnregister(activity.id)}
               className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all duration-200"
               style={{
                 transition: 'all 0.3s ease'
@@ -196,8 +202,8 @@ export default function ActivityListCard({ activity, onViewDetails, onRegister, 
                 e.currentTarget.style.boxShadow = 'none';
               }}
             >
-              <Trash2 className="w-4 h-4" />
-              <span className="font-medium">Xóa</span>
+              <UserMinus className="w-4 h-4" />
+              <span className="font-medium">Hủy đăng ký</span>
             </button>
           ) : (
             <button

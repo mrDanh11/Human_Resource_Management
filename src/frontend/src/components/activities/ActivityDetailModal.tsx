@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { X, Calendar, MapPin, Users, Building2, Clock, Trash2 } from 'lucide-react';
+import { X, Calendar, MapPin, Users, Building2, Clock } from 'lucide-react';
 import type { ActivityData } from '../../data/activityData';
 
 interface ActivityDetailModalProps {
@@ -7,7 +7,6 @@ interface ActivityDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
   onRegister: (activityId: string) => void;
-  onDelete?: (activityId: string) => void;
 }
 
 const activityTypeLabels: Record<ActivityData['type'], string> = {
@@ -26,8 +25,7 @@ const activityTypeColors: Record<ActivityData['type'], string> = {
   volunteer: 'bg-orange-100 text-orange-800 border-orange-200'
 };
 
-export default function ActivityDetailModal({ activity, isOpen, onClose, onRegister, onDelete }: ActivityDetailModalProps) {
-  const isEmployee = localStorage.getItem('role') === 'employee';
+export default function ActivityDetailModal({ activity, isOpen, onClose, onRegister }: ActivityDetailModalProps) {
   
   useEffect(() => {
     if (isOpen) {
@@ -258,59 +256,35 @@ export default function ActivityDetailModal({ activity, isOpen, onClose, onRegis
                 }}
               >
                 Đóng
-              </button>
+              </button>              
               
-              {!isEmployee ? (
-                <button
-                  onClick={() => {
-                    onDelete?.(activity.id);
-                    onClose();
-                  }}
-                  className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all"
-                  style={{
-                    transition: 'all 0.3s ease'
-                  }}
-                  onMouseEnter={(e) => {
+              <button
+                onClick={() => {
+                  onRegister(activity.id);
+                  onClose();
+                }}
+                disabled={!canRegister}
+                className={`flex-1 px-6 py-3 rounded-lg font-medium transition-all ${
+                  canRegister
+                    ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
+                style={{
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseEnter={(e) => {
+                  if (canRegister) {
                     e.currentTarget.style.transform = 'translateY(-2px)';
-                    e.currentTarget.style.boxShadow = '0 5px 20px rgba(220, 38, 38, 0.4)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = 'none';
-                  }}
-                >
-                    <Trash2 className="w-4 h-4" />
-                    <span className="font-medium">Xóa hoạt động</span>
-                </button>
-              ) : (
-                <button
-                  onClick={() => {
-                    onRegister(activity.id);
-                    onClose();
-                  }}
-                  disabled={!canRegister}
-                  className={`flex-1 px-6 py-3 rounded-lg font-medium transition-all ${
-                    canRegister
-                      ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  }`}
-                  style={{
-                    transition: 'all 0.3s ease'
-                  }}
-                  onMouseEnter={(e) => {
-                    if (canRegister) {
-                      e.currentTarget.style.transform = 'translateY(-2px)';
-                      e.currentTarget.style.boxShadow = '0 5px 20px rgba(37, 99, 235, 0.4)';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = 'none';
-                  }}
-                >
-                  {isFullyBooked() ? 'Đã đủ số lượng' : !isRegistrationOpen() ? 'Đã đóng đăng ký' : 'Đăng ký ngay'}
-                </button>
-              )}
+                    e.currentTarget.style.boxShadow = '0 5px 20px rgba(37, 99, 235, 0.4)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
+              >
+                {isFullyBooked() ? 'Đã đủ số lượng' : !isRegistrationOpen() ? 'Đã đóng đăng ký' : 'Đăng ký ngay'}
+              </button>
             </div>
           </div>
         </div>

@@ -13,6 +13,8 @@ import AdminLayout from './layouts/AdminLayout'
 import AdminDashboard from './pages/AdminDashboard'
 import ActivityListPage from './pages/activities/ActivityListPage';
 import AdminActivityListPage from './pages/activities/AdminActivityListPage';
+import CreateActivityPage from './pages/activities/CreateActivityPage';
+import HistoryActivitiesPage from './pages/activities/HistoryActivitiesPage';
 
 const App = () => {
   return (
@@ -28,12 +30,14 @@ const App = () => {
         <Route path="/rewards/hr-reward" element={<RewardPointHR />} />
         <Route path="/rewards" element={<PointsAdmin />} />
         <Route path="/activities" element={<ActivityListPage />} />
+        <Route path="/activities/history" element={<HistoryActivitiesPage />} />
         
         {/* Admin routes with layout */}
         <Route path="admin" element={<AdminLayout />}>
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="point" element={<PointsAdmin />} />
           <Route path="activities" element={<AdminActivityListPage />} />
+          <Route path="activities/create" element={<CreateActivityPage />} />
           <Route path="employee">
             <Route path="list" element={<EmployeeList />} />
             <Route path="create" element={<CreateEmployee />} />
