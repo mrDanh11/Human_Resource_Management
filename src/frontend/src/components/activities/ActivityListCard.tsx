@@ -1,0 +1,240 @@
+import { Calendar, MapPin, Users, Eye, UserPlus, Trash2 } from 'lucide-react';
+import type { ActivityData } from '../../data/activityData';
+
+interface ActivityListCardProps {
+  activity: ActivityData;
+  onViewDetails: (activityId: string) => void;
+  onRegister: (activityId: string) => void;
+  onDelete?: (activityId: string) => void;
+}
+
+const activityTypeLabels: Record<ActivityData['type'], string> = {
+  sports: 'Thể thao',
+  charity: 'Từ thiện',
+  training: 'Đào tạo',
+  'team-building': 'Team Building',
+  volunteer: 'Tình nguyện'
+};
+
+const activityTypeColors: Record<ActivityData['type'], string> = {
+  sports: 'bg-blue-100 text-blue-800',
+  charity: 'bg-pink-100 text-pink-800',
+  training: 'bg-purple-100 text-purple-800',
+  'team-building': 'bg-green-100 text-green-800',
+  volunteer: 'bg-orange-100 text-orange-800'
+};
+
+export default function ActivityListCard({ activity, onViewDetails, onRegister, onDelete }: ActivityListCardProps) {
+  const isEmployee = localStorage.getItem('role') === 'employee';
+  
+  const formatDateTime = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('vi-VN', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  const isRegistrationOpen = () => {
+    const now = new Date();
+    const regStart = new Date(activity.registrationStart);
+    const regEnd = new Date(activity.registrationEnd);
+    return now >= regStart && now <= regEnd;
+  };
+
+  const isFullyBooked = () => {
+    return activity.maxParticipants !== undefined && 
+           activity.currentParticipants >= activity.maxParticipants;
+  };
+
+  const getRegistrationStatus = () => {
+    if (!isRegistrationOpen()) {
+      const now = new Date();
+      const regStart = new Date(activity.registrationStart);
+      const regEnd = new Date(activity.registrationEnd);
+      
+      if (now < regStart) {
+        return { text: 'Chưa mở đăng ký', color: 'text-gray-500' };
+      } else if (now > regEnd) {
+        return { text: 'Đã đóng đăng ký', color: 'text-red-500' };
+      }
+    }
+    
+    if (isFullyBooked()) {
+      return { text: 'Đã đủ số lượng', color: 'text-red-500' };
+    }
+    
+    return { text: 'Đang mở đăng ký', color: 'text-green-600' };
+  };
+
+  const canRegister = isRegistrationOpen() && !isFullyBooked();
+  const regStatus = getRegistrationStatus();
+
+  return (
+    <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
+      {/* Image */}
+      {activity.imageUrl && (
+        <div className="h-48 overflow-hidden">
+          <img 
+            src={activity.imageUrl} 
+            alt={activity.name}
+            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+          />
+        </div>
+      )}
+
+      <div className="p-6">
+        {/* Header */}
+        <div className="flex items-start justify-between mb-3">
+          <h3 className="text-xl font-bold text-gray-900 flex-1">
+            {activity.name}
+          </h3>
+          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${activityTypeColors[activity.type]}`}>
+            {activityTypeLabels[activity.type]}
+          </span>
+        </div>
+
+        {/* Description */}
+        <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+          {activity.description}
+        </p>
+
+        {/* Info Grid */}
+        <div className="space-y-2 mb-4">
+          {/* Activity Time */}
+          <div className="flex items-center text-sm text-gray-700">
+            <Calendar className="w-4 h-4 mr-2 text-blue-600" />
+            <span className="font-medium mr-2">Diễn ra:</span>
+            <span>{formatDateTime(activity.startDate)} - {formatDateTime(activity.endDate)}</span>
+          </div>
+
+          {/* Registration Time */}
+          <div className="flex items-center text-sm text-gray-700">
+            <Calendar className="w-4 h-4 mr-2 text-green-600" />
+            <span className="font-medium mr-2">Đăng ký:</span>
+            <span>{formatDateTime(activity.registrationStart)} - {formatDateTime(activity.registrationEnd)}</span>
+          </div>
+
+          {/* Location */}
+          <div className="flex items-center text-sm text-gray-700">
+            <MapPin className="w-4 h-4 mr-2 text-red-600" />
+            <span className="font-medium mr-2">Địa điểm:</span>
+            <span>{activity.location}</span>
+          </div>
+
+          {/* Participants */}
+          <div className="flex items-center text-sm text-gray-700">
+            <Users className="w-4 h-4 mr-2 text-purple-600" />
+            <span className="font-medium mr-2">Người tham gia:</span>
+            <span>
+              {activity.currentParticipants}
+              {activity.maxParticipants && `/${activity.maxParticipants}`} người
+            </span>
+          </div>
+        </div>
+
+        {/* Progress Bar */}
+        {activity.maxParticipants && (
+          <div className="mb-4">
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div 
+                className={`h-2 rounded-full ${
+                  isFullyBooked() ? 'bg-red-500' : 'bg-blue-600'
+                }`}
+                style={{ 
+                  width: `${Math.min((activity.currentParticipants / activity.maxParticipants) * 100, 100)}%` 
+                }}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Status */}
+        <div className="mb-4">
+          <span className={`text-sm font-semibold ${regStatus.color}`}>
+            {regStatus.text}
+          </span>
+        </div>
+
+        {/* Actions */}
+        <div className="flex gap-3">
+          <button
+            onClick={() => onViewDetails(activity.id)}
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg transition-all duration-200"
+            style={{
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 5px 20px rgba(156, 163, 175, 0.4)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = 'none';
+            }}
+          >
+            <Eye className="w-4 h-4" />
+            <span className="font-medium">Chi tiết</span>
+          </button>
+          
+          {!isEmployee ? (
+            <button
+              onClick={() => onDelete?.(activity.id)}
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all duration-200"
+              style={{
+                transition: 'all 0.3s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 5px 20px rgba(220, 38, 38, 0.4)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = 'none';
+              }}
+            >
+              <Trash2 className="w-4 h-4" />
+              <span className="font-medium">Xóa</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => onRegister(activity.id)}
+              disabled={!canRegister}
+              className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ${
+                canRegister
+                  ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              }`}
+              style={{
+                transition: 'all 0.3s ease'
+              }}
+              onMouseEnter={(e) => {
+                if (canRegister) {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 5px 20px rgba(37, 99, 235, 0.4)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = 'none';
+              }}
+            >
+              <UserPlus className="w-4 h-4" />
+              <span className="font-medium">Đăng ký</span>
+            </button>
+          )}
+        </div>
+
+        {/* Organizer */}
+        <div className="mt-4 pt-4 border-t border-gray-200">
+          <p className="text-xs text-gray-500">
+            Tổ chức bởi: <span className="font-semibold text-gray-700">{activity.organizer}</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}

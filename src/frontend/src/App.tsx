@@ -11,6 +11,8 @@ import Login from './pages/auth/Login'
 import Forbidden from './pages/auth/Forbidden'
 import AdminLayout from './layouts/AdminLayout'
 import AdminDashboard from './pages/AdminDashboard'
+import ActivityListPage from './pages/activities/ActivityListPage';
+import AdminActivityListPage from './pages/activities/AdminActivityListPage';
 
 const App = () => {
   return (
@@ -25,11 +27,13 @@ const App = () => {
         <Route path="/rewards/exchange" element={<PointExchange />} />
         <Route path="/rewards/hr-reward" element={<RewardPointHR />} />
         <Route path="/rewards" element={<PointsAdmin />} />
+        <Route path="/activities" element={<ActivityListPage />} />
         
         {/* Admin routes with layout */}
         <Route path="admin" element={<AdminLayout />}>
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="point" element={<PointsAdmin />} />
+          <Route path="activities" element={<AdminActivityListPage />} />
           <Route path="employee">
             <Route path="list" element={<EmployeeList />} />
             <Route path="create" element={<CreateEmployee />} />

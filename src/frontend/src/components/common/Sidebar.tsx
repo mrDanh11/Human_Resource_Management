@@ -1,11 +1,12 @@
 import React from "react";
-import { Home, User, Users, FileText, Activity, Award } from "lucide-react";
+import { Home, User, FileText, Activity, Award } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
+
+const userId = localStorage.getItem('userId');
 
 const MENU = [
   { label: "Trang chủ", icon: Home, path: "/landing" },
-  { label: "Hồ sơ cá nhân", icon: User, path: "/employee/profile/1" },
-  { label: "Nhân viên", icon: Users, path: "/admin/employee/list" },
+  { label: "Hồ sơ cá nhân", icon: User, path: `/employee/profile/${userId}` },
   { label: "Yêu cầu", icon: FileText, path: "/requests" },
   { label: "Hoạt động", icon: Activity, path: "/activities" },
   { label: "Điểm thưởng", icon: Award, path: "/rewards" },

@@ -7,10 +7,10 @@ const AdminSidebar: React.FC = () => {
   const menuItems = [
     { label: "Quản lý nhân viên", to: "/admin/employee/list" },
     { label: "Thêm nhân viên", to: "/admin/employee/create" },
-    { label: "Yêu cầu nghỉ phép", to: "/requests" },
+    { label: "Yêu cầu nghỉ phép", to: "/admin/requests" },
     { label: "Quản lý điểm thưởng", to: "/admin/point" },
-    { label: "Hoạt động/Campaign", to: "/activities" },
-    { label: "Bảng công", to: "/timesheet" },
+    { label: "Hoạt động/Campaign", to: "/admin/activities" },
+    { label: "Bảng công", to: "/admin/timesheet" },
   ];
 
   return (
