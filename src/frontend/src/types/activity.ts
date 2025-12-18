@@ -48,6 +48,34 @@ export interface CompetitionLeaderboard {
   totalRuns: number;
   averageSpeed: number;
   rank: number;
+}
+
+/**
+ * Campaign - Chiến dịch/hoạt động cho nhân viên
+ */
+export interface Campaign {
+  id?: string;
+  name: string; // 10-200 ký tự
+  description: string; // Tối thiểu 50 ký tự
+  startDate: string;
+  endDate: string;
+  registrationDeadline: string; // Phải trước startDate ít nhất 1 ngày
+  maxParticipants: number | null; // 5-1000 hoặc null (không giới hạn)
+  imageUrl?: string;
+  status?: 'upcoming' | 'ongoing' | 'ended';
+  createdAt?: string;
+}
+
+export interface CampaignFormData extends Omit<Campaign, 'id' | 'status' | 'createdAt'> {}
+
+export interface CampaignValidationErrors {
+  name?: string;
+  description?: string;
+  startDate?: string;
+  endDate?: string;
+  registrationDeadline?: string;
+  maxParticipants?: string;
+  imageUrl?: string;
   points: number;
 }
 

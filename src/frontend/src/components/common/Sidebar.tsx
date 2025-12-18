@@ -22,7 +22,16 @@ const Sidebar: React.FC = () => {
         { label: "Đã đăng ký", to: "/activities/history" },
       ]
     },
-    { label: "Điểm thưởng", icon: Award, to: "/rewards" },
+    { 
+      label: "Điểm thưởng", 
+      icon: Award, 
+      key: "rewards",
+      submenu: [
+        { label: "Tổng quan", to: "/rewards/points" },
+        { label: "Lịch sử giao dịch", to: "/rewards/history" },
+        { label: "Đổi thưởng", to: "/rewards/exchange" },
+      ]
+    },
   ];
 
   return (

@@ -9,7 +9,7 @@ export default function Field({ label, icon, children }: any) {
         {label}
       </div>
 
-      <div className="text-[15px] font-medium text-gray-900 font-mono">
+      <div className="text-[15px] font-medium text-gray-900 font-sans">
         {children || "-"}
       </div>
     </div>

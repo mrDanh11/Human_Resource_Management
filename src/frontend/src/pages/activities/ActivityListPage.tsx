@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import { Search, Filter, Calendar } from 'lucide-react';
+import FilterChips from './components/FilterChips';
+import ActivityCard from './components/ActivityCard';
+import LoadMore from './components/LoadMore';
 import ActivityListCard from '../../components/activities/ActivityListCard';
 import ActivityDetailModal from '../../components/activities/ActivityDetailModal';
 import ConfirmRegistrationModal from '../../components/activities/ConfirmRegistrationModal';
@@ -15,6 +18,8 @@ export default function ActivityListPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [activityToRegister, setActivityToRegister] = useState<ActivityData | null>(null);
+  const [visible, setVisible] = useState(3);
+  const [activeFilter, setActiveFilter] = useState("Tất cả");
   const currentEmployeeId = localStorage.getItem('userId') || '';
 
   const handleViewDetails = (activityId: string) => {
@@ -41,6 +46,37 @@ export default function ActivityListPage() {
       setActivityToRegister(null);
     }
   };
+
+  // Mock data cho hoạt động có thể hủy
+  const cancelableActivities = [
+    {
+      id: "1",
+      title: "Thi đua sáng kiến cải tiến",
+      status: "Đang diễn ra",
+      people: 85,
+      date: "15/09/2025 → 30/11/2025",
+    },
+    {
+      id: "2",
+      title: "Hoạt động teambuilding",
+      status: "Sắp diễn ra",
+      people: 120,
+      date: "20/11/2025 → 22/11/2025",
+    },
+    {
+      id: "3",
+      title: "Chương trình đào tạo Q4",
+      status: "Đang diễn ra",
+      people: 45,
+      date: "01/10/2025 → 31/12/2025",
+    },
+  ];
+
+  // Filter hoạt động có thể hủy
+  const filteredCancelableActivities = cancelableActivities.filter(activity => {
+    if (activeFilter === "Tất cả") return true;
+    return activity.status === activeFilter;
+  });
 
   // Filter activities - only show unregistered activities
   const filteredActivities = mockActivities.filter(activity => {
@@ -142,54 +178,81 @@ export default function ActivityListPage() {
         </div>
 
         {/* Activity Grid */}
-        <div className="mt-6">
-          {filteredActivities.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredActivities.map((activity) => (
-                <ActivityListCard
+        <div className="mt-6 space-y-8">
+          {/* Cancelable Activities Section */}
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              Hoạt động có thể hủy
+            </h2>
+            
+            <FilterChips 
+              selected={activeFilter}
+              onFilterChange={setActiveFilter}
+            />
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+              {filteredCancelableActivities.slice(0, visible).map((activity) => (
+                <ActivityCard
                   key={activity.id}
-                  activity={activity}
-                  onViewDetails={handleViewDetails}
-                  onRegister={handleRegister}
-                  isRegistered={false}
+                  id={activity.id}
+                  title={activity.title}
+                  status={activity.status}
+                  people={activity.people}
+                  date={activity.date}
                 />
               ))}
             </div>
-          ) : (
-            <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-              <div className="flex flex-col items-center gap-4">
-                <Calendar className="w-16 h-16 text-gray-300" />
-                <h3 className="text-xl font-semibold text-gray-900">
-                  Không tìm thấy hoạt động
-                </h3>
-                <p className="text-gray-600 max-w-md">
-                  Không có hoạt động nào phù hợp với bộ lọc của bạn. 
-                  Hãy thử điều chỉnh tiêu chí tìm kiếm.
-                </p>
-                <button
-                  onClick={() => {
-                    setSearchQuery('');
-                    setSelectedType('all');
-                    setSelectedStatus('all');
-                  }}
-                  className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all"
-                  style={{
-                    transition: 'all 0.3s ease'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                    e.currentTarget.style.boxShadow = '0 5px 20px rgba(37, 99, 235, 0.4)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = 'none';
-                  }}
-                >
-                  Đặt lại bộ lọc
-                </button>
+            
+            <LoadMore 
+              shown={visible} 
+              total={filteredCancelableActivities.length}
+              onLoadMore={() => setVisible(prev => prev + 3)}
+            />
+          </div>
+
+          {/* Available Activities Section */}
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              Hoạt động có thể đăng ký
+            </h2>
+            
+            {filteredActivities.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredActivities.map((activity) => (
+                  <ActivityListCard
+                    key={activity.id}
+                    activity={activity}
+                    onViewDetails={handleViewDetails}
+                    onRegister={handleRegister}
+                    isRegistered={false}
+                  />
+                ))}
               </div>
-            </div>
-          )}
+            ) : (
+              <div className="bg-white rounded-lg shadow-sm p-12 text-center">
+                <div className="flex flex-col items-center gap-4">
+                  <Calendar className="w-16 h-16 text-gray-300" />
+                  <h3 className="text-xl font-semibold text-gray-900">
+                    Không tìm thấy hoạt động
+                  </h3>
+                  <p className="text-gray-600 max-w-md">
+                    Không có hoạt động nào phù hợp với bộ lọc của bạn. 
+                    Hãy thử điều chỉnh tiêu chí tìm kiếm.
+                  </p>
+                  <button
+                    onClick={() => {
+                      setSearchQuery('');
+                      setSelectedType('all');
+                      setSelectedStatus('all');
+                    }}
+                    className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all"
+                  >
+                    Đặt lại bộ lọc
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

@@ -102,13 +102,14 @@ export const fetchEmployees = createAsyncThunk(
 );
 
 // Async thunk để fetch chi tiết nhân viên
-export const fetchEmployeeDetail = createAsyncThunk(
+export const fetchEmployeeDetail = createAsyncThunk<EmployeeDetailData, number, { rejectValue: string }>(
   'employee/fetchEmployeeDetail',
   async (id: number, { rejectWithValue }) => {
     try {
-      return await employeeService.getEmployeeById(id);
+      const res = await employeeService.getEmployeeById(id);
+      return res as EmployeeDetailData;
     } catch (error: any) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(error.response?.data ?? String(error.message));
     }
   }
 );
@@ -126,13 +127,14 @@ export const createEmployee = createAsyncThunk(
 );
 
 // Async thunk để cập nhật thông tin nhân viên
-export const updateEmployeeWorkingInfo = createAsyncThunk(
+export const updateEmployeeWorkingInfo = createAsyncThunk<EmployeeDetailData, { id: number, data: UpdateEmployeeWorkingInfoData }, { rejectValue: string }>(
   'employee/updateEmployeeWorkingInfo',
-  async ({ id, data }: { id: number, data: UpdateEmployeeWorkingInfoData }, { rejectWithValue }) => {
+  async ({ id, data }, { rejectWithValue }) => {
     try {
-      return await employeeService.updateEmployee(id, data);
+      const res = await employeeService.updateEmployee(id, data);
+      return res as EmployeeDetailData;
     } catch (error: any) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(error.response?.data ?? String(error.message));
     }
   }
 );
@@ -203,14 +205,48 @@ const employeeSlice = createSlice({
       })
       .addCase(updateEmployeeWorkingInfo.fulfilled, (state, action) => {
         state.updateLoading = false;
-        state.selectedEmployee = action.payload;
-        // Cập nhật lại danh sách nếu employee có trong list
-        const index = state.employees.findIndex(emp => emp.id === action.payload.id);
+        // Treat payload as a partial update and merge into selectedEmployee to satisfy types
+        const payload = action.payload as Partial<EmployeeDetailData>;
+
+        if (state.selectedEmployee) {
+          state.selectedEmployee = { ...state.selectedEmployee, ...payload } as EmployeeDetailData;
+        } else {
+          // Build a full EmployeeDetailData from payload with safe defaults
+          state.selectedEmployee = {
+            id: payload.id ?? 0,
+            fullname: payload.fullname ?? '',
+            cccd: payload.cccd ?? '',
+            taxCode: payload.taxCode ?? '',
+            phone: payload.phone ?? '',
+            address: payload.address ?? '',
+            bankAccount: payload.bankAccount ?? '',
+            joinDate: payload.joinDate ?? '',
+            status: payload.status ?? '',
+            birthday: payload.birthday ?? '',
+            gender: payload.gender ?? '',
+            email: payload.email ?? '',
+            roleId: payload.roleId ?? 0,
+            roleName: payload.roleName ?? '',
+            departmentId: payload.departmentId ?? 0,
+            departmentName: payload.departmentName ?? '',
+            createdAt: payload.createdAt ?? '',
+            updatedAt: payload.updatedAt ?? '',
+          } as EmployeeDetailData;
+        }
+
+        // Update list entry if present (only fields that exist on the list)
+        const idToFind = payload.id ?? state.selectedEmployee.id;
+        const index = state.employees.findIndex(emp => emp.id === idToFind);
         if (index !== -1) {
           state.employees[index] = {
             ...state.employees[index],
-            status: action.payload.status,
-            departmentName: action.payload.departmentName || state.employees[index].departmentName,
+            status: payload.status ?? state.employees[index].status,
+            departmentName: payload.departmentName ?? state.employees[index].departmentName,
+            fullname: payload.fullname ?? state.employees[index].fullname,
+            email: payload.email ?? state.employees[index].email,
+            phone: payload.phone ?? state.employees[index].phone,
+            roleName: payload.roleName ?? state.employees[index].roleName,
+            joinDate: payload.joinDate ?? state.employees[index].joinDate,
           };
         }
       })
