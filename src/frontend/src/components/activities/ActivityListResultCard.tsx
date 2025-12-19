@@ -1,4 +1,4 @@
-import { UserMinus } from 'lucide-react';
+import { CircleArrowRight } from 'lucide-react';
 import type { ParticipationData } from '../../types/activity';
 
 interface ActivityListCardProps {
@@ -50,7 +50,7 @@ export default function ActivityListResultCard({
                             e.currentTarget.style.boxShadow = 'none';
                         }}
                     >
-                        <UserMinus className="w-4 h-4" />
+                        <CircleArrowRight className="w-4 h-4" />
                         <span className="font-medium">Xem kết quả</span>
                     </button>
                 </div>

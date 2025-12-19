@@ -32,16 +32,16 @@ const App = () => {
         <Route path="/activities/results" element={<ActivityResultPage />} />
         <Route path="activities/create" element={<CreateActivityPage />} />
         <Route path="activities/cancel" element={<CancelActivityPage />} />
-        
+
 
         <Route path="/rewards/hr-reward" element={<RewardPointHR />} />
         <Route path="/employee/profile/:id" element={<ProfilePage />} />
+        <Route path="/rewards/exchange" element={<PointExchange />} />
+        <Route path="/rewards/history" element={<RewardHistory />} />
 
         <Route path="" element={<EmployeeLayout />}>
           <Route path="/forbidden" element={<Forbidden />} />
           <Route path="/rewards/points" element={<RewardDashboard />} />
-          <Route path="/rewards/exchange" element={<PointExchange />} />
-          <Route path="/rewards/history" element={<RewardHistory />} />
           <Route path="/rewards/hr-reward" element={<RewardPointHR />} />
           <Route path="/rewards" element={<PointsAdmin />} />
           <Route path="/activities" element={<ActivityListPage />} />

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, Plus, Edit2, Save, X, Users, Calendar, TrendingUp, Award, Loader2, AlertCircle, ArrowLeftRight, Trash2, CirclePower } from 'lucide-react';
+import { Search, Plus, Edit2, Save, X, Users, Calendar, TrendingUp, Award, Loader2, AlertCircle, ArrowLeftRight, Trash2 } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { fetchAllEmployeePoints } from '../../store/pointSlice';
 import { fetchAllConversionRules } from '../../store/conversionRuleSlice'
@@ -32,6 +32,7 @@ export default function PointsAdmin() {
     const [showToast, setShowToast] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [isAddingRule, setIsAddingRule] = useState(false);
+
 
     const itemsPerPage = 5;
 
@@ -577,12 +578,16 @@ export default function PointsAdmin() {
                                                                             className="w-24 px-3 py-1 border-2 border-blue-300 rounded-lg text-center font-bold text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                                         />
                                                                         <div className="text-sm text-gray-500">Trạng thái</div>
-                                                                        <button
-                                                                            onClick={() => { }}
-                                                                            className={`p-2 bg-white ${rule.isActive ? 'border-green-600' : 'border-red-600'} ${rule.isActive ? 'text-green-600' : 'text-red-600'} rounded-lg hover:bg-gray-200 transition-colors`}
+                                                                        <select
+                                                                            value={rule.isActive ? 'active' : 'inactive'}
+                                                                            onChange={(e) => rule.isActive = e.target.value === 'active'}
+                                                                            className={`px-3 py-1.5 rounded-lg border text-sm font-medium ${rule.isActive
+                                                                                ? 'border-green-600 text-green-600'
+                                                                                : 'border-red-600 text-red-600'}} bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500`}
                                                                         >
-                                                                            <CirclePower className="w-5 h-5" />
-                                                                        </button>
+                                                                            <option value="active">Đang áp dụng</option>
+                                                                            <option value="inactive">Ngưng sử dụng</option>
+                                                                        </select>
                                                                     </div>
                                                                 ) : (
                                                                     <>

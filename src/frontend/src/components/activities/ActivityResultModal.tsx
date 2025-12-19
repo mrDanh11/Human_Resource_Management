@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { X, Calendar, MapPin } from 'lucide-react';
+import { X, Calendar, Trophy } from 'lucide-react';
 import type { ParticipationData } from '../../types/activity';
 
 interface ActivityResultModalProps {
@@ -105,7 +105,7 @@ export default function ActivityResultModal({ participation, isOpen, onClose }: 
                             {/* Location */}
                             <div className="bg-red-50 rounded-lg p-4 border border-red-100">
                                 <div className="flex items-start gap-3">
-                                    <MapPin className="w-5 h-5 text-red-600 mt-0.5" />
+                                    <Trophy className="w-5 h-5 text-red-600 mt-0.5" />
                                     <div className="flex-1">
                                         <p className="font-semibold text-gray-900 mb-1">Thành tích của bạn</p>
                                         <p className="text-sm text-gray-700">
