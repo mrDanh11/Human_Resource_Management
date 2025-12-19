@@ -84,11 +84,11 @@ export const pointService = {
     const response = await apiDotNet.get<ApiResponse<EmployeePointDto>>(
       `/Point/employee/${employeeId}`
     );
-    
+
     if (response.data.success) {
       return response.data.data;
     }
-    
+
     throw new Error(response.data.message || 'Lỗi khi lấy thông tin điểm');
   },
 
@@ -104,11 +104,11 @@ export const pointService = {
       `/Point/transactions/employee/${employeeId}`,
       { params: { limit } }
     );
-    
+
     if (response.data.success) {
       return response.data.data;
     }
-    
+
     throw new Error(response.data.message || 'Lỗi khi lấy lịch sử giao dịch');
   },
 
@@ -137,7 +137,7 @@ export const pointService = {
         },
       }
     );
-    
+
     return response.data;
   },
 
@@ -149,12 +149,28 @@ export const pointService = {
     const response = await apiDotNet.get<ApiResponse<PointConversionRuleDto>>(
       '/Point/conversion-rules/active'
     );
-    
+
     if (response.data.success) {
       return response.data.data;
     }
-    
+
     throw new Error(response.data.message || 'Không tìm thấy quy tắc quy đổi');
+  },
+
+  /**
+   * Lấy toàn bộ quy tắc quy đổi điểm
+   * GET /api/Point/conversion-rules
+   */
+  getAllConversionRule: async (): Promise<PointConversionRuleDto[]> => {
+    const response = await apiDotNet.get<ApiResponse<PointConversionRuleDto[]>>(
+      '/Point/conversion-rules'
+    )
+
+    if (response.data.success) {
+      return response.data.data;
+    }
+
+    throw new Error(response.data.message || 'Không tìm thấy bất kì quy tắc quy đổi');
   },
 
   /**
@@ -169,11 +185,11 @@ export const pointService = {
       `/Point/employee/${employeeId}/convert`,
       { PointRequested: pointRequested }  // Backend .NET expects PascalCase
     );
-    
+
     if (response.data.success) {
       return response.data.data;
     }
-    
+
     throw new Error(response.data.message || 'Lỗi khi gửi yêu cầu quy đổi');
   },
 
@@ -198,7 +214,7 @@ export const pointService = {
         },
       }
     );
-    
+
     return response.data;
   },
 
@@ -208,11 +224,11 @@ export const pointService = {
    */
   getPointStatistics: async (): Promise<any> => {
     const response = await apiDotNet.get<ApiResponse<any>>('/Point/statistics');
-    
+
     if (response.data.success) {
       return response.data.data;
     }
-    
+
     throw new Error(response.data.message || 'Lỗi khi lấy thống kê');
   },
 
@@ -233,7 +249,7 @@ export const pointService = {
         },
       }
     );
-    
+
     return response.data;
   },
 };
