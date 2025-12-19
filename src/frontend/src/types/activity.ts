@@ -86,3 +86,16 @@ export interface CompetitionStats {
   averageDistance: number;
   topRunners: CompetitionLeaderboard[];
 }
+
+export interface ParticipationData {
+  id: number,
+  employeeId: number,
+  activityId: number,
+  employeeName: string,
+  activityName: string,
+  description: string,
+  registerDate: Date,
+  cancelDate: Date,
+  status: string,
+  result: string,
+}

@@ -37,6 +37,8 @@ builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IPointService, PointService>();
 builder.Services.AddScoped<IMonthlyPointRepository, MonthlyPointRepository>();
 builder.Services.AddScoped<IMonthlyPointService, MonthlyPointService>();
+builder.Services.AddScoped<IParticipationRepository, ParticipationRepository>();
+builder.Services.AddScoped<IParticipationService, ParticipationService>();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 // Register Background Services
@@ -54,7 +56,7 @@ builder.Services.AddCors(options =>
 });
 
 // ========== JWT Authentication ==========
-var jwtSecret = builder.Configuration["Jwt:Secret"] 
+var jwtSecret = builder.Configuration["Jwt:Secret"]
                 ?? "mysecret_nguyenchidanh_mysecret_nguyenchidanh";
 
 builder.Services.AddAuthentication(options =>
@@ -122,7 +124,11 @@ builder.Services.AddAuthorization(options =>
         "monthly-point:update",
         "monthly-point:delete",
         "monthly-point:allocate",
-        "monthly-point:history"
+        "monthly-point:history",
+
+        // Participate
+        "participate:list",
+        "participate:view"
     };
 
     foreach (var permission in permissions)

@@ -82,3 +82,61 @@ export const getActivityById = async (id: number): Promise<Campaign> => {
 // API lấy bảng xếp hạng cuộc thi
 // API lấy thống kê tổng quan cuộc thi
 // API xác thực kết quả chạy
+
+import { apiDotNet } from './api';
+
+export interface ParticipationDto {
+    id: number,
+    employeeId: number,
+    activityId: number,
+    employeeName: string,
+    activityName: string,
+    description: string,
+    registerDate: Date,
+    cancelDate: Date,
+    status: string,
+    result: string,
+}
+
+export interface ApiResponse<T> {
+    success: boolean;
+    message: string;
+    data: T;
+    errors: string[];
+}
+
+export interface PagedResult<T> {
+    items: T[];
+    pageNumber: number;
+    pageSize: number;
+    totalPages: number;
+    hasPreviousPage: boolean;
+    hasNextPage: boolean;
+}
+
+
+export const participationService = {
+    getActivityEmployeeAttended: async (employeeId: number): Promise<ParticipationDto[]> => {
+        const response = await apiDotNet.get<ApiResponse<ParticipationDto[]>>(
+            `/Participation/employee/${employeeId}`
+        );
+
+        if (response.data.success) {
+            return response.data.data;
+        }
+
+        throw new Error(response.data.message || 'Lỗi khi lấy thông tin các hoạt động nhân viên tham gia');
+    },
+
+    getResultActivity: async (activityId: number, employeeId: number): Promise<ParticipationDto> => {
+        const response = await apiDotNet.get<ApiResponse<ParticipationDto>>(
+            `/Participation/${activityId}-${employeeId}`
+        );
+
+        if (response.data.success) {
+            return response.data.data;
+        }
+
+        throw new Error(response.data.message || 'Lỗi khi lấy kết quả hoạt động nhân viên tham gia');
+    }
+}

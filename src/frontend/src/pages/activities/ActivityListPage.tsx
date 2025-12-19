@@ -83,14 +83,14 @@ export default function ActivityListPage() {
     // Exclude registered activities
     const isRegistered = isActivityRegistered(currentEmployeeId, activity.id);
     if (isRegistered) return false;
-    
+
     // Search filter
     const matchesSearch = activity.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         activity.description.toLowerCase().includes(searchQuery.toLowerCase());
-    
+      activity.description.toLowerCase().includes(searchQuery.toLowerCase());
+
     // Type filter
     const matchesType = selectedType === 'all' || activity.type === selectedType;
-    
+
     // Status filter
     let matchesStatus = true;
     if (selectedStatus !== 'all') {
@@ -98,10 +98,10 @@ export default function ActivityListPage() {
       const regStart = new Date(activity.registrationStart);
       const regEnd = new Date(activity.registrationEnd);
       const isOpen = now >= regStart && now <= regEnd;
-      
+
       matchesStatus = selectedStatus === 'open' ? isOpen : !isOpen;
     }
-    
+
     return matchesSearch && matchesType && matchesStatus;
   });
 
@@ -202,7 +202,6 @@ export default function ActivityListPage() {
                 />
               ))}
             </div>
-            
             <LoadMore 
               shown={visible} 
               total={filteredCancelableActivities.length}
