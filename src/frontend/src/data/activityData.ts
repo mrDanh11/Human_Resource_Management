@@ -101,7 +101,7 @@ export const mockActivities: ActivityData[] = [
     currentParticipants: 54,
     location: 'Hội trường Tầng 1',
     type: 'volunteer',
-    status: 'upcoming',
+    status: 'completed',
     imageUrl: 'https://images.unsplash.com/photo-1615461065929-4f8ffed6ca40?w=800',
     organizer: 'Phòng Y tế',
     points: 70
@@ -237,7 +237,7 @@ export const mockActivities: ActivityData[] = [
     currentParticipants: 18,
     location: 'Trung tâm Bảo trợ trẻ em Hà Nội',
     type: 'charity',
-    status: 'upcoming',
+    status: 'completed',
     imageUrl: 'https://images.unsplash.com/photo-1618826411640-d6df44dd3f7a?w=800',
     organizer: 'Ban Đoàn thể',
     points: 85
