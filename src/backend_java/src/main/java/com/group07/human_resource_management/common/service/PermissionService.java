@@ -34,7 +34,18 @@ public class PermissionService {
                     "monthly-point:update",
                     "monthly-point:delete",
                     "monthly-point:allocate",
-                    "monthly-point:history"
+                    "monthly-point:history",
+                    
+                    // Activity permissions 
+                    "activity:view",
+                    "activity:create",
+                    "activity:update",
+                    "activity:delete",
+                    "activity:statistics",
+                
+                    // Participation permissions 
+                    "participation:view",
+                    "participation:update"
             );
 
             case "hr" -> List.of(
@@ -60,7 +71,18 @@ public class PermissionService {
                     "monthly-point:update",
                     "monthly-point:delete",
                     "monthly-point:allocate",
-                    "monthly-point:history"
+                    "monthly-point:history",
+                    
+                    // Activity permissions
+                    "activity:view",
+                    "activity:create",
+                    "activity:update",
+                    "activity:delete",
+                    "activity:statistics",
+                    
+                    // Participation permissions 
+                    "participation:view",
+                    "participation:update"
             );
 
             case "manager" -> List.of(
@@ -81,7 +103,17 @@ public class PermissionService {
                     
                     // Monthly Point permissions
                     "monthly-point:view",
-                    "monthly-point:history"
+                    "monthly-point:history",
+                    
+                    // Activity permissions 
+                    "activity:view",
+                    "activity:create",
+                    "activity:update",
+                    "activity:statistics",
+                    
+                    // Participation permissions 
+                    "participation:view",
+                    "participation:update"
             );
 
             default -> List.of(
@@ -92,7 +124,13 @@ public class PermissionService {
                     "point:view",
                     
                     // Monthly Point permissions
-                    "monthly-point:view"
+                    "monthly-point:view",
+                    
+                    // Activity permissions
+                    "activity:view",
+                    
+                    // Participation permissions
+                    "participation:view"
             );
         };
     }
