@@ -9,6 +9,8 @@ using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using HRMApi.BackgroundServices;
 
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Load .env
@@ -37,6 +39,8 @@ builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IPointService, PointService>();
 builder.Services.AddScoped<IMonthlyPointRepository, MonthlyPointRepository>();
 builder.Services.AddScoped<IMonthlyPointService, MonthlyPointService>();
+builder.Services.AddScoped<IActivityRepository, ActivityRepository>();
+builder.Services.AddScoped<IActivityService, ActivityService>();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 // Register Background Services
@@ -122,7 +126,18 @@ builder.Services.AddAuthorization(options =>
         "monthly-point:update",
         "monthly-point:delete",
         "monthly-point:allocate",
-        "monthly-point:history"
+        "monthly-point:history",
+
+        // Activity permissions
+        "activity:view",
+        "activity:create",
+        "activity:update",
+        "activity:delete",
+        "activity:statistics",
+        
+        // Participation permissions
+        "participation:view",
+        "participation:update"
     };
 
     foreach (var permission in permissions)
