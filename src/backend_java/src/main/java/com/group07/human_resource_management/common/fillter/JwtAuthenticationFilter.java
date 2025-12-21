@@ -44,15 +44,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String username = jwtUtil.extractUsername(token);
             List<String> permissions = jwtUtil.extractPermissions(token);
             Long employeeId = jwtUtil.extractEmployeeId(token);
+            String role = jwtUtil.extractRole(token);
 
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
                 if (!jwtUtil.isExpired(token)) {
 
-                    var authorities = permissions
+                    List<SimpleGrantedAuthority> authorities = new java.util.ArrayList<>(permissions
                             .stream()
                             .map(SimpleGrantedAuthority::new)
-                            .toList();
+                            .toList());
+                    
+                    if (role != null) {
+                        authorities.add(new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()));
+                    }
 
                     CustomUserDetails userDetails = new CustomUserDetails(username, null, authorities, employeeId);
 

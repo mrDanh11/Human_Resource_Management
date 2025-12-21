@@ -1,9 +1,12 @@
 package com.group07.human_resource_management.service;
 
+import com.group07.human_resource_management.dto.request.CreateActivityRequest;
 import com.group07.human_resource_management.dto.response.ActivityListResponse;
 import com.group07.human_resource_management.dto.response.ActivityResponse;
 import com.group07.human_resource_management.entity.Activity;
+import com.group07.human_resource_management.entity.Employee;
 import com.group07.human_resource_management.repository.ActivityRepository;
+import com.group07.human_resource_management.repository.ParticipationRepository;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -12,8 +15,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +27,7 @@ import java.util.List;
 public class ActivityService implements IActivityService {
 
     private final ActivityRepository activityRepository;
+    private final ParticipationRepository participationRepository;
 
     @Override
     public ActivityListResponse getAllActivities(int page, int pageSize, String status, String search) {
@@ -35,6 +41,8 @@ public class ActivityService implements IActivityService {
 
         Specification<Activity> spec = (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
+
+            predicates.add(criteriaBuilder.equal(root.get("isDeleted"), false));
 
             if (StringUtils.hasText(status)) {
                 predicates.add(criteriaBuilder.equal(root.get("status"), status));
@@ -66,7 +74,48 @@ public class ActivityService implements IActivityService {
     public ActivityResponse getActivityById(Long id) {
         Activity activity = activityRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Activity not found"));
+        
+        if (activity.isDeleted()) {
+            throw new RuntimeException("Activity not found");
+        }
+        
         return mapToResponse(activity);
+    }
+
+    @Override
+    @Transactional
+    public ActivityResponse createActivity(Long employeeId, CreateActivityRequest request) {
+        Activity activity = Activity.builder()
+                .name(request.getName())
+                .description(request.getDescription())
+                .startDate(request.getStartDate())
+                .endDate(request.getEndDate())
+                .registrationStartDate(request.getRegistrationStartDate())
+                .registrationEndDate(request.getRegistrationEndDate())
+                .maxParticipants(request.getMaxParticipants())
+                .location(request.getLocation())
+                .activityType(request.getActivityType())
+                .imageUrl(request.getImageUrl())
+                .organizer(request.getOrganizer())
+                .points(request.getPoints())
+                .status("upcoming") // Default status
+                .createdBy(Employee.builder().id(employeeId).build())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        Activity savedActivity = activityRepository.save(activity);
+        return mapToResponse(savedActivity);
+    }
+
+    @Override
+    @Transactional
+    public void deleteActivity(Long id) {
+        Activity activity = activityRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Activity not found"));
+        
+        activity.setDeleted(true);
+        activityRepository.save(activity);
     }
 
     private ActivityResponse mapToResponse(Activity activity) {

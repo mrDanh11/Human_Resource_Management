@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ParticipationRepository extends JpaRepository<Participation, Long> {
     boolean existsByEmployeeIdAndActivityId(Long employeeId, Long activityId);
+    void deleteByActivityId(Long activityId);
 }
