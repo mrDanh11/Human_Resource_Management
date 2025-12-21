@@ -438,3 +438,4 @@ ALTER COLUMN created_at TYPE timestamptz USING created_at AT TIME ZONE 'UTC';
 
 ALTER TABLE point_to_money_history
 ALTER COLUMN processed_at TYPE timestamptz USING processed_at AT TIME ZONE 'UTC';
+ALTER TABLE activity ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE;
