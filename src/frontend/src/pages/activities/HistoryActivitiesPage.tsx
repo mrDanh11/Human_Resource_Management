@@ -1,45 +1,76 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Search, Filter, Calendar, CheckCircle } from 'lucide-react';
 import ActivityListCard from '../../components/activities/ActivityListCard';
 import ActivityDetailModal from '../../components/activities/ActivityDetailModal';
-import { mockActivities } from '../../data/activityData';
-import { getRegisteredActivitiesByEmployee } from '../../data/registeredActivityData';
 import type { ActivityData } from '../../data/activityData';
+import { getMyParticipations, unregisterActivity } from '../../services/activityService';
+import type { MyParticipationResponse } from '../../types/activity';
 
 export default function HistoryActivitiesPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedType, setSelectedType] = useState<ActivityData['type'] | 'all'>('all');
   const [selectedActivity, setSelectedActivity] = useState<ActivityData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
-  // TODO: Get from auth context or localStorage
-  const currentEmployeeId = '06';
+  const [activities, setActivities] = useState<ActivityData[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchMyActivities();
+  }, []);
+
+  const fetchMyActivities = async () => {
+    try {
+      setLoading(true);
+      const data = await getMyParticipations();
+      const mappedActivities: ActivityData[] = data.map((p: MyParticipationResponse) => ({
+        id: p.activityId.toString(),
+        name: p.activityName,
+        description: p.description,
+        startDate: p.startDate,
+        endDate: p.endDate,
+        registrationStart: p.registrationStartDate,
+        registrationEnd: p.registrationEndDate,
+        maxParticipants: p.maxParticipants,
+        currentParticipants: p.currentParticipants || 0,
+        location: p.location,
+        type: p.activityType as any,
+        status: p.activityStatus as any,
+        imageUrl: p.imageUrl,
+        organizer: p.organizer,
+        points: p.points
+      }));
+      setActivities(mappedActivities);
+    } catch (error) {
+      console.error("Failed to fetch my activities", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleViewDetails = (activityId: string) => {
-    const activity = mockActivities.find(a => a.id === activityId);
+    const activity = activities.find(a => a.id === activityId);
     if (activity) {
       setSelectedActivity(activity);
       setIsModalOpen(true);
     }
   };
 
-  const handleUnregister = (activityId: string) => {
-    const activity = mockActivities.find(a => a.id === activityId);
+  const handleUnregister = async (activityId: string) => {
+    const activity = activities.find(a => a.id === activityId);
     if (activity && window.confirm(`Bạn có chắc muốn hủy đăng ký hoạt động "${activity.name}"?`)) {
-      console.log('Unregistered from activity:', activityId);
-      // TODO: Call API to unregister
-      alert(`Đã hủy đăng ký: ${activity.name}`);
+      try {
+        await unregisterActivity(Number(activityId));
+        alert(`Đã hủy đăng ký: ${activity.name}`);
+        fetchMyActivities(); // Refresh list
+      } catch (error) {
+        console.error("Unregister failed", error);
+        alert("Hủy đăng ký thất bại. Vui lòng thử lại.");
+      }
     }
   };
 
-  // Get registered activities for current employee
-  const registeredActivityIds = getRegisteredActivitiesByEmployee(currentEmployeeId).map(reg => reg.activityId);
-  
   // Filter registered activities
-  const myActivities = mockActivities.filter(activity => {
-    // Only show registered activities
-    if (!registeredActivityIds.includes(activity.id)) return false;
-    
+  const filteredActivities = activities.filter(activity => {
     // Search filter
     const matchesSearch = activity.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          activity.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -103,16 +134,18 @@ export default function HistoryActivitiesPage() {
 
             {/* Results Count */}
             <div className="mt-4 text-sm text-gray-600">
-              Bạn đã đăng ký <span className="font-semibold">{myActivities.length}</span> hoạt động
+              Bạn đã đăng ký <span className="font-semibold">{filteredActivities.length}</span> hoạt động
             </div>
           </div>
         </div>
 
         {/* Activity Grid */}
         <div className="mt-6">
-          {myActivities.length > 0 ? (
+          {loading ? (
+             <div className="text-center py-12">Đang tải...</div>
+          ) : filteredActivities.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {myActivities.map((activity) => (
+              {filteredActivities.map((activity) => (
                 <ActivityListCard
                   key={activity.id}
                   activity={activity}
@@ -150,6 +183,8 @@ export default function HistoryActivitiesPage() {
             setSelectedActivity(null);
           }}
           onRegister={() => {}}
+          onUnregister={handleUnregister}
+          isRegistered={true}
         />
       )}
     </div>

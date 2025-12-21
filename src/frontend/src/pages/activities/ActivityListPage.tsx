@@ -1,14 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Search, Filter, Calendar } from 'lucide-react';
-import FilterChips from './components/FilterChips';
-import ActivityCard from './components/ActivityCard';
-import LoadMore from './components/LoadMore';
+import { jwtDecode } from "jwt-decode";
 import ActivityListCard from '../../components/activities/ActivityListCard';
 import ActivityDetailModal from '../../components/activities/ActivityDetailModal';
 import ConfirmRegistrationModal from '../../components/activities/ConfirmRegistrationModal';
-import { mockActivities } from '../../data/activityData';
-import { isActivityRegistered } from '../../data/registeredActivityData';
+import ActivityFormModal from '../../components/activities/ActivityFormModal';
 import type { ActivityData } from '../../data/activityData';
+import { getAllActivities, registerActivity, unregisterActivity, getMyParticipations, deleteActivity, updateActivity } from '../../services/activityService';
+import type { Activity, CreateActivityRequest } from '../../types/activity';
 
 export default function ActivityListPage() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -17,13 +16,71 @@ export default function ActivityListPage() {
   const [selectedActivity, setSelectedActivity] = useState<ActivityData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingActivity, setEditingActivity] = useState<ActivityData | null>(null);
   const [activityToRegister, setActivityToRegister] = useState<ActivityData | null>(null);
-  const [visible, setVisible] = useState(3);
-  const [activeFilter, setActiveFilter] = useState("Tất cả");
-  const currentEmployeeId = localStorage.getItem('userId') || '';
+  
+  const [userRole, setUserRole] = useState<string>('');
+
+  const [activities, setActivities] = useState<ActivityData[]>([]);
+  const [myParticipations, setMyParticipations] = useState<number[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      try {
+        const decoded: any = jwtDecode(token);
+        console.log("Decoded Token:", decoded);
+        setUserRole((decoded.role || '').toUpperCase());
+      } catch (error) {
+        console.error("Invalid token", error);
+      }
+    }
+    fetchActivities();
+    fetchMyParticipations();
+  }, []);
+
+  const fetchMyParticipations = async () => {
+    try {
+      const data = await getMyParticipations();
+      setMyParticipations(data.map((p: any) => p.activityId));
+    } catch (error) {
+      console.error("Failed to fetch participations", error);
+    }
+  };
+
+  const fetchActivities = async () => {
+    try {
+      setLoading(true);
+      const response = await getAllActivities({ page: 1, pageSize: 100 }); // Fetch all for now
+      const mappedActivities: ActivityData[] = response.activities.map((a: Activity) => ({
+        id: a.id.toString(),
+        name: a.name,
+        description: a.description,
+        startDate: a.startDate,
+        endDate: a.endDate,
+        registrationStart: a.registrationStartDate,
+        registrationEnd: a.registrationEndDate,
+        maxParticipants: a.maxParticipants,
+        currentParticipants: a.currentParticipants || 0,
+        location: a.location,
+        type: a.activityType as any,
+        status: a.status as any,
+        imageUrl: a.imageUrl,
+        organizer: a.organizer,
+        points: a.points
+      }));
+      setActivities(mappedActivities);
+    } catch (error) {
+      console.error("Failed to fetch activities", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleViewDetails = (activityId: string) => {
-    const activity = mockActivities.find(a => a.id === activityId);
+    const activity = activities.find(a => a.id === activityId);
     if (activity) {
       setSelectedActivity(activity);
       setIsModalOpen(true);
@@ -31,66 +88,86 @@ export default function ActivityListPage() {
   };
 
   const handleRegister = (activityId: string) => {
-    const activity = mockActivities.find(a => a.id === activityId);
+    const activity = activities.find(a => a.id === activityId);
     if (activity) {
       setActivityToRegister(activity);
       setIsConfirmModalOpen(true);
     }
   };
 
-  const handleConfirmRegister = () => {
+  const handleConfirmRegister = async () => {
     if (activityToRegister) {
-      console.log('Confirmed registration for activity:', activityToRegister.id);
-      alert(`Đăng ký thành công: ${activityToRegister.name}`);
-      setIsConfirmModalOpen(false);
-      setActivityToRegister(null);
+      try {
+        await registerActivity(Number(activityToRegister.id));
+        alert(`Đăng ký thành công: ${activityToRegister.name}`);
+        setIsConfirmModalOpen(false);
+        setActivityToRegister(null);
+        // Refresh data
+        fetchActivities();
+        fetchMyParticipations();
+      } catch (error) {
+        console.error("Registration failed", error);
+        alert("Đăng ký thất bại. Vui lòng thử lại.");
+      }
     }
   };
 
-  // Mock data cho hoạt động có thể hủy
-  const cancelableActivities = [
-    {
-      id: "1",
-      title: "Thi đua sáng kiến cải tiến",
-      status: "Đang diễn ra",
-      people: 85,
-      date: "15/09/2025 → 30/11/2025",
-    },
-    {
-      id: "2",
-      title: "Hoạt động teambuilding",
-      status: "Sắp diễn ra",
-      people: 120,
-      date: "20/11/2025 → 22/11/2025",
-    },
-    {
-      id: "3",
-      title: "Chương trình đào tạo Q4",
-      status: "Đang diễn ra",
-      people: 45,
-      date: "01/10/2025 → 31/12/2025",
-    },
-  ];
+  const handleUnregister = async (activityId: string) => {
+    if (window.confirm("Bạn có chắc chắn muốn hủy đăng ký hoạt động này không?")) {
+      try {
+        await unregisterActivity(Number(activityId));
+        alert("Hủy đăng ký thành công");
+        fetchActivities();
+        fetchMyParticipations();
+      } catch (error) {
+        console.error("Unregistration failed", error);
+        alert("Hủy đăng ký thất bại. Vui lòng thử lại.");
+      }
+    }
+  };
 
-  // Filter hoạt động có thể hủy
-  const filteredCancelableActivities = cancelableActivities.filter(activity => {
-    if (activeFilter === "Tất cả") return true;
-    return activity.status === activeFilter;
-  });
+  const handleDeleteActivity = async (activityId: string) => {
+    if (window.confirm("Bạn có chắc chắn muốn xóa hoạt động này không? Hành động này không thể hoàn tác.")) {
+      try {
+        await deleteActivity(Number(activityId));
+        alert("Xóa hoạt động thành công");
+        fetchActivities();
+      } catch (error) {
+        console.error("Delete failed", error);
+        alert("Xóa hoạt động thất bại. Vui lòng thử lại.");
+      }
+    }
+  };
 
-  // Filter activities - only show unregistered activities
-  const filteredActivities = mockActivities.filter(activity => {
-    // Exclude registered activities
-    const isRegistered = isActivityRegistered(currentEmployeeId, activity.id);
-    if (isRegistered) return false;
-    
+  const handleEditClick = (activity: ActivityData) => {
+    setEditingActivity(activity);
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdateActivity = async (data: CreateActivityRequest) => {
+    if (editingActivity) {
+      try {
+        await updateActivity(Number(editingActivity.id), data);
+        alert("Cập nhật hoạt động thành công");
+        setIsEditModalOpen(false);
+        setEditingActivity(null);
+        fetchActivities();
+      } catch (error) {
+        console.error("Update failed", error);
+        alert("Cập nhật hoạt động thất bại. Vui lòng thử lại.");
+      }
+    }
+  };
+
+  // Filter activities
+  const filteredActivities = activities.filter(activity => {
     // Search filter
     const matchesSearch = activity.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         activity.description.toLowerCase().includes(searchQuery.toLowerCase());
-    
+      activity.description.toLowerCase().includes(searchQuery.toLowerCase());
+
     // Type filter
     const matchesType = selectedType === 'all' || activity.type === selectedType;
-    
+
     // Status filter
     let matchesStatus = true;
     if (selectedStatus !== 'all') {
@@ -98,10 +175,10 @@ export default function ActivityListPage() {
       const regStart = new Date(activity.registrationStart);
       const regEnd = new Date(activity.registrationEnd);
       const isOpen = now >= regStart && now <= regEnd;
-      
+
       matchesStatus = selectedStatus === 'open' ? isOpen : !isOpen;
     }
-    
+
     return matchesSearch && matchesType && matchesStatus;
   });
 
@@ -179,41 +256,10 @@ export default function ActivityListPage() {
 
         {/* Activity Grid */}
         <div className="mt-6 space-y-8">
-          {/* Cancelable Activities Section */}
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Hoạt động có thể hủy
-            </h2>
-            
-            <FilterChips 
-              selected={activeFilter}
-              onFilterChange={setActiveFilter}
-            />
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
-              {filteredCancelableActivities.slice(0, visible).map((activity) => (
-                <ActivityCard
-                  key={activity.id}
-                  id={activity.id}
-                  title={activity.title}
-                  status={activity.status}
-                  people={activity.people}
-                  date={activity.date}
-                />
-              ))}
-            </div>
-            
-            <LoadMore 
-              shown={visible} 
-              total={filteredCancelableActivities.length}
-              onLoadMore={() => setVisible(prev => prev + 3)}
-            />
-          </div>
-
           {/* Available Activities Section */}
           <div>
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Hoạt động có thể đăng ký
+              Danh sách hoạt động
             </h2>
             
             {filteredActivities.length > 0 ? (
@@ -224,7 +270,11 @@ export default function ActivityListPage() {
                     activity={activity}
                     onViewDetails={handleViewDetails}
                     onRegister={handleRegister}
-                    isRegistered={false}
+                    onUnregister={handleUnregister}
+                    onDelete={handleDeleteActivity}
+                    onEdit={handleEditClick}
+                    isRegistered={myParticipations.includes(Number(activity.id))}
+                    userRole={userRole}
                   />
                 ))}
               </div>
@@ -266,6 +316,8 @@ export default function ActivityListPage() {
             setSelectedActivity(null);
           }}
           onRegister={handleRegister}
+          onUnregister={handleUnregister}
+          isRegistered={myParticipations.includes(Number(selectedActivity.id))}
         />
       )}
 
@@ -279,6 +331,20 @@ export default function ActivityListPage() {
             setIsConfirmModalOpen(false);
             setActivityToRegister(null);
           }}
+        />
+      )}
+
+      {/* Edit Activity Modal */}
+      {editingActivity && (
+        <ActivityFormModal
+          isOpen={isEditModalOpen}
+          onClose={() => {
+            setIsEditModalOpen(false);
+            setEditingActivity(null);
+          }}
+          onSubmit={handleUpdateActivity}
+          initialData={editingActivity}
+          title="Chỉnh sửa hoạt động"
         />
       )}
     </div>

@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Header from "../../components/LandingPage/Header";
 import Sidebar from "../../components/common/Sidebar";
 import Footer from "../../components/LandingPage/Footer";
+import { deleteActivity } from "../../services/activityService";
 
 export default function CancelActivityPage() {
   const navigate = useNavigate();
@@ -47,20 +48,19 @@ export default function CancelActivityPage() {
     );
   }
 
-  const requiresManagerApproval = activityData.people > 50;
+  const requiresManagerApproval = (activityData.currentParticipants || 0) > 50;
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!canSubmit) return;
     
-    // TODO: Call API để hủy hoạt động
-    console.log("Hủy hoạt động:", { 
-      id: activityData.id, 
-      title: activityData.title,
-      reason 
-    });
-    
-    alert(`Đã gửi yêu cầu hủy hoạt động: ${activityData.title}`);
-    navigate("/activities");
+    try {
+      await deleteActivity(Number(activityData.id));
+      alert(`Đã hủy hoạt động: ${activityData.name}`);
+      navigate("/activities");
+    } catch (error) {
+      console.error("Failed to delete activity", error);
+      alert("Có lỗi xảy ra khi hủy hoạt động. Vui lòng thử lại.");
+    }
   };
 
   return (
@@ -80,10 +80,10 @@ export default function CancelActivityPage() {
               {/* Activity Info */}
               <div className="bg-gray-50 p-4 rounded-lg mb-6">
                 <h2 className="font-semibold text-gray-900 mb-1">
-                  {activityData.title}
+                  {activityData.name}
                 </h2>
                 <p className="text-sm text-gray-600">
-                  {activityData.status} · {activityData.people} người tham gia
+                  {activityData.status} · {activityData.currentParticipants || 0} người tham gia
                 </p>
               </div>
 
@@ -95,7 +95,7 @@ export default function CancelActivityPage() {
                 <ul className="text-sm text-gray-600 space-y-2">
                   <li className="flex items-start gap-2">
                     <span className="text-blue-600 mt-0.5">•</span>
-                    <span>{activityData.people} người sẽ nhận thông báo</span>
+                    <span>{activityData.currentParticipants || 0} người sẽ nhận thông báo</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-blue-600 mt-0.5">•</span>

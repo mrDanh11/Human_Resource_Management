@@ -1,4 +1,5 @@
-import { Calendar, MapPin, Users, Eye, UserPlus, UserMinus } from 'lucide-react';
+import { useState } from 'react';
+import { Calendar, MapPin, Users, Eye, UserPlus, UserMinus, Trash2, Pencil } from 'lucide-react';
 import type { ActivityData } from '../../data/activityData';
 
 interface ActivityListCardProps {
@@ -6,7 +7,10 @@ interface ActivityListCardProps {
   onViewDetails: (activityId: string) => void;
   onRegister: (activityId: string) => void;
   onUnregister?: (activityId: string) => void;
+  onDelete?: (activityId: string) => void;
+  onEdit?: (activity: ActivityData) => void;
   isRegistered?: boolean;
+  userRole?: string;
 }
 
 const activityTypeLabels: Record<ActivityData['type'], string> = {
@@ -30,8 +34,12 @@ export default function ActivityListCard({
   onViewDetails, 
   onRegister, 
   onUnregister,
-  isRegistered = false 
+  onDelete,
+  onEdit,
+  isRegistered = false,
+  userRole
 }: ActivityListCardProps) {
+  const [isHovered, setIsHovered] = useState(false);
   
   const formatDateTime = (dateString: string) => {
     const date = new Date(dateString);
@@ -187,24 +195,45 @@ export default function ActivityListCard({
           </button>
           
           {isRegistered ? (
-            <button
-              onClick={() => onUnregister && onUnregister(activity.id)}
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all duration-200"
-              style={{
-                transition: 'all 0.3s ease'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 5px 20px rgba(220, 38, 38, 0.4)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = 'none';
-              }}
-            >
-              <UserMinus className="w-4 h-4" />
-              <span className="font-medium">Hủy đăng ký</span>
-            </button>
+            !isRegistrationOpen() ? (
+              <button
+                disabled
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gray-400 text-white rounded-lg cursor-not-allowed"
+              >
+                <UserPlus className="w-4 h-4" />
+                <span className="font-medium">Đã đăng ký</span>
+              </button>
+            ) : (
+              <button
+                onClick={() => onUnregister && onUnregister(activity.id)}
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-600 hover:bg-red-600 text-white rounded-lg transition-all duration-200"
+                style={{
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseEnter={(e) => {
+                  setIsHovered(true);
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 5px 20px rgba(22, 163, 74, 0.4)';
+                }}
+                onMouseLeave={(e) => {
+                  setIsHovered(false);
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
+              >
+                {!isHovered ? (
+                  <span className="flex items-center gap-2">
+                    <UserPlus className="w-4 h-4" />
+                    <span className="font-medium">Đã đăng ký</span>
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2">
+                    <UserMinus className="w-4 h-4" />
+                    <span className="font-medium">Hủy đăng ký</span>
+                  </span>
+                )}
+              </button>
+            )
           ) : (
             <button
               onClick={() => onRegister(activity.id)}
@@ -231,6 +260,29 @@ export default function ActivityListCard({
               <UserPlus className="w-4 h-4" />
               <span className="font-medium">Đăng ký</span>
             </button>
+          )}
+
+          {['HR', 'ADMIN'].includes(userRole?.toUpperCase() || '') && (
+            <>
+              {onEdit && (
+                <button
+                  onClick={() => onEdit(activity)}
+                  className="flex items-center justify-center px-4 py-2 bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-lg transition-all duration-200"
+                  title="Chỉnh sửa hoạt động"
+                >
+                  <Pencil className="w-4 h-4" />
+                </button>
+              )}
+              {onDelete && (
+                <button
+                  onClick={() => onDelete(activity.id)}
+                  className="flex items-center justify-center px-4 py-2 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg transition-all duration-200"
+                  title="Xóa hoạt động"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              )}
+            </>
           )}
         </div>
 

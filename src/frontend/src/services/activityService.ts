@@ -4,33 +4,10 @@
  */
 
 import { apiSpring } from './api';
-import type { Campaign } from '../types/campaign';
-
-// Response types
-export interface CancelActivityRequest {
-  ids: number[];
-  reason: string;
-}
-
-export interface CancelActivityResponse {
-  success: boolean;
-  message: string;
-  cancelledIds: number[];
-  errors?: Array<{
-    id: number;
-    error: string;
-  }>;
-}
-
-export interface ActivityListResponse {
-  activities: Campaign[];
-  total: number;
-  page: number;
-  pageSize: number;
-}
+import type { Activity, ActivityListResponse, CreateActivityRequest, MyParticipationResponse } from '../types/activity';
 
 /**
- * Get all activities (for HR management)
+ * Get all activities (for HR management and Employee view)
  */
 export const getAllActivities = async (params?: {
   page?: number;
@@ -43,42 +20,112 @@ export const getAllActivities = async (params?: {
 };
 
 /**
- * Get pending/ongoing activities that can be cancelled
- */
-export const getCancellableActivities = async (): Promise<Campaign[]> => {
-  const response = await apiSpring.get<Campaign[]>('/activities/cancellable');
-  return response.data;
-};
-
-/**
- * Cancel a single activity by ID
- * @deprecated Use cancelActivities for consistency
- */
-export const cancelActivityById = async (id: number, reason: string): Promise<void> => {
-  await apiSpring.delete(`/activities/cancel/${id}`, {
-    data: { reason }
-  });
-};
-
-/**
- * Cancel multiple activities (bulk operation)
- * Preferred method for both single and multiple cancellations
- */
-export const cancelActivities = async (request: CancelActivityRequest): Promise<CancelActivityResponse> => {
-  const response = await apiSpring.post<CancelActivityResponse>('/activities/cancel', request);
-  return response.data;
-};
-
-/**
  * Get activity details by ID
  */
-export const getActivityById = async (id: number): Promise<Campaign> => {
-  const response = await apiSpring.get<Campaign>(`/activities/${id}`);
+export const getActivityById = async (id: number): Promise<Activity> => {
+  const response = await apiSpring.get<Activity>(`/activities/${id}`);
   return response.data;
 };
 
-// API tạo cuộc thi chạy bộ mới
-// API ghi nhận kết quả chạy của nhân viên
-// API lấy bảng xếp hạng cuộc thi
-// API lấy thống kê tổng quan cuộc thi
-// API xác thực kết quả chạy
+/**
+ * Create a new activity (HR/Admin only)
+ */
+export const createActivity = async (data: CreateActivityRequest): Promise<Activity> => {
+  const response = await apiSpring.post<Activity>('/activities', data);
+  return response.data;
+};
+
+/**
+ * Update an activity (HR/Admin only)
+ */
+export const updateActivity = async (id: number, data: CreateActivityRequest): Promise<Activity> => {
+  const response = await apiSpring.put<Activity>(`/activities/${id}`, data);
+  return response.data;
+};
+
+/**
+ * Delete an activity (HR/Admin only)
+ */
+export const deleteActivity = async (id: number): Promise<void> => {
+  await apiSpring.delete(`/activities/${id}`);
+};
+
+import { apiDotNet } from './api';
+
+export interface ParticipationDto {
+    id: number,
+    employeeId: number,
+    activityId: number,
+    employeeName: string,
+    activityName: string,
+    description: string,
+    registerDate: Date,
+    cancelDate: Date,
+    status: string,
+    result: string,
+}
+
+export interface ApiResponse<T> {
+    success: boolean;
+    message: string;
+    data: T;
+    errors: string[];
+}
+
+export interface PagedResult<T> {
+    items: T[];
+    pageNumber: number;
+    pageSize: number;
+    totalPages: number;
+    hasPreviousPage: boolean;
+    hasNextPage: boolean;
+}
+
+
+export const participationService = {
+    getActivityEmployeeAttended: async (employeeId: number): Promise<ParticipationDto[]> => {
+        const response = await apiDotNet.get<ApiResponse<ParticipationDto[]>>(
+            `/Participation/employee/${employeeId}`
+        );
+
+        if (response.data.success) {
+            return response.data.data;
+        }
+
+        throw new Error(response.data.message || 'Lỗi khi lấy thông tin các hoạt động nhân viên tham gia');
+    },
+
+    getResultActivity: async (activityId: number, employeeId: number): Promise<ParticipationDto> => {
+        const response = await apiDotNet.get<ApiResponse<ParticipationDto>>(
+            `/Participation/${activityId}-${employeeId}`
+        );
+
+        if (response.data.success) {
+            return response.data.data;
+        }
+
+        throw new Error(response.data.message || 'Lỗi khi lấy kết quả hoạt động nhân viên tham gia');
+    }
+}
+
+/**
+ * Register for an activity
+ */
+export const registerActivity = async (activityId: number): Promise<void> => {
+  await apiSpring.post('/participations/register', { activityId });
+};
+
+/**
+ * Unregister from an activity
+ */
+export const unregisterActivity = async (activityId: number): Promise<void> => {
+  await apiSpring.delete(`/participations/cancel/${activityId}`);
+};
+
+/**
+ * Get my participations
+ */
+export const getMyParticipations = async (): Promise<MyParticipationResponse[]> => {
+  const response = await apiSpring.get<MyParticipationResponse[]>('/participations/my-participations');
+  return response.data;
+};

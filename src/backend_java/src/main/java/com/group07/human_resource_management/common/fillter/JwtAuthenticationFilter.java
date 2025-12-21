@@ -1,7 +1,7 @@
 package com.group07.human_resource_management.common.fillter;
 
-import com.group07.human_resource_management.common.service.JwtUserDetailsService;
 import com.group07.human_resource_management.common.utils.JwtUtil;
+import com.group07.human_resource_management.config.CustomUserDetails;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -43,19 +43,27 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             String username = jwtUtil.extractUsername(token);
             List<String> permissions = jwtUtil.extractPermissions(token);
+            Long employeeId = jwtUtil.extractEmployeeId(token);
+            String role = jwtUtil.extractRole(token);
 
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
                 if (!jwtUtil.isExpired(token)) {
 
-                    var authorities = permissions
+                    List<SimpleGrantedAuthority> authorities = new java.util.ArrayList<>(permissions
                             .stream()
                             .map(SimpleGrantedAuthority::new)
-                            .toList();
+                            .toList());
+                    
+                    if (role != null) {
+                        authorities.add(new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()));
+                    }
+
+                    CustomUserDetails userDetails = new CustomUserDetails(username, null, authorities, employeeId);
 
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(
-                                    username,
+                                    userDetails,
                                     null,
                                     authorities
                             );
