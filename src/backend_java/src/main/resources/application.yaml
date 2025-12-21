@@ -9,7 +9,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: none   # update | create | create-drop | validate
+      ddl-auto: update   # update | create | create-drop | validate
     show-sql: true
     properties:
       hibernate:

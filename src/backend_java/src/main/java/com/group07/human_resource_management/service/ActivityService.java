@@ -119,6 +119,7 @@ public class ActivityService implements IActivityService {
     }
 
     private ActivityResponse mapToResponse(Activity activity) {
+        int currentParticipants = participationRepository.countByActivityId(activity.getId());
         return ActivityResponse.builder()
                 .id(activity.getId())
                 .name(activity.getName())
@@ -128,6 +129,7 @@ public class ActivityService implements IActivityService {
                 .registrationStartDate(activity.getRegistrationStartDate())
                 .registrationEndDate(activity.getRegistrationEndDate())
                 .maxParticipants(activity.getMaxParticipants())
+                .currentParticipants(currentParticipants)
                 .location(activity.getLocation())
                 .activityType(activity.getActivityType())
                 .imageUrl(activity.getImageUrl())

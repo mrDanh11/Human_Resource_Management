@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Calendar, MapPin, Users, Eye, UserPlus, UserMinus } from 'lucide-react';
 import type { ActivityData } from '../../data/activityData';
 
@@ -32,6 +33,7 @@ export default function ActivityListCard({
   onUnregister,
   isRegistered = false 
 }: ActivityListCardProps) {
+  const [isHovered, setIsHovered] = useState(false);
   
   const formatDateTime = (dateString: string) => {
     const date = new Date(dateString);
@@ -189,21 +191,32 @@ export default function ActivityListCard({
           {isRegistered ? (
             <button
               onClick={() => onUnregister && onUnregister(activity.id)}
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all duration-200"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-600 hover:bg-red-600 text-white rounded-lg transition-all duration-200"
               style={{
                 transition: 'all 0.3s ease'
               }}
               onMouseEnter={(e) => {
+                setIsHovered(true);
                 e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 5px 20px rgba(220, 38, 38, 0.4)';
+                e.currentTarget.style.boxShadow = '0 5px 20px rgba(22, 163, 74, 0.4)';
               }}
               onMouseLeave={(e) => {
+                setIsHovered(false);
                 e.currentTarget.style.transform = 'translateY(0)';
                 e.currentTarget.style.boxShadow = 'none';
               }}
             >
-              <UserMinus className="w-4 h-4" />
-              <span className="font-medium">Hủy đăng ký</span>
+              {!isHovered ? (
+                <span className="flex items-center gap-2">
+                  <UserPlus className="w-4 h-4" />
+                  <span className="font-medium">Đã đăng ký</span>
+                </span>
+              ) : (
+                <span className="flex items-center gap-2">
+                  <UserMinus className="w-4 h-4" />
+                  <span className="font-medium">Hủy đăng ký</span>
+                </span>
+              )}
             </button>
           ) : (
             <button

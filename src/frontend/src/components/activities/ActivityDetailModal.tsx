@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { X, Calendar, MapPin, Users, Building2, Clock } from 'lucide-react';
 import type { ActivityData } from '../../data/activityData';
 
@@ -7,6 +7,8 @@ interface ActivityDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
   onRegister: (activityId: string) => void;
+  onUnregister?: (activityId: string) => void;
+  isRegistered?: boolean;
 }
 
 const activityTypeLabels: Record<ActivityData['type'], string> = {
@@ -25,7 +27,15 @@ const activityTypeColors: Record<ActivityData['type'], string> = {
   volunteer: 'bg-orange-100 text-orange-800 border-orange-200'
 };
 
-export default function ActivityDetailModal({ activity, isOpen, onClose, onRegister }: ActivityDetailModalProps) {
+export default function ActivityDetailModal({ 
+  activity, 
+  isOpen, 
+  onClose, 
+  onRegister,
+  onUnregister,
+  isRegistered = false
+}: ActivityDetailModalProps) {
+  const [isHovered, setIsHovered] = useState(false);
   
   useEffect(() => {
     if (isOpen) {
@@ -258,33 +268,64 @@ export default function ActivityDetailModal({ activity, isOpen, onClose, onRegis
                 Đóng
               </button>              
               
-              <button
-                onClick={() => {
-                  onRegister(activity.id);
-                  onClose();
-                }}
-                disabled={!canRegister}
-                className={`flex-1 px-6 py-3 rounded-lg font-medium transition-all ${
-                  canRegister
-                    ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                }`}
-                style={{
-                  transition: 'all 0.3s ease'
-                }}
-                onMouseEnter={(e) => {
-                  if (canRegister) {
+              {isRegistered ? (
+                <button
+                  onClick={() => {
+                    if (onUnregister) {
+                      onUnregister(activity.id);
+                      onClose();
+                    }
+                  }}
+                  className="flex-1 px-6 py-3 bg-green-600 hover:bg-red-600 text-white rounded-lg font-medium transition-all group"
+                  style={{
+                    transition: 'all 0.3s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    setIsHovered(true);
                     e.currentTarget.style.transform = 'translateY(-2px)';
-                    e.currentTarget.style.boxShadow = '0 5px 20px rgba(37, 99, 235, 0.4)';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = 'none';
-                }}
-              >
-                {isFullyBooked() ? 'Đã đủ số lượng' : !isRegistrationOpen() ? 'Đã đóng đăng ký' : 'Đăng ký ngay'}
-              </button>
+                    e.currentTarget.style.boxShadow = '0 5px 20px rgba(22, 163, 74, 0.4)';
+                  }}
+                  onMouseLeave={(e) => {
+                    setIsHovered(false);
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
+                >
+                  {!isHovered ? (
+                    <span>Đã đăng ký</span>
+                  ) : (
+                    <span>Hủy đăng ký</span>
+                  )}
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    onRegister(activity.id);
+                    onClose();
+                  }}
+                  disabled={!canRegister}
+                  className={`flex-1 px-6 py-3 rounded-lg font-medium transition-all ${
+                    canRegister
+                      ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  }`}
+                  style={{
+                    transition: 'all 0.3s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (canRegister) {
+                      e.currentTarget.style.transform = 'translateY(-2px)';
+                      e.currentTarget.style.boxShadow = '0 5px 20px rgba(37, 99, 235, 0.4)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
+                >
+                  {isFullyBooked() ? 'Đã đủ số lượng' : !isRegistrationOpen() ? 'Đã đóng đăng ký' : 'Đăng ký ngay'}
+                </button>
+              )}
             </div>
           </div>
         </div>

@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +21,19 @@ public class ParticipationService implements IParticipationService {
 
     private final ParticipationRepository participationRepository;
     private final ActivityRepository activityRepository;
+
+    @Override
+    public List<ParticipationResponse> getMyParticipations(Long employeeId) {
+        List<Participation> participations = participationRepository.findByEmployeeId(employeeId);
+        return participations.stream()
+                .map(p -> ParticipationResponse.builder()
+                        .employeeId(p.getEmployee().getId())
+                        .activityId(p.getActivity().getId())
+                        .registeredAt(p.getRegisterDate())
+                        .status(p.getStatus())
+                        .build())
+                .collect(Collectors.toList());
+    }
 
     @Override
     @Transactional
@@ -49,6 +64,7 @@ public class ParticipationService implements IParticipationService {
         participation.setEmployee(employee);
         participation.setActivity(activity);
         participation.setRegisterDate(now);
+        participation.setCreatedAt(now);
         participation.setStatus("registered"); 
         
         participationRepository.save(participation);
@@ -59,5 +75,23 @@ public class ParticipationService implements IParticipationService {
                 .registeredAt(now)
                 .status(participation.getStatus())
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public void unregisterActivity(Long employeeId, Long activityId) {
+        Participation participation = participationRepository.findByEmployeeId(employeeId).stream()
+                .filter(p -> p.getActivity().getId().equals(activityId))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("You have not registered for this activity"));
+
+        Activity activity = participation.getActivity();
+        LocalDateTime now = LocalDateTime.now();
+
+        if (activity.getRegistrationEndDate() != null && now.isAfter(activity.getRegistrationEndDate())) {
+            throw new RuntimeException("Cannot unregister. Registration period has ended.");
+        }
+
+        participationRepository.delete(participation);
     }
 }

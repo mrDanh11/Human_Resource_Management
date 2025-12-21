@@ -1,14 +1,16 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Search, Filter, Calendar } from 'lucide-react';
+import { jwtDecode } from "jwt-decode";
 import FilterChips from './components/FilterChips';
 import ActivityCard from './components/ActivityCard';
 import LoadMore from './components/LoadMore';
 import ActivityListCard from '../../components/activities/ActivityListCard';
 import ActivityDetailModal from '../../components/activities/ActivityDetailModal';
 import ConfirmRegistrationModal from '../../components/activities/ConfirmRegistrationModal';
-import { mockActivities } from '../../data/activityData';
 import { isActivityRegistered } from '../../data/registeredActivityData';
 import type { ActivityData } from '../../data/activityData';
+import { getAllActivities, registerActivity, unregisterActivity, getMyParticipations } from '../../services/activityService';
+import type { Activity } from '../../types/activity';
 
 export default function ActivityListPage() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -21,9 +23,67 @@ export default function ActivityListPage() {
   const [visible, setVisible] = useState(3);
   const [activeFilter, setActiveFilter] = useState("Tất cả");
   const currentEmployeeId = localStorage.getItem('userId') || '';
+  
+  const [userRole, setUserRole] = useState<string>('');
+
+  const [activities, setActivities] = useState<ActivityData[]>([]);
+  const [myParticipations, setMyParticipations] = useState<number[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      try {
+        const decoded: any = jwtDecode(token);
+        setUserRole(decoded.role || '');
+      } catch (error) {
+        console.error("Invalid token", error);
+      }
+    }
+    fetchActivities();
+    fetchMyParticipations();
+  }, []);
+
+  const fetchMyParticipations = async () => {
+    try {
+      const data = await getMyParticipations();
+      setMyParticipations(data.map((p: any) => p.activityId));
+    } catch (error) {
+      console.error("Failed to fetch participations", error);
+    }
+  };
+
+  const fetchActivities = async () => {
+    try {
+      setLoading(true);
+      const response = await getAllActivities({ page: 1, pageSize: 100 }); // Fetch all for now
+      const mappedActivities: ActivityData[] = response.activities.map((a: Activity) => ({
+        id: a.id.toString(),
+        name: a.name,
+        description: a.description,
+        startDate: a.startDate,
+        endDate: a.endDate,
+        registrationStart: a.registrationStartDate,
+        registrationEnd: a.registrationEndDate,
+        maxParticipants: a.maxParticipants,
+        currentParticipants: a.currentParticipants || 0,
+        location: a.location,
+        type: a.activityType as any,
+        status: a.status as any,
+        imageUrl: a.imageUrl,
+        organizer: a.organizer,
+        points: a.points
+      }));
+      setActivities(mappedActivities);
+    } catch (error) {
+      console.error("Failed to fetch activities", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleViewDetails = (activityId: string) => {
-    const activity = mockActivities.find(a => a.id === activityId);
+    const activity = activities.find(a => a.id === activityId);
     if (activity) {
       setSelectedActivity(activity);
       setIsModalOpen(true);
@@ -31,19 +91,41 @@ export default function ActivityListPage() {
   };
 
   const handleRegister = (activityId: string) => {
-    const activity = mockActivities.find(a => a.id === activityId);
+    const activity = activities.find(a => a.id === activityId);
     if (activity) {
       setActivityToRegister(activity);
       setIsConfirmModalOpen(true);
     }
   };
 
-  const handleConfirmRegister = () => {
+  const handleConfirmRegister = async () => {
     if (activityToRegister) {
-      console.log('Confirmed registration for activity:', activityToRegister.id);
-      alert(`Đăng ký thành công: ${activityToRegister.name}`);
-      setIsConfirmModalOpen(false);
-      setActivityToRegister(null);
+      try {
+        await registerActivity(Number(activityToRegister.id));
+        alert(`Đăng ký thành công: ${activityToRegister.name}`);
+        setIsConfirmModalOpen(false);
+        setActivityToRegister(null);
+        // Refresh data
+        fetchActivities();
+        fetchMyParticipations();
+      } catch (error) {
+        console.error("Registration failed", error);
+        alert("Đăng ký thất bại. Vui lòng thử lại.");
+      }
+    }
+  };
+
+  const handleUnregister = async (activityId: string) => {
+    if (window.confirm("Bạn có chắc chắn muốn hủy đăng ký hoạt động này không?")) {
+      try {
+        await unregisterActivity(Number(activityId));
+        alert("Hủy đăng ký thành công");
+        fetchActivities();
+        fetchMyParticipations();
+      } catch (error) {
+        console.error("Unregistration failed", error);
+        alert("Hủy đăng ký thất bại. Vui lòng thử lại.");
+      }
     }
   };
 
@@ -78,12 +160,8 @@ export default function ActivityListPage() {
     return activity.status === activeFilter;
   });
 
-  // Filter activities - only show unregistered activities
-  const filteredActivities = mockActivities.filter(activity => {
-    // Exclude registered activities
-    const isRegistered = isActivityRegistered(currentEmployeeId, activity.id);
-    if (isRegistered) return false;
-
+  // Filter activities
+  const filteredActivities = activities.filter(activity => {
     // Search filter
     const matchesSearch = activity.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       activity.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -179,40 +257,42 @@ export default function ActivityListPage() {
 
         {/* Activity Grid */}
         <div className="mt-6 space-y-8">
-          {/* Cancelable Activities Section */}
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Hoạt động có thể hủy
-            </h2>
-            
-            <FilterChips 
-              selected={activeFilter}
-              onFilterChange={setActiveFilter}
-            />
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
-              {filteredCancelableActivities.slice(0, visible).map((activity) => (
-                <ActivityCard
-                  key={activity.id}
-                  id={activity.id}
-                  title={activity.title}
-                  status={activity.status}
-                  people={activity.people}
-                  date={activity.date}
-                />
-              ))}
+          {/* Cancelable Activities Section - Only for HR/Admin */}
+          {(userRole === 'HR' || userRole === 'ADMIN') && (
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                Hoạt động có thể hủy
+              </h2>
+              
+              <FilterChips 
+                selected={activeFilter}
+                onFilterChange={setActiveFilter}
+              />
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+                {filteredCancelableActivities.slice(0, visible).map((activity) => (
+                  <ActivityCard
+                    key={activity.id}
+                    id={activity.id}
+                    title={activity.title}
+                    status={activity.status}
+                    people={activity.people}
+                    date={activity.date}
+                  />
+                ))}
+              </div>
+              <LoadMore 
+                shown={visible} 
+                total={filteredCancelableActivities.length}
+                onLoadMore={() => setVisible(prev => prev + 3)}
+              />
             </div>
-            <LoadMore 
-              shown={visible} 
-              total={filteredCancelableActivities.length}
-              onLoadMore={() => setVisible(prev => prev + 3)}
-            />
-          </div>
+          )}
 
           {/* Available Activities Section */}
           <div>
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Hoạt động có thể đăng ký
+              Danh sách hoạt động
             </h2>
             
             {filteredActivities.length > 0 ? (
@@ -223,7 +303,8 @@ export default function ActivityListPage() {
                     activity={activity}
                     onViewDetails={handleViewDetails}
                     onRegister={handleRegister}
-                    isRegistered={false}
+                    onUnregister={handleUnregister}
+                    isRegistered={myParticipations.includes(Number(activity.id))}
                   />
                 ))}
               </div>
@@ -265,6 +346,8 @@ export default function ActivityListPage() {
             setSelectedActivity(null);
           }}
           onRegister={handleRegister}
+          onUnregister={handleUnregister}
+          isRegistered={myParticipations.includes(Number(selectedActivity.id))}
         />
       )}
 

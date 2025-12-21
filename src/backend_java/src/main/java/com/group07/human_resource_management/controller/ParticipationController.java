@@ -10,12 +10,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/participations")
 @RequiredArgsConstructor
 public class ParticipationController {
 
     private final IParticipationService participationService;
+
+    @GetMapping("/my-participations")
+    public ResponseEntity<List<ParticipationResponse>> getMyParticipations(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        List<ParticipationResponse> response = participationService.getMyParticipations(userDetails.getEmployeeId());
+        return ResponseEntity.ok(response);
+    }
 
     @PostMapping("/register")
     public ResponseEntity<ParticipationResponse> registerActivity(
@@ -25,5 +34,13 @@ public class ParticipationController {
         ParticipationResponse response = participationService.registerActivity(userDetails.getEmployeeId(), request);
 
         return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/cancel/{activityId}")
+    public ResponseEntity<Void> unregisterActivity(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long activityId) {
+        participationService.unregisterActivity(userDetails.getEmployeeId(), activityId);
+        return ResponseEntity.noContent().build();
     }
 }

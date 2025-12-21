@@ -1,53 +1,43 @@
-/**
- * activity.ts - Định nghĩa types cho các hoạt động công ty
- * Chủ yếu quản lý các cuộc thi chạy bộ và hoạt động thể thao
- */
-
-export interface RunningCompetition {
-  id: string;
+export interface Activity {
+  id: number;
   name: string;
   description: string;
-  startDate: Date;
-  endDate: Date;
-  status: 'draft' | 'active' | 'completed' | 'cancelled';
-  targetDistance?: number; // Mục tiêu km (nếu có)
-  rules: string;
-  prizes: CompetitionPrize[];
-  participants: string[]; // Employee IDs
-  createdBy: string;
-  createdAt: Date;
-}
-
-export interface CompetitionPrize {
-  rank: number;
-  title: string;
-  description: string;
+  startDate: string;
+  endDate: string;
+  registrationStartDate: string;
+  registrationEndDate: string;
+  maxParticipants: number;
+  currentParticipants: number;
+  location: string;
+  activityType: string;
+  imageUrl: string;
+  organizer: string;
   points: number;
-  cashReward?: number;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export interface RunningRecord {
-  id: string;
-  employeeId: string;
-  competitionId: string;
-  date: Date;
-  distance: number; // km
-  duration: number; // minutes
-  averageSpeed: number; // km/h
-  location?: string;
-  notes?: string;
-  verified: boolean;
-  verifiedBy?: string;
-  verifiedAt?: Date;
+export interface CreateActivityRequest {
+  name: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+  registrationStartDate: string;
+  registrationEndDate: string;
+  maxParticipants: number;
+  location: string;
+  activityType: string;
+  imageUrl: string;
+  organizer: string;
+  points: number;
 }
 
-export interface CompetitionLeaderboard {
-  employeeId: string;
-  employeeName: string;
-  totalDistance: number;
-  totalRuns: number;
-  averageSpeed: number;
-  rank: number;
+export interface ActivityListResponse {
+  activities: Activity[];
+  total: number;
+  page: number;
+  pageSize: number;
 }
 
 /**
@@ -77,6 +67,15 @@ export interface CampaignValidationErrors {
   maxParticipants?: string;
   imageUrl?: string;
   points: number;
+}
+
+export interface CompetitionLeaderboard {
+  employeeId: string;
+  employeeName: string;
+  totalDistance: number;
+  totalRuns: number;
+  averageSpeed: number;
+  rank: number;
 }
 
 export interface CompetitionStats {

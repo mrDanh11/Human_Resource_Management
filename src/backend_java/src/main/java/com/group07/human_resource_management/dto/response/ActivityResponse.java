@@ -24,4 +24,5 @@ public class ActivityResponse {
     private String status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Integer currentParticipants;
 }
