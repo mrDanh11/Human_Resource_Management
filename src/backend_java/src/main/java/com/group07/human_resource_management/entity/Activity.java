@@ -24,11 +24,26 @@ public class Activity {
     @Column(name = "end_date")
     private LocalDateTime endDate;
 
-    @Column(name = "register_deadline")
-    private LocalDateTime registerDeadline;
+    @Column(name = "registration_start_date")
+    private LocalDateTime registrationStartDate;
+
+    @Column(name = "registration_end_date")
+    private LocalDateTime registrationEndDate;
 
     @Column(name = "max_participants")
     private Integer maxParticipants;
+
+    private String location;
+
+    @Column(name = "activity_type")
+    private String activityType;
+
+    @Column(name = "image_url")
+    private String imageUrl;
+
+    private String organizer;
+
+    private Integer points;
 
     private String status;
 
