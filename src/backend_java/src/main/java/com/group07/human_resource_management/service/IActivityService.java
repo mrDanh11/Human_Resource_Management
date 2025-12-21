@@ -9,4 +9,5 @@ public interface IActivityService {
     ActivityResponse getActivityById(Long id);
     ActivityResponse createActivity(Long employeeId, CreateActivityRequest request);
     void deleteActivity(Long id);
+    ActivityResponse updateActivity(Long id, CreateActivityRequest request);
 }

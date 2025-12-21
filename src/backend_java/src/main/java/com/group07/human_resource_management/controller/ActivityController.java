@@ -52,4 +52,13 @@ public class ActivityController {
         activityService.deleteActivity(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('HR')")
+    public ResponseEntity<ActivityResponse> updateActivity(
+            @PathVariable Long id,
+            @Valid @RequestBody CreateActivityRequest request) {
+        ActivityResponse response = activityService.updateActivity(id, request);
+        return ResponseEntity.ok(response);
+    }
 }

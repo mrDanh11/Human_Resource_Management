@@ -26,12 +26,31 @@ public class ParticipationService implements IParticipationService {
     public List<ParticipationResponse> getMyParticipations(Long employeeId) {
         List<Participation> participations = participationRepository.findByEmployeeId(employeeId);
         return participations.stream()
-                .map(p -> ParticipationResponse.builder()
-                        .employeeId(p.getEmployee().getId())
-                        .activityId(p.getActivity().getId())
-                        .registeredAt(p.getRegisterDate())
-                        .status(p.getStatus())
-                        .build())
+                .filter(p -> !p.getActivity().isDeleted())
+                .map(p -> {
+                    Activity activity = p.getActivity();
+                    int currentParticipants = participationRepository.countByActivityId(activity.getId());
+                    return ParticipationResponse.builder()
+                            .employeeId(p.getEmployee().getId())
+                            .activityId(activity.getId())
+                            .activityName(activity.getName())
+                            .description(activity.getDescription())
+                            .startDate(activity.getStartDate())
+                            .endDate(activity.getEndDate())
+                            .registrationStartDate(activity.getRegistrationStartDate())
+                            .registrationEndDate(activity.getRegistrationEndDate())
+                            .location(activity.getLocation())
+                            .activityType(activity.getActivityType())
+                            .imageUrl(activity.getImageUrl())
+                            .organizer(activity.getOrganizer())
+                            .maxParticipants(activity.getMaxParticipants())
+                            .currentParticipants(currentParticipants)
+                            .points(activity.getPoints())
+                            .activityStatus(activity.getStatus())
+                            .registeredAt(p.getRegisterDate())
+                            .status(p.getStatus())
+                            .build();
+                })
                 .collect(Collectors.toList());
     }
 

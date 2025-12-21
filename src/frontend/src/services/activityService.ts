@@ -4,7 +4,7 @@
  */
 
 import { apiSpring } from './api';
-import type { Activity, ActivityListResponse, CreateActivityRequest } from '../types/activity';
+import type { Activity, ActivityListResponse, CreateActivityRequest, MyParticipationResponse } from '../types/activity';
 
 /**
  * Get all activities (for HR management and Employee view)
@@ -32,6 +32,14 @@ export const getActivityById = async (id: number): Promise<Activity> => {
  */
 export const createActivity = async (data: CreateActivityRequest): Promise<Activity> => {
   const response = await apiSpring.post<Activity>('/activities', data);
+  return response.data;
+};
+
+/**
+ * Update an activity (HR/Admin only)
+ */
+export const updateActivity = async (id: number, data: CreateActivityRequest): Promise<Activity> => {
+  const response = await apiSpring.put<Activity>(`/activities/${id}`, data);
   return response.data;
 };
 
@@ -117,7 +125,7 @@ export const unregisterActivity = async (activityId: number): Promise<void> => {
 /**
  * Get my participations
  */
-export const getMyParticipations = async (): Promise<any[]> => {
-  const response = await apiSpring.get<any[]>('/participations/my-participations');
+export const getMyParticipations = async (): Promise<MyParticipationResponse[]> => {
+  const response = await apiSpring.get<MyParticipationResponse[]>('/participations/my-participations');
   return response.data;
 };

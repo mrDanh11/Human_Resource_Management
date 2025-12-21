@@ -98,3 +98,24 @@ export interface ParticipationData {
   status: string,
   result: string,
 }
+
+export interface MyParticipationResponse {
+  employeeId: number;
+  activityId: number;
+  activityName: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+  registrationStartDate: string;
+  registrationEndDate: string;
+  location: string;
+  activityType: string;
+  imageUrl: string;
+  organizer: string;
+  maxParticipants: number;
+  currentParticipants: number;
+  points: number;
+  activityStatus: string;
+  registeredAt: string;
+  status: string;
+}

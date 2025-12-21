@@ -118,6 +118,34 @@ public class ActivityService implements IActivityService {
         activityRepository.save(activity);
     }
 
+    @Override
+    @Transactional
+    public ActivityResponse updateActivity(Long id, CreateActivityRequest request) {
+        Activity activity = activityRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Activity not found"));
+
+        if (activity.isDeleted()) {
+            throw new RuntimeException("Activity not found");
+        }
+
+        activity.setName(request.getName());
+        activity.setDescription(request.getDescription());
+        activity.setStartDate(request.getStartDate());
+        activity.setEndDate(request.getEndDate());
+        activity.setRegistrationStartDate(request.getRegistrationStartDate());
+        activity.setRegistrationEndDate(request.getRegistrationEndDate());
+        activity.setMaxParticipants(request.getMaxParticipants());
+        activity.setLocation(request.getLocation());
+        activity.setActivityType(request.getActivityType());
+        activity.setImageUrl(request.getImageUrl());
+        activity.setOrganizer(request.getOrganizer());
+        activity.setPoints(request.getPoints());
+        activity.setUpdatedAt(LocalDateTime.now());
+
+        Activity savedActivity = activityRepository.save(activity);
+        return mapToResponse(savedActivity);
+    }
+
     private ActivityResponse mapToResponse(Activity activity) {
         int currentParticipants = participationRepository.countByActivityId(activity.getId());
         return ActivityResponse.builder()

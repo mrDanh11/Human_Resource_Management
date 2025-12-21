@@ -269,34 +269,43 @@ export default function ActivityDetailModal({
               </button>              
               
               {isRegistered ? (
-                <button
-                  onClick={() => {
-                    if (onUnregister) {
-                      onUnregister(activity.id);
-                      onClose();
-                    }
-                  }}
-                  className="flex-1 px-6 py-3 bg-green-600 hover:bg-red-600 text-white rounded-lg font-medium transition-all group"
-                  style={{
-                    transition: 'all 0.3s ease'
-                  }}
-                  onMouseEnter={(e) => {
-                    setIsHovered(true);
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                    e.currentTarget.style.boxShadow = '0 5px 20px rgba(22, 163, 74, 0.4)';
-                  }}
-                  onMouseLeave={(e) => {
-                    setIsHovered(false);
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = 'none';
-                  }}
-                >
-                  {!isHovered ? (
-                    <span>Đã đăng ký</span>
-                  ) : (
-                    <span>Hủy đăng ký</span>
-                  )}
-                </button>
+                !isRegistrationOpen() ? (
+                  <button
+                    disabled
+                    className="flex-1 px-6 py-3 bg-gray-400 text-white rounded-lg font-medium cursor-not-allowed"
+                  >
+                    Đã đăng ký
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => {
+                      if (onUnregister) {
+                        onUnregister(activity.id);
+                        onClose();
+                      }
+                    }}
+                    className="flex-1 px-6 py-3 bg-green-600 hover:bg-red-600 text-white rounded-lg font-medium transition-all"
+                    style={{
+                      transition: 'all 0.3s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      setIsHovered(true);
+                      e.currentTarget.style.transform = 'translateY(-2px)';
+                      e.currentTarget.style.boxShadow = '0 5px 20px rgba(22, 163, 74, 0.4)';
+                    }}
+                    onMouseLeave={(e) => {
+                      setIsHovered(false);
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      e.currentTarget.style.boxShadow = 'none';
+                    }}
+                  >
+                    {!isHovered ? (
+                      <span>Đã đăng ký</span>
+                    ) : (
+                      <span>Hủy đăng ký</span>
+                    )}
+                  </button>
+                )
               ) : (
                 <button
                   onClick={() => {
