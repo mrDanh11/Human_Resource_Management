@@ -76,4 +76,8 @@ public class JwtUtil {
         return claims.get("permissions", List.class);
     }
 
+    public Long extractEmployeeId(String token) {
+        Claims claims = extractAllClaims(token);
+        return claims.get("employeeId", Long.class);
+    }
 }

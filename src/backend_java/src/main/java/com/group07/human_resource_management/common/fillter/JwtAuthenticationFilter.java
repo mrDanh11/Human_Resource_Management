@@ -1,7 +1,7 @@
 package com.group07.human_resource_management.common.fillter;
 
-import com.group07.human_resource_management.common.service.JwtUserDetailsService;
 import com.group07.human_resource_management.common.utils.JwtUtil;
+import com.group07.human_resource_management.config.CustomUserDetails;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -43,6 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             String username = jwtUtil.extractUsername(token);
             List<String> permissions = jwtUtil.extractPermissions(token);
+            Long employeeId = jwtUtil.extractEmployeeId(token);
 
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
@@ -53,9 +54,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             .map(SimpleGrantedAuthority::new)
                             .toList();
 
+                    CustomUserDetails userDetails = new CustomUserDetails(username, null, authorities, employeeId);
+
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(
-                                    username,
+                                    userDetails,
                                     null,
                                     authorities
                             );
