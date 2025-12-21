@@ -4,6 +4,8 @@ import { Calendar } from 'lucide-react';
 import Header from '../../components/LandingPage/Header';
 import Sidebar from '../../components/common/Sidebar';
 import Footer from '../../components/LandingPage/Footer';
+import { createActivity } from '../../services/activityService';
+import type { CreateActivityRequest } from '../../types/activity';
 
 export interface CreateActivityData {
   name: string;
@@ -17,6 +19,7 @@ export interface CreateActivityData {
   type: 'sports' | 'charity' | 'training' | 'team-building' | 'volunteer';
   imageUrl: string;
   organizer: string;
+  points: number;
 }
 
 export default function CreateActivityPage() {
@@ -32,15 +35,35 @@ export default function CreateActivityPage() {
     location: '',
     type: 'sports',
     imageUrl: '',
-    organizer: ''
+    organizer: '',
+    points: 0
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Create new activity:', formData);
-    alert(`Đã tạo hoạt động mới: ${formData.name}`);
-    // Navigate back to admin activities page
-    navigate('/admin/activities');
+    try {
+      const request: CreateActivityRequest = {
+        name: formData.name,
+        description: formData.description,
+        startDate: formData.startDate + ":00", // Append seconds if needed by backend
+        endDate: formData.endDate + ":00",
+        registrationStartDate: formData.registrationStart + ":00",
+        registrationEndDate: formData.registrationEnd + ":00",
+        maxParticipants: formData.maxParticipants,
+        location: formData.location,
+        activityType: formData.type,
+        imageUrl: formData.imageUrl,
+        organizer: formData.organizer,
+        points: formData.points
+      };
+      
+      await createActivity(request);
+      alert(`Đã tạo hoạt động mới: ${formData.name}`);
+      navigate('/admin/activities');
+    } catch (error) {
+      console.error("Failed to create activity", error);
+      alert("Có lỗi xảy ra khi tạo hoạt động");
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -143,6 +166,23 @@ export default function CreateActivityPage() {
                           required
                           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
                           placeholder="Tên đơn vị tổ chức..."
+                        />
+                      </div>
+
+                      {/* Points */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Điểm thưởng <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="number"
+                          name="points"
+                          value={formData.points}
+                          onChange={handleChange}
+                          required
+                          min="0"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                          placeholder="Số điểm thưởng..."
                         />
                       </div>
                     </div>

@@ -20,44 +20,53 @@ import ActivityResultPage from './pages/activities/ActivityResultPage';
 import HistoryActivitiesPage from './pages/activities/HistoryActivitiesPage';
 import ActivityPrivateResultPage from './pages/activities/ActivityPrivateResultPage';
 import EmployeeLayout from './layouts/EmployeeLayout';
+import ProtectedRoute from './components/ProtectedRoute';
 
 const App = () => {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Public Routes */}
         <Route path="/" element={<Navigate to="/landing" replace />} />
         <Route path="/landing" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/forbidden" element={<Forbidden />} />
-        <Route path="/activities/results" element={<ActivityResultPage />} />
-        <Route path="activities/create" element={<CreateActivityPage />} />
-        <Route path="activities/cancel" element={<CancelActivityPage />} />
 
-
-        <Route path="/rewards/hr-reward" element={<RewardPointHR />} />
-        <Route path="/employee/profile/:id" element={<ProfilePage />} />
-        <Route path="/rewards/exchange" element={<PointExchange />} />
-        <Route path="/rewards/history" element={<RewardHistory />} />
-
-        <Route path="" element={<EmployeeLayout />}>
-          <Route path="/forbidden" element={<Forbidden />} />
-          <Route path="/rewards/points" element={<RewardDashboard />} />
-          <Route path="/rewards/hr-reward" element={<RewardPointHR />} />
-          <Route path="/rewards" element={<PointsAdmin />} />
-          <Route path="/activities" element={<ActivityListPage />} />
-          <Route path="/activities/history" element={<HistoryActivitiesPage />} />
-          <Route path="/activities/result" element={<ActivityPrivateResultPage />} />
+        {/* Protected Routes - Require Login */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/activities/results" element={<ActivityResultPage />} />
+          <Route path="/employee/profile/:id" element={<ProfilePage />} />
+          <Route path="/rewards/exchange" element={<PointExchange />} />
+          <Route path="/rewards/history" element={<RewardHistory />} />
+          
+          {/* Employee Layout Routes */}
+          <Route path="" element={<EmployeeLayout />}>
+            <Route path="/rewards/points" element={<RewardDashboard />} />
+            <Route path="/rewards/hr-reward" element={<RewardPointHR />} />
+            <Route path="/rewards" element={<PointsAdmin />} />
+            <Route path="/activities" element={<ActivityListPage />} />
+            <Route path="/activities/history" element={<HistoryActivitiesPage />} />
+            <Route path="/activities/result" element={<ActivityPrivateResultPage />} />
+          </Route>
         </Route>
 
+        {/* HR & Admin Routes */}
+        <Route element={<ProtectedRoute allowedRoles={['HR', 'ADMIN']} />}>
+          <Route path="activities/create" element={<CreateActivityPage />} />
+          <Route path="activities/cancel" element={<CancelActivityPage />} />
+          <Route path="/rewards/hr-reward" element={<RewardPointHR />} />
+        </Route>
 
-        {/* Admin routes with layout */}
-        <Route path="admin" element={<AdminLayout />}>
-          <Route path="dashboard" element={<AdminDashboard />} />
-          <Route path="point" element={<PointsAdmin />} />
-          <Route path="activities" element={<AdminActivityListPage />} />
-          <Route path="employee">
-            <Route path="list" element={<EmployeeList />} />
-            <Route path="create" element={<CreateEmployee />} />
+        {/* Admin Routes */}
+        <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
+          <Route path="admin" element={<AdminLayout />}>
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="point" element={<PointsAdmin />} />
+            <Route path="activities" element={<AdminActivityListPage />} />
+            <Route path="employee">
+              <Route path="list" element={<EmployeeList />} />
+              <Route path="create" element={<CreateEmployee />} />
+            </Route>
           </Route>
         </Route>
 
