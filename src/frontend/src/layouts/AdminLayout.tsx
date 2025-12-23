@@ -1,7 +1,7 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
 import Header from "../components/LandingPage/Header";
-import Sidebar from "../components/common/Sidebar";
+import AdminSidebar from "../components/common/AdminSidebar.tsx";
 
 const AdminLayout: React.FC = () => {
   return (
@@ -9,7 +9,7 @@ const AdminLayout: React.FC = () => {
       <Header />
 
       <div className="flex flex-1">
-        <Sidebar />
+        <AdminSidebar />
 
         <main className="flex-1 bg-gray-100">
           <Outlet />
