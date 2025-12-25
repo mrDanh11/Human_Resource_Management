@@ -1,20 +1,24 @@
 import { useParams } from "react-router-dom";
 import { useEmployeeProfile } from "../../hooks/useEmployeeProfile";
 import { useSecureFieldToggle } from "../../hooks/useSecureFieldToggle";
+import { useUpdateEmployeeInfo } from "../../hooks/useUpdateEmployeeInfo";
 import ProfileLayout from "../../layouts/ProfileLayout";
 import ProfileContent from "../../components/profile/ProfileContent";
 import ProfileSkeleton from "../../components/profile/ProfileSkeleton";
+import UpdateEmployeePersonalInformation from "../../components/profile/UpdateProfileEmployee";
+import { useState } from "react";
 
 export default function ProfilePage() {
   const { id } = useParams();
   const { data, loading, err } = useEmployeeProfile(id);
   const { toggle, isVisible } = useSecureFieldToggle();
 
-  const handleUpdateClick = () => {
-    console.log("Update profile clicked");
-    // TODO: Navigate to update profile page or open modal
-    alert("Chức năng cập nhật hồ sơ đang được phát triển");
-  };
+  const { handleUpdateSubmit, isSubmitting } = useUpdateEmployeeInfo();
+
+  const [showUpdateForm, setShowUpdateForm] = useState(false);
+
+  console.log("Employee Data:", data);
+  console.log("Number:", Number(data?.employeeCode));
 
   // Loading state
   if (loading) {
@@ -49,8 +53,18 @@ export default function ProfilePage() {
         onToggleCccd={() => toggle("cccd")}
         onToggleBank={() => toggle("bank")}
         onToggleTax={() => toggle("tax")}
-        onUpdateClick={handleUpdateClick}
+        onUpdateClick={() => setShowUpdateForm(true)}
       />
+
+      {showUpdateForm && (
+        <UpdateEmployeePersonalInformation
+          employeeId={Number(data.id)}
+          isOpen={showUpdateForm}
+          onClose={() => setShowUpdateForm(false)}
+          onSubmit={handleUpdateSubmit}
+          isSubmitting={isSubmitting}
+        />
+      )}
     </ProfileLayout>
   );
 }

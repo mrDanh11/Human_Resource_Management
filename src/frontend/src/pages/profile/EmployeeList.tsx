@@ -177,7 +177,7 @@ const EmployeeList = () => {
     };
 
     // Xử lý submit cập nhật thông tin làm việc
-    const handleUpdateSubmit = async (data: { employeeId: number; fullname: string; departmentId: number; status: string; phone: string; email: string; address: string; bankAccount: string; birthday: string; gender: string }) => {
+    const handleUpdateSubmit = async (data: { employeeId: number; departmentId: number; status: string; bankAccount: string; cccd: string; taxCode: string; joinDate: string }) => {
         if (!data.employeeId) return;
 
         setIsSubmitting(true);
@@ -185,15 +185,12 @@ const EmployeeList = () => {
             await dispatch(updateEmployeeWorkingInfo({
                 id: data.employeeId,
                 data: {
-                    fullname: data.fullname,
                     status: data.status,
                     departmentId: data.departmentId,
-                    phone: data.phone,
-                    email: data.email,
-                    address: data.address,
                     bankAccount: data.bankAccount,
-                    birthday: data.birthday,
-                    gender: data.gender,
+                    cccd: data.cccd,
+                    taxCode: data.taxCode,
+                    joinDate: data.joinDate,
                 }
             })).unwrap();
 
