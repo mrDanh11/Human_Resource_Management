@@ -62,7 +62,7 @@ export const employeeService = {
 
   // Tạo nhân viên mới
   createEmployee: async (data: CreateEmployeeData) => {
-    const response = await apiSpring.post('/v1/employee', data, {
+    const response = await apiSpring.post('/employee', data, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
       },
