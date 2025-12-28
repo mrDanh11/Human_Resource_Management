@@ -1,6 +1,6 @@
 package com.group07.human_resource_management.common.service;
 
-import com.group07.human_resource_management.modules.auth.repository.UserAccountRepository;
+import com.group07.human_resource_management.repository.UserAccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
