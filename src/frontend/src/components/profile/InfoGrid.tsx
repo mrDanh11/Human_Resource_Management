@@ -2,7 +2,7 @@
 
 export default function InfoGrid({ children }: any) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       {children}
     </div>
   );

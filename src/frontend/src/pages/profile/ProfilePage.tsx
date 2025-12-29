@@ -10,6 +10,12 @@ export default function ProfilePage() {
   const { data, loading, err } = useEmployeeProfile(id);
   const { toggle, isVisible } = useSecureFieldToggle();
 
+  const handleUpdateClick = () => {
+    console.log("Update profile clicked");
+    // TODO: Navigate to update profile page or open modal
+    alert("Chức năng cập nhật hồ sơ đang được phát triển");
+  };
+
   // Loading state
   if (loading) {
     return (
@@ -43,7 +49,7 @@ export default function ProfilePage() {
         onToggleCccd={() => toggle("cccd")}
         onToggleBank={() => toggle("bank")}
         onToggleTax={() => toggle("tax")}
-        onUpdateClick={() => console.log("Update profile clicked")}
+        onUpdateClick={handleUpdateClick}
       />
     </ProfileLayout>
   );

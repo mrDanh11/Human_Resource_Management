@@ -16,13 +16,13 @@ export default function Stats() {
         {/* Tiêu đề */}
         <div className="text-center mb-10">
           <h2
-            className="text-4xl font-semibold tracking-tight"
+            className="text-5xl font-bold tracking-tight"
             style={{ color: THEME_COLORS.primary[700] }}
           >
             Những con số tạo nên giá trị
           </h2>
 
-          <p className="mt-3 text-gray-600 text-lg max-w-2xl mx-auto leading-relaxed">
+          <p className="mt-3 text-gray-600 text-xl max-w-2xl mx-auto leading-relaxed">
             Hành trình phát triển của doanh nghiệp được minh chứng qua các cột mốc ấn tượng.
           </p>
         </div>
@@ -40,14 +40,14 @@ export default function Stats() {
             >
               {/* Number */}
               <h3
-                className="text-5xl md:text-6xl font-bold"
+                className="text-6xl md:text-7xl font-bold"
                 style={{ color: THEME_COLORS.primary[500] }}
               >
                 {item.number}
               </h3>
 
               {/* Label */}
-              <p className="text-gray-600 mt-2 text-lg">{item.label}</p>
+              <p className="text-gray-600 mt-2 text-xl">{item.label}</p>
 
               {/* Divider */}
               {i < stats.length - 1 && (

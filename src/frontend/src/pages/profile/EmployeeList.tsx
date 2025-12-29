@@ -151,7 +151,7 @@ const EmployeeList = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 p-6">
+        <div className="h-full bg-gray-50 p-6">
             <div className="max-w-6xl mx-auto rounded-2xl overflow-hidden shadow-xl">
                 {/* Header */}
                 <div className="bg-linear-to-r from-blue-600 to-blue-700 p-6 shadow-lg">
