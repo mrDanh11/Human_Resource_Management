@@ -8,6 +8,7 @@ const AdminSidebar: React.FC = () => {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   
   const menuItems = [
+    { label: "Dashboard", to: "/admin/dashboard" },
     { 
       label: "Quản lý nhân viên", 
       key: "employees",

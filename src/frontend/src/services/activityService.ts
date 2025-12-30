@@ -129,3 +129,50 @@ export const getMyParticipations = async (): Promise<MyParticipationResponse[]> 
   const response = await apiSpring.get<MyParticipationResponse[]>('/participations/my-participations');
   return response.data;
 };
+
+/**
+ * Get activity statistics
+ */
+export const getActivityStatistics = async (): Promise<{
+  totalActivities: number;
+  openRegistration: number;
+  closedRegistration: number;
+  statusDistribution: { status: string; count: number }[];
+}> => {
+  const response = await apiSpring.get<ActivityListResponse>('/activities', {
+    params: { page: 1, pageSize: 10000 }
+  });
+  
+  const activities = response.data.content || [];
+  const totalActivities = activities.length;
+  
+  // Đếm theo trạng thái
+  let openRegistration = 0;
+  let closedRegistration = 0;
+  const statusMap = new Map<string, number>();
+  
+  activities.forEach(activity => {
+    const status = activity.status || 'unknown';
+    statusMap.set(status, (statusMap.get(status) || 0) + 1);
+    
+    if (status === 'OPEN' || status === 'open' || status === 'ONGOING') {
+      openRegistration++;
+    } else if (status === 'CLOSED' || status === 'closed' || status === 'COMPLETED') {
+      closedRegistration++;
+    }
+  });
+  
+  const statusDistribution = Array.from(statusMap.entries()).map(([status, count]) => ({
+    status: status === 'OPEN' || status === 'open' || status === 'ONGOING' ? 'Đang mở đăng ký' : 
+            status === 'CLOSED' || status === 'closed' || status === 'COMPLETED' ? 'Đã đóng đăng ký' : 
+            status,
+    count,
+  }));
+  
+  return {
+    totalActivities,
+    openRegistration,
+    closedRegistration,
+    statusDistribution,
+  };
+};

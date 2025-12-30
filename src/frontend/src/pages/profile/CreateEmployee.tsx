@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserPlus, ArrowLeft, User, Phone, CreditCard, Hash, MapPin, Mail, Calendar, UserCircle, Building2, Wallet, RotateCcw, Save, Loader2, Briefcase } from 'lucide-react';
+import { UserPlus, User, Phone, CreditCard, Hash, MapPin, Mail, Calendar, UserCircle, Building2, Wallet, RotateCcw, Save, Loader2, Briefcase } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { createEmployee } from '../../store/employeeSlice';
+import { createEmployee, fetchDepartments } from '../../store/employeeSlice';
 import { jwtDecode } from "jwt-decode";
 
 const CreateEmployee = () => {
@@ -24,7 +24,7 @@ const CreateEmployee = () => {
         }
     }, [navigate]);
 
-    const { createLoading } = useAppSelector((state) => state.employee);
+    const { createLoading, departments, departmentsLoading } = useAppSelector((state) => state.employee);
 
     const [formData, setFormData] = useState({
         fullname: '',
@@ -40,6 +40,46 @@ const CreateEmployee = () => {
         roleId: '',
         bankAccount: '',
     });
+
+    // Fetch danh sách phòng ban khi component mount
+    useEffect(() => {
+        dispatch(fetchDepartments());
+    }, [dispatch]);
+
+    // Function để bỏ dấu tiếng Việt
+    const removeVietnameseTones = (str: string): string => {
+        str = str.toLowerCase();
+        str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, 'a');
+        str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, 'e');
+        str = str.replace(/ì|í|ị|ỉ|ĩ/g, 'i');
+        str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, 'o');
+        str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, 'u');
+        str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, 'y');
+        str = str.replace(/đ/g, 'd');
+        str = str.replace(/\s+/g, '');
+        str = str.replace(/[^a-z0-9]/g, '');
+        return str;
+    };
+
+    // Tự động tạo email từ họ tên và CCCD
+    useEffect(() => {
+        if (formData.fullname && formData.cccd.length >= 3) {
+            const nameWithoutTones = removeVietnameseTones(formData.fullname);
+            const last3Digits = formData.cccd.slice(-3);
+            const generatedEmail = `${nameWithoutTones}${last3Digits}@company.com`;
+            setFormData(prev => ({
+                ...prev,
+                email: generatedEmail
+            }));
+        } else if (formData.fullname && formData.cccd.length === 0) {
+            const nameWithoutTones = removeVietnameseTones(formData.fullname);
+            const generatedEmail = `${nameWithoutTones}@company.com`;
+            setFormData(prev => ({
+                ...prev,
+                email: generatedEmail
+            }));
+        }
+    }, [formData.fullname, formData.cccd]);
 
     const [errors, setErrors] = useState({
         phone: '',
@@ -358,14 +398,12 @@ const CreateEmployee = () => {
                                         type="email"
                                         name="email"
                                         value={formData.email}
-                                        onChange={handleChange}
-                                        placeholder="ten@company.com"
+                                        readOnly
+                                        placeholder="Tự động tạo từ họ tên và CCCD"
                                         required
-                                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent focus:outline-none ${
-                                            errors.email ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
-                                        }`}
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed focus:outline-none"
                                     />
-                                    {errors.email && <p className="text-red-500 text-xs mt-1 text-left">{errors.email}</p>}
+                                    <p className="text-gray-500 text-xs mt-1 text-left">Email được tạo tự động từ họ tên (không dấu) + 3 số cuối CCCD</p>
                                 </div>
 
                                 <div>
@@ -393,7 +431,8 @@ const CreateEmployee = () => {
                                         value={formData.departmentId}
                                         onChange={handleChange}
                                         required
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:outline-none appearance-none bg-white cursor-pointer"
+                                        disabled={departmentsLoading}
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:outline-none appearance-none bg-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                                         style={{
                                             backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
                                             backgroundPosition: 'right 0.5rem center',
@@ -402,12 +441,12 @@ const CreateEmployee = () => {
                                             paddingRight: '2.5rem'
                                         }}
                                     >
-                                        <option value="">Chọn phòng ban</option>
-                                        <option value="1">Công nghệ</option>
-                                        <option value="2">Nhân sự</option>
-                                        <option value="3">Kinh doanh</option>
-                                        <option value="4">Marketing</option>
-                                        <option value="5">Kế toán</option>
+                                        <option value="">{departmentsLoading ? 'Đang tải...' : 'Chọn phòng ban'}</option>
+                                        {departments.map((dept) => (
+                                            <option key={dept.id} value={dept.id}>
+                                                {dept.name}
+                                            </option>
+                                        ))}
                                     </select>
                                 </div>
 
