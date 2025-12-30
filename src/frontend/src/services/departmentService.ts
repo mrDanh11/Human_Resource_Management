@@ -3,7 +3,7 @@
  * Các API calls: lấy danh sách phòng ban, tạo, cập nhật, xóa
  */
 
-import { apiDotNet } from './api';
+import { apiDotNet, apiSpring } from './api';
 
 // ============================================
 // TYPES & INTERFACES
@@ -48,9 +48,9 @@ export const departmentService = {
   getAllDepartments: async (): Promise<DepartmentDto[]> => {
     const response = await apiDotNet.get<ApiResponse<DepartmentDto[]>>('/Department');
     
-    // if (response.data.success) {
+    if (response.data.success) {
       return response.data.data;
-    // }
+    }
     
     throw new Error(response.data.message || 'Lỗi khi lấy danh sách phòng ban');
   },
