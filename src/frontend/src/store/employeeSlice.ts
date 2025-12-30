@@ -57,10 +57,12 @@ interface EmployeeState {
   detailLoading: boolean;
   createLoading: boolean;
   updateLoading: boolean;
+  deleteLoading: boolean;
   error: string | null;
   detailError: string | null;
   createError: string | null;
   updateError: string | null;
+  deleteError: string | null;
 }
 
 const initialState: EmployeeState = {
@@ -70,10 +72,12 @@ const initialState: EmployeeState = {
   detailLoading: false,
   createLoading: false,
   updateLoading: false,
+  deleteLoading: false,
   error: null,
   detailError: null,
   createError: null,
   updateError: null,
+  deleteError: null,
 };
 
 //Interface cho update employee
@@ -102,13 +106,14 @@ export const fetchEmployees = createAsyncThunk(
 );
 
 // Async thunk để fetch chi tiết nhân viên
-export const fetchEmployeeDetail = createAsyncThunk(
+export const fetchEmployeeDetail = createAsyncThunk<EmployeeDetailData, number, { rejectValue: string }>(
   'employee/fetchEmployeeDetail',
   async (id: number, { rejectWithValue }) => {
     try {
-      return await employeeService.getEmployeeById(id);
+      const res = await employeeService.getEmployeeDetail(id);
+      return res as EmployeeDetailData;
     } catch (error: any) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(error.response?.data ?? String(error.message));
     }
   }
 );
@@ -126,13 +131,27 @@ export const createEmployee = createAsyncThunk(
 );
 
 // Async thunk để cập nhật thông tin nhân viên
-export const updateEmployeeWorkingInfo = createAsyncThunk(
+export const updateEmployeeWorkingInfo = createAsyncThunk<EmployeeDetailData, { id: number, data: UpdateEmployeeWorkingInfoData }, { rejectValue: string }>(
   'employee/updateEmployeeWorkingInfo',
-  async ({ id, data }: { id: number, data: UpdateEmployeeWorkingInfoData }, { rejectWithValue }) => {
+  async ({ id, data }, { rejectWithValue }) => {
     try {
-      return await employeeService.updateEmployee(id, data);
+      const res = await employeeService.updateEmployee(id, data);
+      return res as EmployeeDetailData;
     } catch (error: any) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(error.response?.data ?? String(error.message));
+    }
+  }
+);
+
+// Async thunk để xóa nhân viên
+export const deleteEmployee = createAsyncThunk<number, number, { rejectValue: string }>(
+  'employee/deleteEmployee',
+  async (id: number, { rejectWithValue }) => {
+    try {
+      await employeeService.deleteEmployee(id);
+      return id;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data ?? String(error.message));
     }
   }
 );
@@ -149,6 +168,9 @@ const employeeSlice = createSlice({
     },
     clearCreateError: (state) => {
       state.createError = null;
+    },
+    clearDeleteError: (state) => {
+      state.deleteError = null;
     },
     clearSelectedEmployee: (state) => {
       state.selectedEmployee = null;
@@ -203,24 +225,76 @@ const employeeSlice = createSlice({
       })
       .addCase(updateEmployeeWorkingInfo.fulfilled, (state, action) => {
         state.updateLoading = false;
-        state.selectedEmployee = action.payload;
-        // Cập nhật lại danh sách nếu employee có trong list
-        const index = state.employees.findIndex(emp => emp.id === action.payload.id);
+        // Treat payload as a partial update and merge into selectedEmployee to satisfy types
+        const payload = action.payload as Partial<EmployeeDetailData>;
+
+        if (state.selectedEmployee) {
+          state.selectedEmployee = { ...state.selectedEmployee, ...payload } as EmployeeDetailData;
+        } else {
+          // Build a full EmployeeDetailData from payload with safe defaults
+          state.selectedEmployee = {
+            id: payload.id ?? 0,
+            fullname: payload.fullname ?? '',
+            cccd: payload.cccd ?? '',
+            taxCode: payload.taxCode ?? '',
+            phone: payload.phone ?? '',
+            address: payload.address ?? '',
+            bankAccount: payload.bankAccount ?? '',
+            joinDate: payload.joinDate ?? '',
+            status: payload.status ?? '',
+            birthday: payload.birthday ?? '',
+            gender: payload.gender ?? '',
+            email: payload.email ?? '',
+            roleId: payload.roleId ?? 0,
+            roleName: payload.roleName ?? '',
+            departmentId: payload.departmentId ?? 0,
+            departmentName: payload.departmentName ?? '',
+            createdAt: payload.createdAt ?? '',
+            updatedAt: payload.updatedAt ?? '',
+          } as EmployeeDetailData;
+        }
+
+        // Update list entry if present (only fields that exist on the list)
+        const idToFind = payload.id ?? state.selectedEmployee.id;
+        const index = state.employees.findIndex(emp => emp.id === idToFind);
         if (index !== -1) {
           state.employees[index] = {
             ...state.employees[index],
-            status: action.payload.status,
-            departmentName: action.payload.departmentName || state.employees[index].departmentName,
+            status: payload.status ?? state.employees[index].status,
+            departmentName: payload.departmentName ?? state.employees[index].departmentName,
+            fullname: payload.fullname ?? state.employees[index].fullname,
+            email: payload.email ?? state.employees[index].email,
+            phone: payload.phone ?? state.employees[index].phone,
+            roleName: payload.roleName ?? state.employees[index].roleName,
+            joinDate: payload.joinDate ?? state.employees[index].joinDate,
           };
         }
       })
       .addCase(updateEmployeeWorkingInfo.rejected, (state, action) => {
         state.updateLoading = false;
         state.updateError = action.payload as string;
+      })
+      // Delete employee
+      .addCase(deleteEmployee.pending, (state) => {
+        state.deleteLoading = true;
+        state.deleteError = null;
+      })
+      .addCase(deleteEmployee.fulfilled, (state, action) => {
+        state.deleteLoading = false;
+        // Remove employee from list
+        state.employees = state.employees.filter(emp => emp.id !== action.payload);
+        // Clear selected employee if it was deleted
+        if (state.selectedEmployee?.id === action.payload) {
+          state.selectedEmployee = null;
+        }
+      })
+      .addCase(deleteEmployee.rejected, (state, action) => {
+        state.deleteLoading = false;
+        state.deleteError = action.payload as string;
       });
   },
 });
 
-export const { clearError, clearDetailError, clearCreateError, clearSelectedEmployee } = employeeSlice.actions;
+export const { clearError, clearDetailError, clearCreateError, clearDeleteError, clearSelectedEmployee } = employeeSlice.actions;
 
 export default employeeSlice.reducer;

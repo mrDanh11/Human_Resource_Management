@@ -56,7 +56,7 @@ builder.Services.AddCors(options =>
 });
 
 // ========== JWT Authentication ==========
-var jwtSecret = builder.Configuration["Jwt:Secret"] 
+var jwtSecret = builder.Configuration["Jwt:Secret"]
                 ?? "mysecret_nguyenchidanh_mysecret_nguyenchidanh";
 
 builder.Services.AddAuthentication(options =>
@@ -124,7 +124,11 @@ builder.Services.AddAuthorization(options =>
         "monthly-point:update",
         "monthly-point:delete",
         "monthly-point:allocate",
-        "monthly-point:history"
+        "monthly-point:history",
+
+        // Participate
+        "participate:list",
+        "participate:view"
     };
 
     foreach (var permission in permissions)

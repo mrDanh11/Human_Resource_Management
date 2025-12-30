@@ -1,84 +1,88 @@
 import { useState, useEffect } from "react";
-import { THEME_COLORS } from "../../components/common/THEME_COLORS";
+import { useNavigate } from "react-router-dom";
+import PointExchangeLayout from "../../components/rewards/PointExchangeLayout";
+import HalfCircleProgress from "../../components/rewards/HalfCircleProgress";
+import ConversionRateInfo from "../../components/rewards/ConversionRateInfo";
+import TickSelector from "../../components/rewards/TickSelector";
+import { usePointExchange } from "../../hooks/usePointExchange";
+import { calculateMoneyFromPoints } from "../../utils/pointCalculations";
+import { Loader2, Clock } from "lucide-react";
 import { pointService } from "../../services/pointService";
-import type { EmployeePointDto, PointConversionRuleDto, PointToMoneyHistoryDto } from "../../services/pointService";
-
-import ExchangePointHeader from "../../components/rewards/ExchangePointHeader";
-import ExchangePointCurrent from "../../components/rewards/ExchangePointCurrent";
-import ExchangePointForm from "../../components/rewards/ExchangePointForm";
-import ExchangePointConfirmModal from "../../components/rewards/ExchangePointConfirmModal";
+import type { PointToMoneyHistoryDto } from "../../services/pointService";
+import ConfirmExchangeModal from "../../components/rewards/ConfirmExchangeModal";
 import ExchangePointSuccessToast from "../../components/rewards/ExchangePointSuccessToast";
-import { Loader2, AlertCircle, Clock } from "lucide-react";
+
+/* -------------------------------------------------------------------------- */
+/*                                MAIN SCREEN                                 */
+/* -------------------------------------------------------------------------- */
 
 export default function PointExchange() {
-  const employeeId = parseInt(localStorage.getItem('userId') || '1');
-
-  // States cho dữ liệu
-  const [employeePoint, setEmployeePoint] = useState<EmployeePointDto | null>(null);
-  const [conversionRule, setConversionRule] = useState<PointConversionRuleDto | null>(null);
+  const navigate = useNavigate();
+  const employeeId = parseInt(localStorage.getItem("userId") || "1");
+  const { currentPoints, conversionRate, loading } = usePointExchange(employeeId);
+  const [percent, setPercent] = useState(0);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedPoints, setSelectedPoints] = useState(0);
+  const [selectedMoney, setSelectedMoney] = useState(0);
+  const [exchanging, setExchanging] = useState(false);
   const [pendingRequests, setPendingRequests] = useState<PointToMoneyHistoryDto[]>([]);
-  
-  // States cho UI
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [modalOpen, setModalOpen] = useState(false);
   const [toast, setToast] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
 
-  const [pendingPoints, setPendingPoints] = useState(0);
-  const [pendingMoney, setPendingMoney] = useState(0);
+  const totalMoney = calculateMoneyFromPoints(currentPoints, conversionRate);
 
   useEffect(() => {
-    fetchData();
+    fetchPendingRequests();
   }, []);
 
-  const fetchData = async () => {
+  const fetchPendingRequests = async () => {
     try {
-      setLoading(true);
-      setError(null);
-
-      const [pointData, ruleData, pendingData] = await Promise.all([
-        pointService.getEmployeePoint(employeeId),
-        pointService.getActiveConversionRule(),
-        pointService.getPointToMoneyHistory(1, 100, employeeId, 'pending'),
-      ]);
-
-      setEmployeePoint(pointData);
-      setConversionRule(ruleData);
+      const pendingData = await pointService.getPointToMoneyHistory(1, 100, employeeId, 'pending');
       setPendingRequests(pendingData.items);
     } catch (err: any) {
-      console.error('Error fetching exchange data:', err);
-      setError(err.message || 'Không thể tải dữ liệu quy đổi');
-    } finally {
-      setLoading(false);
+      console.error('Error fetching pending requests:', err);
     }
   };
 
-  const openConfirm = (points: number, money: number) => {
-    setPendingPoints(points);
-    setPendingMoney(money);
-    setModalOpen(true);
+  const handleOpenModal = (points: number, money: number) => {
+    // Kiểm tra nếu đã có yêu cầu pending
+    if (hasPendingRequest) {
+      alert('Bạn đã có yêu cầu quy đổi đang chờ xử lý. Vui lòng đợi admin duyệt trước khi gửi yêu cầu mới.');
+      return;
+    }
+    
+    setSelectedPoints(points);
+    setSelectedMoney(money);
+    setShowModal(true);
   };
 
-  const confirmExchange = async () => {
+  const handleConfirmExchange = async () => {
+    // Kiểm tra lại trước khi gửi request
+    if (hasPendingRequest) {
+      setShowModal(false);
+      alert('Bạn đã có yêu cầu quy đổi đang chờ xử lý. Vui lòng đợi admin duyệt trước khi gửi yêu cầu mới.');
+      return;
+    }
+    
+    setExchanging(true);
     try {
-      setSubmitting(true);
-      setModalOpen(false);
-
-      // Gọi API quy đổi điểm
-      await pointService.requestPointToMoneyConversion(employeeId, pendingPoints);
-
+      await pointService.requestPointToMoneyConversion(employeeId, selectedPoints);
+      setShowModal(false);
+      
       // Hiển thị toast thành công
       setToast(true);
       setTimeout(() => setToast(false), 3000);
-
+      
       // Refresh dữ liệu
-      await fetchData();
-    } catch (err: any) {
-      console.error('Error requesting conversion:', err);
-      alert(err.message || 'Có lỗi xảy ra khi gửi yêu cầu quy đổi');
+      await fetchPendingRequests();
+      
+      // Không chuyển trang, chỉ reload dữ liệu và hiển thị toast
+    } catch (error: any) {
+      setShowModal(false);
+      // Hiển thị thông báo lỗi chi tiết hơn
+      const errorMessage = error.message || 'Lỗi khi gửi yêu cầu quy đổi. Vui lòng thử lại!';
+      alert(errorMessage);
     } finally {
-      setSubmitting(false);
+      setExchanging(false);
     }
   };
 
@@ -86,57 +90,34 @@ export default function PointExchange() {
 
   if (loading) {
     return (
-      <div
-        className="w-full min-h-screen p-4 flex items-center justify-center"
-        style={{ backgroundColor: THEME_COLORS.primary[50] }}
-      >
-        <div className="flex flex-col items-center">
-          <Loader2 className="h-12 w-12 text-blue-600 animate-spin" />
-          <span className="ml-3 text-gray-600 mt-4">Đang tải dữ liệu...</span>
+      <PointExchangeLayout>
+        <div className="w-full min-h-screen flex items-center justify-center bg-[#f4f7fb]">
+          <Loader2 className="animate-spin w-8 h-8 text-blue-600" />
         </div>
-      </div>
+      </PointExchangeLayout>
     );
   }
-
-  if (error || !employeePoint || !conversionRule) {
-    return (
-      <div
-        className="w-full min-h-screen p-4 flex items-center justify-center"
-        style={{ backgroundColor: THEME_COLORS.primary[50] }}
-      >
-        <div className="flex flex-col items-center text-red-600">
-          <AlertCircle className="h-12 w-12 mb-4" />
-          <p className="font-medium">{error || 'Không thể tải dữ liệu'}</p>
-          <button
-            onClick={fetchData}
-            className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-          >
-            Thử lại
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  const CURRENT_POINTS = employeePoint.pointTotal;
-  const EXCHANGE_RATE = conversionRule.moneyValue / conversionRule.pointValue * 100;
 
   return (
-    <div className="w-full p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-screen">
-      {/* Page Header */}
-      <div className="mb-6 sm:mb-8 text-center">
-        <h1 className="text-blue-600 text-xl sm:text-2xl lg:text-3xl font-semibold mb-2 sm:mb-3">
-          Quy đổi điểm thưởng
-        </h1>
-        <p className="text-gray-600 text-sm sm:text-base px-4">
-          Chuyển đổi điểm thưởng của bạn thành tiền mặt
-        </p>
-      </div>
+    <PointExchangeLayout>
+      <div className="w-full p-6 md:p-10" style={{ background: '#fafdff' }}>
+        {/* HEADER */}
+        <div className="text-center mb-8">
+          <h1 className="text-2xl font-bold text-blue-600">
+            Quy đổi điểm thưởng
+          </h1>
+          <p className="text-gray-600 text-sm mt-1">
+            Chuyển đổi điểm thưởng của bạn thành tiền mặt
+          </p>
+        </div>
 
-      <div className="w-full max-w-4xl mx-auto">
+        {/* ---------------------------------------------------------------------- */}
+        {/*                        BỐ CỤC 1/3 - 2/3                                */}
+        {/* ---------------------------------------------------------------------- */}
+
         {/* Pending Request Alert */}
         {hasPendingRequest && (
-          <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 sm:p-6 mb-6">
+          <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 sm:p-6 mb-6 max-w-6xl mx-auto">
             <div className="flex items-start gap-3">
               <Clock className="w-5 h-5 text-yellow-600 shrink-0 mt-0.5" />
               <div className="flex-1">
@@ -162,62 +143,70 @@ export default function PointExchange() {
           </div>
         )}
 
-        {/* Current Points Card */}
-        <div className="bg-white border border-gray-200 rounded-xl p-4 sm:p-6 mb-6">
-          <h3 className="text-gray-600 text-sm mb-3">Điểm hiện có</h3>
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-              <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <div>
-              <div className="text-3xl sm:text-4xl font-bold text-blue-600">{CURRENT_POINTS}</div>
-              <div className="text-sm text-gray-500">điểm</div>
+        <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-6 relative">
+          {/* Vertical divider only between boxes */}
+          {/* <div className="hidden lg:block absolute" style={{left: '33.3333%', top: 0, bottom: 0, width: '0', height: '100%', borderLeft: '1px solid #E6E6E6', zIndex: 1}}></div> */}
+
+          {/* LEFT — 1/3 */}
+          <div className="lg:w-1/3 flex">
+            <div className="p-6 rounded-2xl bg-white shadow border border-[#E6E6E6] w-full flex flex-col" style={{ boxShadow: '0 1px 4px rgba(0,102,255,0.08)' }}>
+
+              {/* HALF CIRCLE */}
+              <HalfCircleProgress
+                percent={percent}
+                totalPoints={currentPoints}
+                totalMoney={totalMoney}
+              />
+
+              {/* BEAUTIFUL DIVIDER */}
+              <div className="relative w-full my-8 flex justify-center">
+                <div
+                  className="w-full h-[2px] rounded-full backdrop-blur-sm"
+                  style={{
+                    background: `
+                      linear-gradient(
+                        90deg,
+                        rgba(255,255,255,0) 0%,
+                        rgba(153,180,255,0.4) 50%,
+                        rgba(255,255,255,0) 100%
+                      )
+                    `,
+                    boxShadow: "0 0 10px rgba(30, 90, 255, 0.25)",
+                  }}
+                ></div>
+              </div>
+
+              {/* INFO BOX */}
+              <ConversionRateInfo rate={conversionRate} />
             </div>
           </div>
-          <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-            <p className="text-sm text-gray-700">
-              <span className="font-medium">Tỷ lệ quy đổi:</span> 100 điểm = {EXCHANGE_RATE.toLocaleString('vi-VN')}đ
-            </p>
+
+          {/* RIGHT — 2/3 */}
+          <div className="lg:w-2/3 flex">
+            <div className="p-6 rounded-2xl bg-white shadow border border-[#E6E6E6] w-full flex flex-col" style={{ boxShadow: '0 1px 4px rgba(0,102,255,0.08)' }}>
+              <TickSelector
+                max={currentPoints}
+                rate={conversionRate}
+                onChangePercent={(p: number) => setPercent(p)}
+                onSelect={handleOpenModal}
+              />
+            </div>
           </div>
         </div>
 
-        {/* Exchange Form or Disabled Message */}
-        {hasPendingRequest ? (
-          <div className="bg-white border border-gray-200 rounded-xl p-6 sm:p-8 text-center">
-            <Clock className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">
-              Không thể gửi yêu cầu mới
-            </h3>
-            <p className="text-sm text-gray-600">
-              Vui lòng đợi admin xử lý yêu cầu hiện tại trước khi gửi yêu cầu mới
-            </p>
-          </div>
-        ) : (
-          <div className="bg-white border border-gray-200 rounded-xl p-4 sm:p-6">
-            <h3 className="text-gray-800 font-semibold text-base sm:text-lg mb-4">
-              Nhập số điểm cần quy đổi
-            </h3>
-            <ExchangePointForm
-              current={CURRENT_POINTS}
-              rate={EXCHANGE_RATE}
-              openConfirm={openConfirm}
-            />
-          </div>
-        )}
-
-        <ExchangePointConfirmModal
-          open={modalOpen}
-          points={pendingPoints}
-          money={pendingMoney}
-          onConfirm={confirmExchange}
-          onClose={() => setModalOpen(false)}
+        {/* CONFIRMATION MODAL */}
+        <ConfirmExchangeModal
+          isOpen={showModal}
+          onClose={() => setShowModal(false)}
+          onConfirm={handleConfirmExchange}
+          points={selectedPoints}
+          money={selectedMoney}
+          loading={exchanging}
         />
-
+        
         <ExchangePointSuccessToast show={toast} />
 
-        {submitting && (
+        {exchanging && (
           <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-xl shadow-xl flex flex-col items-center">
               <Loader2 className="h-10 w-10 text-blue-600 animate-spin mb-3" />
@@ -226,6 +215,6 @@ export default function PointExchange() {
           </div>
         )}
       </div>
-    </div>
+    </PointExchangeLayout>
   );
 }

@@ -34,7 +34,11 @@ public class PermissionService {
                     "monthly-point:update",
                     "monthly-point:delete",
                     "monthly-point:allocate",
-                    "monthly-point:history"
+                    "monthly-point:history",
+
+                    //Participation
+                    "participate:list",
+                    "participate:view"
             );
 
             case "hr" -> List.of(
@@ -60,7 +64,11 @@ public class PermissionService {
                     "monthly-point:update",
                     "monthly-point:delete",
                     "monthly-point:allocate",
-                    "monthly-point:history"
+                    "monthly-point:history",
+
+                    //Participation
+                    "participate:list",
+                    "participate:view"
             );
 
             case "manager" -> List.of(
@@ -81,7 +89,11 @@ public class PermissionService {
                     
                     // Monthly Point permissions
                     "monthly-point:view",
-                    "monthly-point:history"
+                    "monthly-point:history",
+
+                    //Participation
+                    "participate:list",
+                    "participate:view"
             );
 
             default -> List.of(
@@ -92,7 +104,11 @@ public class PermissionService {
                     "point:view",
                     
                     // Monthly Point permissions
-                    "monthly-point:view"
+                    "monthly-point:view",
+
+                    //Participation
+                    "participate:list",
+                    "participate:view"
             );
         };
     }

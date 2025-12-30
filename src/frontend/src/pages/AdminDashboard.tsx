@@ -1,7 +1,9 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const AdminDashboard: React.FC = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="px-10 py-12">
         <h1 className="text-3xl font-bold mb-10 text-gray-800 text-center">
@@ -35,27 +37,25 @@ const AdminDashboard: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
 
-          <Link
-            to="/employees/add"
+          <button
+            onClick={() => navigate("/admin/employee/create")}
             className="bg-blue-600 text-white text-lg font-semibold
               py-4 rounded-xl shadow-md text-center 
               hover:bg-blue-700 active:scale-[.98]
               transition-all duration-200"
-            style={{ color: '#ffffff' }}
           >
             Thêm nhân viên mới
-          </Link>
+          </button>
 
-          <Link
-            to="/activities/create"
+          <button
+            onClick={() => navigate("/admin/activities/create")}
             className="bg-green-600 text-white text-lg font-semibold
               py-4 rounded-xl shadow-md text-center 
               hover:bg-green-700 active:scale-[.98]
               transition-all duration-200"
-            style={{ color: '#ffffff' }}
           >
             Tạo hoạt động mới
-          </Link>
+          </button>
 
         </div>
       </div>
