@@ -311,13 +311,6 @@ export default function ActivityListCard({
             </>
           )}
         </div>
-
-        {/* Organizer */}
-        <div className="mt-4 pt-4 border-t border-gray-200">
-          <p className="text-xs text-gray-500">
-            Tổ chức bởi: <span className="font-semibold text-gray-700">{activity.organizer}</span>
-          </p>
-        </div>
       </div>
     </div>
   );

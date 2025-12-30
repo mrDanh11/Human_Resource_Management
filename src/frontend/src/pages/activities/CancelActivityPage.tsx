@@ -25,7 +25,7 @@ export default function CancelActivityPage() {
             Vui lòng chọn hoạt động từ danh sách để thực hiện hủy.
           </p>
           <button
-            onClick={() => navigate("/activities")}
+            onClick={() => navigate("/admin/activities")}
             className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
           >
             Quay lại danh sách
@@ -43,7 +43,7 @@ export default function CancelActivityPage() {
     try {
       await deleteActivity(Number(activityData.id));
       alert(`Đã hủy hoạt động: ${activityData.name}`);
-      navigate("/activities");
+      navigate("/admin/activities");
     } catch (error) {
       console.error("Failed to delete activity", error);
       alert("Có lỗi xảy ra khi hủy hoạt động. Vui lòng thử lại.");

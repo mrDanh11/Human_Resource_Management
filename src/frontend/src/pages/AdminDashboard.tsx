@@ -16,6 +16,8 @@ const AdminDashboard: React.FC = () => {
     dispatch(fetchActivityStatistics());
   }, [dispatch]);
 
+  console.log('Activity Statistics:', activityStatistics);
+
   return (
     <div className="px-10 py-12">
         <h1 className="text-3xl font-bold mb-10 text-gray-800 text-center">
@@ -46,87 +48,90 @@ const AdminDashboard: React.FC = () => {
 
         </div>
 
-        {/* Pie Chart - Phân bổ chức vụ */}
-        <div className="mb-16">
-          <h2 className="text-2xl font-bold text-gray-700 mb-6 text-center">
-            Phân bổ chức vụ nhân viên
-          </h2>
-          <div className="bg-white p-8 rounded-xl shadow-md border border-gray-200">
-            {statisticsLoading ? (
-              <div className="text-center py-12 text-gray-500">Đang tải dữ liệu...</div>
-            ) : statistics?.roleDistribution && statistics.roleDistribution.length > 0 ? (
-              <ResponsiveContainer width="100%" height={400}>
-                <PieChart>
-                  <Pie
-                    data={statistics.roleDistribution}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ roleName, percent }) => `${roleName}: ${(percent * 100).toFixed(0)}%`}
-                    outerRadius={120}
-                    fill="#8884d8"
-                    dataKey="count"
-                    nameKey="roleName"
-                  >
-                    {statistics.roleDistribution.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip 
-                    formatter={(value: number) => [`${value} nhân viên`, 'Số lượng']}
-                  />
-                  <Legend 
-                    verticalAlign="bottom" 
-                    height={36}
-                    formatter={(value) => value}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="text-center py-12 text-gray-500">Không có dữ liệu</div>
-            )}
+        {/* Pie Charts - Side by Side */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+          {/* Pie Chart - Phân bổ chức vụ */}
+          <div>
+            <h2 className="text-2xl font-bold text-gray-700 mb-6 text-center">
+              Phân bổ chức vụ nhân viên
+            </h2>
+            <div className="bg-white p-8 rounded-xl shadow-md border border-gray-200">
+              {statisticsLoading ? (
+                <div className="text-center py-12 text-gray-500">Đang tải dữ liệu...</div>
+              ) : statistics?.roleDistribution && statistics.roleDistribution.length > 0 ? (
+                <ResponsiveContainer width="100%" height={400}>
+                  <PieChart>
+                    <Pie
+                      data={statistics.roleDistribution}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ roleName, percent }) => `${roleName}: ${(percent ? (percent * 100).toFixed(0) : 0)}%`}
+                      outerRadius={120}
+                      fill="#8884d8"
+                      dataKey="count"
+                      nameKey="roleName"
+                    >
+                      {statistics.roleDistribution.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip 
+                      formatter={(value: number) => [`${value} nhân viên`, 'Số lượng']}
+                    />
+                    <Legend 
+                      verticalAlign="bottom" 
+                      height={36}
+                      formatter={(value) => value}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="text-center py-12 text-gray-500">Không có dữ liệu</div>
+              )}
+            </div>
           </div>
-        </div>
 
-        {/* Pie Chart - Phân bố hoạt động */}
-        <div className="mb-16">
-          <h2 className="text-2xl font-bold text-gray-700 mb-6 text-center">
-            Phân bố trạng thái hoạt động
-          </h2>
-          <div className="bg-white p-8 rounded-xl shadow-md border border-gray-200">
-            {activityStatisticsLoading ? (
-              <div className="text-center py-12 text-gray-500">Đang tải dữ liệu...</div>
-            ) : activityStatistics?.statusDistribution && activityStatistics.statusDistribution.length > 0 ? (
-              <ResponsiveContainer width="100%" height={400}>
-                <PieChart>
-                  <Pie
-                    data={activityStatistics.statusDistribution}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ status, percent }) => `${status}: ${(percent * 100).toFixed(0)}%`}
-                    outerRadius={120}
-                    fill="#8884d8"
-                    dataKey="count"
-                    nameKey="status"
-                  >
-                    {activityStatistics.statusDistribution.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip 
-                    formatter={(value: number) => [`${value} hoạt động`, 'Số lượng']}
-                  />
-                  <Legend 
-                    verticalAlign="bottom" 
-                    height={36}
-                    formatter={(value) => value}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="text-center py-12 text-gray-500">Không có dữ liệu</div>
-            )}
+          {/* Pie Chart - Phân bố hoạt động */}
+          <div>
+            <h2 className="text-2xl font-bold text-gray-700 mb-6 text-center">
+              Phân bố trạng thái hoạt động
+            </h2>
+            <div className="bg-white p-8 rounded-xl shadow-md border border-gray-200">
+              {activityStatisticsLoading ? (
+                <div className="text-center py-12 text-gray-500">Đang tải dữ liệu...</div>
+              ) : activityStatistics?.statusDistribution && activityStatistics.statusDistribution.length > 0 ? (
+                <ResponsiveContainer width="100%" height={400}>
+                  <PieChart>
+                    <Pie
+                      data={activityStatistics.statusDistribution}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ status, percent }) => `${status}: ${(percent ? (percent * 100).toFixed(0) : 0)}%`}
+                      outerRadius={120}
+                      fill="#8884d8"
+                      dataKey="count"
+                      nameKey="status"
+                    >
+                      {activityStatistics.statusDistribution.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip 
+                      formatter={(value: number) => [`${value} hoạt động`, 'Số lượng']}
+                    />
+                    <Legend 
+                      verticalAlign="bottom" 
+                      height={36}
+                      formatter={(value) => value}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="text-center py-12 text-gray-500">Không có dữ liệu</div>
+              )}
+            </div>
           </div>
         </div>
 

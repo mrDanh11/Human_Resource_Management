@@ -99,4 +99,37 @@ export const employeeService = {
       throw new Error(response.data || 'Something went wrong while deleting employee');
     }
   },
+
+  // Lấy thống kê nhân viên
+  getEmployeeStatistics: async (): Promise<{
+    totalEmployees: number;
+    roleDistribution: { roleName: string; count: number }[];
+  }> => {
+    const response = await apiDotNet.get<{ items: EmployeeListItem[] }>('/Employee', {
+      params: {
+        pageNumber: 1,
+        pageSize: 10000,
+      },
+    });
+    
+    const employees = response.data.items;
+    const totalEmployees = employees.length;
+    
+    // Tính phân bổ theo role
+    const roleMap = new Map<string, number>();
+    employees.forEach(emp => {
+      const role = emp.roleName || 'Unknown';
+      roleMap.set(role, (roleMap.get(role) || 0) + 1);
+    });
+    
+    const roleDistribution = Array.from(roleMap.entries()).map(([roleName, count]) => ({
+      roleName,
+      count,
+    }));
+    
+    return {
+      totalEmployees,
+      roleDistribution,
+    };
+  },
 };

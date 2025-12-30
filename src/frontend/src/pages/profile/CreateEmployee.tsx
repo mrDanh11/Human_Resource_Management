@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserPlus, User, Phone, CreditCard, Hash, MapPin, Mail, Calendar, UserCircle, Building2, Wallet, RotateCcw, Save, Loader2, Briefcase } from 'lucide-react';
+import { UserPlus, User, Phone, CreditCard, Hash, MapPin, Mail, Calendar, UserCircle, Building2, Wallet, RotateCcw, Save, Loader2, Briefcase, Upload, FileSpreadsheet, X, CheckCircle, AlertCircle } from 'lucide-react';
+import Papa from 'papaparse';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { createEmployee, fetchDepartments } from '../../store/employeeSlice';
 import { jwtDecode } from "jwt-decode";
@@ -40,6 +41,11 @@ const CreateEmployee = () => {
         roleId: '',
         bankAccount: '',
     });
+
+    const [csvMode, setCsvMode] = useState(false);
+    const [csvData, setCsvData] = useState<any[]>([]);
+    const [csvErrors, setCsvErrors] = useState<string[]>([]);
+    const [importLoading, setImportLoading] = useState(false);
 
     // Fetch danh sách phòng ban khi component mount
     useEffect(() => {
@@ -221,11 +227,149 @@ const CreateEmployee = () => {
             bankAccount: '',
             birthday: '',
         });
+        setCsvMode(false);
+        setCsvData([]);
+        setCsvErrors([]);
+    };
+
+    const validateCsvRow = (row: any, index: number): string[] => {
+        const errors: string[] = [];
+        const requiredFields = ['fullname', 'birthday', 'phone', 'cccd', 'address', 'joinDate', 'gender', 'departmentId', 'roleId', 'bankAccount'];
+        
+        requiredFields.forEach(field => {
+            if (!row[field] || row[field].toString().trim() === '') {
+                errors.push(`Dòng ${index + 2}: Thiếu trường "${field}"`);
+            }
+        });
+
+        // Validate formats
+        if (row.phone && !/^[0-9]{10}$/.test(row.phone)) {
+            errors.push(`Dòng ${index + 2}: Số điện thoại không hợp lệ`);
+        }
+        if (row.cccd && !/^[0-9]{12}$/.test(row.cccd)) {
+            errors.push(`Dòng ${index + 2}: Số CCCD không hợp lệ (phải 12 số)`);
+        }
+        if (row.taxCode && row.taxCode.trim() !== '' && !/^[0-9]{10}$/.test(row.taxCode)) {
+            errors.push(`Dòng ${index + 2}: Mã số thuế không hợp lệ`);
+        }
+        if (row.bankAccount && !/^[0-9]{8,15}$/.test(row.bankAccount)) {
+            errors.push(`Dòng ${index + 2}: Số tài khoản không hợp lệ`);
+        }
+        if (row.email && !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[cC][oO][mM]$/.test(row.email)) {
+            errors.push(`Dòng ${index + 2}: Email không hợp lệ`);
+        }
+
+        return errors;
+    };
+
+    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        Papa.parse(file, {
+            header: true,
+            skipEmptyLines: true,
+            complete: (results) => {
+                const allErrors: string[] = [];
+                
+                results.data.forEach((row: any, index) => {
+                    const rowErrors = validateCsvRow(row, index);
+                    allErrors.push(...rowErrors);
+                });
+
+                if (allErrors.length > 0) {
+                    setCsvErrors(allErrors);
+                    setCsvData([]);
+                } else {
+                    setCsvData(results.data);
+                    setCsvErrors([]);
+                    setCsvMode(true);
+                }
+            },
+            error: (error) => {
+                alert('Lỗi khi đọc file CSV: ' + error.message);
+            }
+        });
+    };
+
+    const handleImportCsv = async () => {
+        if (csvData.length === 0) return;
+
+        setImportLoading(true);
+        try {
+            let successCount = 0;
+            let failCount = 0;
+            const errors: string[] = [];
+
+            for (let i = 0; i < csvData.length; i++) {
+                const row = csvData[i];
+                try {
+                    await dispatch(createEmployee({
+                        fullname: row.fullname,
+                        birthday: row.birthday,
+                        phone: row.phone,
+                        cccd: row.cccd,
+                        taxCode: row.taxCode || null,
+                        address: row.address,
+                        email: row.email,
+                        joinDate: row.joinDate,
+                        gender: row.gender,
+                        departmentId: parseInt(row.departmentId),
+                        roleId: parseInt(row.roleId),
+                        bankAccount: row.bankAccount,
+                    })).unwrap();
+                    successCount++;
+                } catch (error: any) {
+                    failCount++;
+                    errors.push(`Dòng ${i + 2} (${row.fullname}): ${error.message || 'Lỗi không xác định'}`);
+                }
+            }
+
+            if (failCount === 0) {
+                alert(`Tạo thành công ${successCount} nhân viên!`);
+                navigate('/employee/list');
+            } else {
+                const message = `Tạo thành công ${successCount}/${csvData.length} nhân viên.\n\nLỗi (${failCount}):\n${errors.join('\n')}`;
+                alert(message);
+                if (successCount > 0) {
+                    navigate('/employee/list');
+                }
+            }
+        } catch (error) {
+            alert('Có lỗi xảy ra khi import dữ liệu!');
+        } finally {
+            setImportLoading(false);
+        }
     };
 
     return (
         <div className="h-full p-6">
-            <div className="max-w-4xl mx-auto">
+            <div className="max-w-4xl mx-auto space-y-4">
+                {/* Import CSV Button - Outside Form */}
+                <div className="flex justify-start">
+                    <label 
+                        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all flex items-center gap-2 cursor-pointer shadow-lg"
+                        style={{ transition: 'all 0.3s ease' }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = 'translateY(-2px)';
+                            e.currentTarget.style.boxShadow = '0 5px 20px rgba(37, 99, 235, 0.4)';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = 'translateY(0)';
+                            e.currentTarget.style.boxShadow = 'none';
+                        }}
+                    >
+                        <Upload className="w-5 h-5" />
+                        <span className="font-medium">Import từ file CSV</span>
+                        <input
+                            type="file"
+                            accept=".csv"
+                            onChange={handleFileUpload}
+                            className="hidden"
+                        />
+                    </label>
+                </div>
+
                 <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl overflow-hidden">
                     {/* Header */}
                     <div className="p-6 bg-linear-to-r from-blue-600 to-blue-700">
@@ -236,8 +380,144 @@ const CreateEmployee = () => {
                     </div>
 
                     <div className="p-6 space-y-6">
+                        {/* CSV Errors Display */}
+                        {csvErrors.length > 0 && (
+                            <div className="bg-red-50 border-2 border-red-200 rounded-xl p-4">
+                                <div className="flex items-start gap-3">
+                                    <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+                                    <div className="flex-1">
+                                        <h3 className="font-semibold text-red-800 mb-2">Lỗi trong file CSV</h3>
+                                        <div className="max-h-60 overflow-y-auto space-y-1">
+                                            {csvErrors.map((error, idx) => (
+                                                <p key={idx} className="text-sm text-red-700">• {error}</p>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => setCsvErrors([])}
+                                        className="text-red-600 hover:text-red-800 transition-all"
+                                        style={{ transition: 'all 0.3s ease' }}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.transform = 'translateY(-2px)';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.transform = 'translateY(0)';
+                                        }}
+                                    >
+                                        <X className="w-5 h-5" />
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* CSV Preview Mode */}
+                        {csvMode && csvData.length > 0 && (
+                            <div className="bg-green-50 border-2 border-green-200 rounded-xl p-4">
+                                <div className="flex items-start gap-3 mb-4">
+                                    <CheckCircle className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
+                                    <div className="flex-1">
+                                        <h3 className="font-semibold text-green-800 mb-1">File CSV hợp lệ</h3>
+                                        <p className="text-sm text-green-700">Tìm thấy {csvData.length} nhân viên. Xem trước dữ liệu bên dưới:</p>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => { setCsvMode(false); setCsvData([]); }}
+                                        className="text-green-600 hover:text-green-800 transition-all"
+                                        style={{ transition: 'all 0.3s ease' }}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.transform = 'translateY(-2px)';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.transform = 'translateY(0)';
+                                        }}
+                                    >
+                                        <X className="w-5 h-5" />
+                                    </button>
+                                </div>
+                                
+                                <div className="overflow-x-auto max-h-96 overflow-y-auto border border-green-200 rounded-lg">
+                                    <table className="min-w-full divide-y divide-green-200 text-sm">
+                                        <thead className="bg-green-100 sticky top-0">
+                                            <tr>
+                                                <th className="px-3 py-2 text-left font-medium text-green-800">STT</th>
+                                                <th className="px-3 py-2 text-left font-medium text-green-800">Họ tên</th>
+                                                <th className="px-3 py-2 text-left font-medium text-green-800">Ngày sinh</th>
+                                                <th className="px-3 py-2 text-left font-medium text-green-800">SĐT</th>
+                                                <th className="px-3 py-2 text-left font-medium text-green-800">CCCD</th>
+                                                <th className="px-3 py-2 text-left font-medium text-green-800">Email</th>
+                                                <th className="px-3 py-2 text-left font-medium text-green-800">Phòng ban</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="bg-white divide-y divide-green-100">
+                                            {csvData.map((row: any, idx: number) => (
+                                                <tr key={idx} className="hover:bg-green-50">
+                                                    <td className="px-3 py-2">{idx + 1}</td>
+                                                    <td className="px-3 py-2">{row.fullname}</td>
+                                                    <td className="px-3 py-2">{row.birthday}</td>
+                                                    <td className="px-3 py-2">{row.phone}</td>
+                                                    <td className="px-3 py-2">{row.cccd}</td>
+                                                    <td className="px-3 py-2">{row.email}</td>
+                                                    <td className="px-3 py-2">{row.departmentId}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div className="flex justify-end gap-4 mt-4">
+                                    <button
+                                        type="button"
+                                        onClick={() => { setCsvMode(false); setCsvData([]); }}
+                                        className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-all flex items-center gap-2"
+                                        style={{ transition: 'all 0.3s ease' }}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.transform = 'translateY(-2px)';
+                                            e.currentTarget.style.boxShadow = '0 5px 20px rgba(107, 114, 128, 0.4)';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.transform = 'translateY(0)';
+                                            e.currentTarget.style.boxShadow = 'none';
+                                        }}
+                                    >
+                                        <X className="w-4 h-4" />
+                                        Hủy
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={handleImportCsv}
+                                        disabled={importLoading}
+                                        className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        style={{ transition: 'all 0.3s ease' }}
+                                        onMouseEnter={(e) => {
+                                            if (!importLoading) {
+                                                e.currentTarget.style.transform = 'translateY(-2px)';
+                                                e.currentTarget.style.boxShadow = '0 5px 20px rgba(22, 163, 74, 0.4)';
+                                            }
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.transform = 'translateY(0)';
+                                            e.currentTarget.style.boxShadow = 'none';
+                                        }}
+                                    >
+                                        {importLoading ? (
+                                            <>
+                                                <Loader2 className="w-4 h-4 animate-spin" />
+                                                Đang import...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Upload className="w-4 h-4" />
+                                                Import {csvData.length} nhân viên
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
                         {/* Thông tin cá nhân */}
-                        <div>
+                        {!csvMode && <div>
                             <div className="flex items-center gap-2 mb-4 pb-2 border-b-2 border-blue-500">
                                 <User className="w-5 h-5 text-blue-600" />
                                 <h2 className="text-lg font-semibold text-gray-800">Thông tin cá nhân</h2>
@@ -379,10 +659,10 @@ const CreateEmployee = () => {
                                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:outline-none resize-none"
                                 />
                             </div>
-                        </div>
+                        </div>}
 
                         {/* Thông tin công việc */}
-                        <div>
+                        {!csvMode && <div>
                             <div className="flex items-center gap-2 mb-4 pb-2 border-b-2 border-blue-500">
                                 <Building2 className="w-5 h-5 text-blue-600" />
                                 <h2 className="text-lg font-semibold text-gray-800">Thông tin công việc</h2>
@@ -476,10 +756,10 @@ const CreateEmployee = () => {
                                     </select>
                                 </div>
                             </div>
-                        </div>
+                        </div>}
 
                         {/* Thông tin ngân hàng */}
-                        <div>
+                        {!csvMode && <div>
                             <div className="flex items-center gap-2 mb-4 pb-2 border-b-2 border-blue-500">
                                 <Wallet className="w-5 h-5 text-blue-600" />
                                 <h2 className="text-lg font-semibold text-gray-800">Thông tin ngân hàng</h2>
@@ -507,37 +787,61 @@ const CreateEmployee = () => {
                                     {errors.bankAccount && <p className="text-red-500 text-xs mt-1 text-left">{errors.bankAccount}</p>}
                                 </div>
                             </div>
-                        </div>
+                        </div>}
 
                         {/* Buttons */}
-                        <div className="flex justify-end gap-4 pt-6 border-t">
-                            <button
-                                type="button"
-                                onClick={handleReset}
-                                disabled={createLoading}
-                                className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                <RotateCcw className="w-4 h-4" />
-                                Đặt lại
-                            </button>
-                            <button
-                                type="submit"
-                                disabled={createLoading}
-                                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                {createLoading ? (
-                                    <>
-                                        <Loader2 className="w-4 h-4 animate-spin" />
-                                        Đang lưu...
-                                    </>
-                                ) : (
-                                    <>
-                                        <Save className="w-4 h-4" />
-                                        Lưu hồ sơ
-                                    </>
-                                )}
-                            </button>
-                        </div>
+                        {!csvMode && (
+                            <div className="flex justify-end gap-4 pt-6 border-t">
+                                <button
+                                    type="button"
+                                    onClick={handleReset}
+                                    disabled={createLoading}
+                                    className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    style={{ transition: 'all 0.3s ease' }}
+                                    onMouseEnter={(e) => {
+                                        if (!createLoading) {
+                                            e.currentTarget.style.transform = 'translateY(-2px)';
+                                            e.currentTarget.style.boxShadow = '0 5px 20px rgba(107, 114, 128, 0.4)';
+                                        }
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.transform = 'translateY(0)';
+                                        e.currentTarget.style.boxShadow = 'none';
+                                    }}
+                                >
+                                    <RotateCcw className="w-4 h-4" />
+                                    Đặt lại
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={createLoading}
+                                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    style={{ transition: 'all 0.3s ease' }}
+                                    onMouseEnter={(e) => {
+                                        if (!createLoading) {
+                                            e.currentTarget.style.transform = 'translateY(-2px)';
+                                            e.currentTarget.style.boxShadow = '0 5px 20px rgba(37, 99, 235, 0.4)';
+                                        }
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.transform = 'translateY(0)';
+                                        e.currentTarget.style.boxShadow = 'none';
+                                    }}
+                                >
+                                    {createLoading ? (
+                                        <>
+                                            <Loader2 className="w-4 h-4 animate-spin" />
+                                            Đang lưu...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Save className="w-4 h-4" />
+                                            Lưu hồ sơ
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </form>
             </div>

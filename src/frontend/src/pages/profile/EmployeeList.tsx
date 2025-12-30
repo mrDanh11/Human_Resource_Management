@@ -27,6 +27,7 @@ const EmployeeList = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [employeeToDelete, setEmployeeToDelete] = useState<{ id: number; name: string } | null>(null);
+    const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<Set<number>>(new Set());
 
     // Chỉ fetch một lần khi component mount
     useEffect(() => {
@@ -97,9 +98,21 @@ const EmployeeList = () => {
         if (!employeeToDelete) return;
 
         try {
-            await dispatch(deleteEmployee(employeeToDelete.id)).unwrap();
+            if (employeeToDelete.id === -1) {
+                // Xóa hàng loạt
+                await Promise.all(
+                    Array.from(selectedEmployeeIds).map(id => 
+                        dispatch(deleteEmployee(id)).unwrap()
+                    )
+                );
+                setSelectedEmployeeIds(new Set());
+            } else {
+                // Xóa đơn lẻ
+                await dispatch(deleteEmployee(employeeToDelete.id)).unwrap();
+            }
             setIsDeleteModalOpen(false);
             setEmployeeToDelete(null);
+            setCurrentPage(1); // Quay về trang đầu tiên sau khi xóa
         } catch (error) {
             console.error('Lỗi khi xóa nhân viên:', error);
         }
@@ -110,6 +123,52 @@ const EmployeeList = () => {
         setIsDeleteModalOpen(false);
         setEmployeeToDelete(null);
     };
+
+    // Xử lý chọn/bỏ chọn nhân viên
+    const handleToggleEmployee = (employeeId: number) => {
+        setSelectedEmployeeIds(prev => {
+            const newSet = new Set(prev);
+            if (newSet.has(employeeId)) {
+                newSet.delete(employeeId);
+            } else {
+                newSet.add(employeeId);
+            }
+            return newSet;
+        });
+    };
+
+    // Xử lý chọn/bỏ chọn tất cả nhân viên trên trang hiện tại
+    const handleToggleAll = () => {
+        if (currentEmployees.every(emp => selectedEmployeeIds.has(emp.id))) {
+            // Nếu tất cả đã được chọn, bỏ chọn tất cả
+            setSelectedEmployeeIds(prev => {
+                const newSet = new Set(prev);
+                currentEmployees.forEach(emp => newSet.delete(emp.id));
+                return newSet;
+            });
+        } else {
+            // Chọn tất cả
+            setSelectedEmployeeIds(prev => {
+                const newSet = new Set(prev);
+                currentEmployees.forEach(emp => newSet.add(emp.id));
+                return newSet;
+            });
+        }
+    };
+
+    // Xử lý xóa hàng loạt
+    const handleBulkDelete = () => {
+        const selectedNames = employees
+            .filter(emp => selectedEmployeeIds.has(emp.id))
+            .map(emp => emp.fullname)
+            .join(', ');
+        setEmployeeToDelete({ id: -1, name: selectedNames });
+        setIsDeleteModalOpen(true);
+    };
+
+    // Kiểm tra xem tất cả nhân viên trên trang có được chọn không
+    const isAllCurrentPageSelected = currentEmployees.length > 0 && 
+        currentEmployees.every(emp => selectedEmployeeIds.has(emp.id));
 
     //Xử lý cập nhật
     const handleUpdate = (employeeId: number) => {
@@ -264,6 +323,32 @@ const EmployeeList = () => {
                             </select>
                         </div>
                     </div>
+
+                    {/* Bulk Delete Button */}
+                    <div 
+                        className={`mt-4 transition-all duration-300 ease-in-out overflow-hidden ${
+                            selectedEmployeeIds.size > 0 
+                                ? 'opacity-100 max-h-20 translate-y-0' 
+                                : 'opacity-0 max-h-0 -translate-y-2 pointer-events-none'
+                        }`}
+                    >
+                        <button
+                            onClick={handleBulkDelete}
+                            className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg transition-all duration-300 ease-in-out"
+                            onMouseEnter={(e) => {
+                                if (selectedEmployeeIds.size > 0) {
+                                    e.currentTarget.style.transform = 'translateY(-2px)';
+                                    e.currentTarget.style.boxShadow = '0 5px 20px rgba(220, 38, 38, 0.4)';
+                                }
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = 'translateY(0)';
+                                e.currentTarget.style.boxShadow = 'none';
+                            }}
+                        >
+                            Xóa
+                        </button>
+                    </div>
                 </div>
 
                 {/* Employee Table */}
@@ -272,6 +357,14 @@ const EmployeeList = () => {
                         <table className="min-w-full divide-y divide-gray-200">
                             <thead className="bg-gray-50">
                                 <tr>
+                                    <th scope="col" className="px-6 py-3 text-center">
+                                        <input
+                                            type="checkbox"
+                                            checked={isAllCurrentPageSelected}
+                                            onChange={handleToggleAll}
+                                            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                        />
+                                    </th>
                                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         NHÂN VIÊN
                                     </th>
@@ -292,7 +385,7 @@ const EmployeeList = () => {
                             <tbody className="bg-white divide-y divide-gray-200">
                                 {loading ? (
                                     <tr>
-                                        <td colSpan={5} className="px-6 py-12 text-center">
+                                        <td colSpan={6} className="px-6 py-12 text-center">
                                             <div className="flex justify-center items-center">
                                                 <Loader2 className="h-8 w-8 text-blue-600 animate-spin" />
                                                 <span className="ml-3 text-gray-600">Đang tải dữ liệu...</span>
@@ -301,7 +394,7 @@ const EmployeeList = () => {
                                     </tr>
                                 ) : error ? (
                                     <tr>
-                                        <td colSpan={5} className="px-6 py-12 text-center">
+                                        <td colSpan={6} className="px-6 py-12 text-center">
                                             <div className="flex flex-col items-center text-red-600">
                                                 <AlertCircle className="h-12 w-12 mb-2" />
                                                 <p className="font-medium">Có lỗi xảy ra</p>
@@ -311,13 +404,21 @@ const EmployeeList = () => {
                                     </tr>
                                 ) : currentEmployees.length === 0 ? (
                                     <tr>
-                                        <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
+                                        <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
                                             Không tìm thấy nhân viên nào
                                         </td>
                                     </tr>
                                 ) : (
                                     currentEmployees.map((employee) => (
                                         <tr key={employee.id} className="hover:bg-gray-50">
+                                            <td className="px-6 py-4 text-center">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedEmployeeIds.has(employee.id)}
+                                                    onChange={() => handleToggleEmployee(employee.id)}
+                                                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                                />
+                                            </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="flex items-center">
                                                     <div className="shrink-0 h-10 w-10">
@@ -383,24 +484,6 @@ const EmployeeList = () => {
                                                         <Pencil className="w-4 h-4" />
                                                         Sửa
                                                     </button>
-                                                    <button
-                                                        onClick={() => handleDeleteClick(employee.id, employee.fullname)}
-                                                        className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-all flex items-center gap-2"
-                                                        style={{
-                                                            transition: 'all 0.3s ease'
-                                                        }}
-                                                        onMouseEnter={(e) => {
-                                                            e.currentTarget.style.transform = 'translateY(-2px)';
-                                                            e.currentTarget.style.boxShadow = '0 5px 20px rgba(220, 38, 38, 0.4)';
-                                                        }}
-                                                        onMouseLeave={(e) => {
-                                                            e.currentTarget.style.transform = 'translateY(0)';
-                                                            e.currentTarget.style.boxShadow = 'none';
-                                                        }}
-                                                    >
-                                                        <Trash2 className="w-4 h-4" />
-                                                        Xóa
-                                                    </button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -412,22 +495,6 @@ const EmployeeList = () => {
 
                     {/* Pagination */}
                     <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-                        <div className="flex-1 flex justify-between sm:hidden">
-                            <button
-                                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                                disabled={currentPage === 1}
-                                className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
-                            >
-                                Trước
-                            </button>
-                            <button
-                                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalFilteredPages))}
-                                disabled={currentPage === totalFilteredPages}
-                                className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
-                            >
-                                Sau
-                            </button>
-                        </div>
                         <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                             <div>
                                 <p className="text-sm text-gray-700">

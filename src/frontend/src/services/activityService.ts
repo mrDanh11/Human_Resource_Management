@@ -143,7 +143,7 @@ export const getActivityStatistics = async (): Promise<{
     params: { page: 1, pageSize: 10000 }
   });
   
-  const activities = response.data.content || [];
+  const activities = response.data.activities || [];
   const totalActivities = activities.length;
   
   // Đếm theo trạng thái
@@ -152,19 +152,19 @@ export const getActivityStatistics = async (): Promise<{
   const statusMap = new Map<string, number>();
   
   activities.forEach(activity => {
-    const status = activity.status || 'unknown';
+    const status = activity.status?.toLowerCase() || 'unknown';
     statusMap.set(status, (statusMap.get(status) || 0) + 1);
     
-    if (status === 'OPEN' || status === 'open' || status === 'ONGOING') {
+    if (status === 'upcoming') {
       openRegistration++;
-    } else if (status === 'CLOSED' || status === 'closed' || status === 'COMPLETED') {
+    } else if (status === 'completed') {
       closedRegistration++;
     }
   });
   
   const statusDistribution = Array.from(statusMap.entries()).map(([status, count]) => ({
-    status: status === 'OPEN' || status === 'open' || status === 'ONGOING' ? 'Đang mở đăng ký' : 
-            status === 'CLOSED' || status === 'closed' || status === 'COMPLETED' ? 'Đã đóng đăng ký' : 
+    status: status === 'upcoming' ? 'Đang mở đăng ký' : 
+            status === 'completed' ? 'Đã hoàn thành' : 
             status,
     count,
   }));
