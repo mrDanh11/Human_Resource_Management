@@ -62,9 +62,10 @@ export default function Header() {
       <nav className="flex items-center gap-6">
         {isLoggedIn && (
           <Link
-            to={localStorage.getItem("role") === "employee" 
-              ? `/employee/profile/${localStorage.getItem("userId")}`
-              : "/admin/dashboard"
+            to={
+              localStorage.getItem("role") === "admin"
+                ? "/admin/dashboard"
+                : `/employee/profile/${localStorage.getItem("userId")}`
             }
             className="text-sm hover:text-gray-900 transition"
           >
