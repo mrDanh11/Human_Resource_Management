@@ -55,6 +55,11 @@ const App = () => {
         {/* HR & Admin Routes */}
         <Route element={<ProtectedRoute allowedRoles={['HR', 'ADMIN']} />}>
           <Route path="/rewards/hr-reward" element={<RewardPointHR />} />
+          <Route path="activities" element={<AdminActivityListPage />} />
+          <Route path="employee">
+              <Route path="list" element={<EmployeeList />} />
+              <Route path="create" element={<CreateEmployee />} />
+            </Route>
         </Route>
 
         {/* Admin Routes */}
@@ -62,6 +67,7 @@ const App = () => {
           <Route path="admin" element={<AdminLayout />}>
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="point" element={<PointsAdmin />} />
+
             <Route path="activities" element={<ActivityListPage />} />
             <Route path="activities">
               <Route path="statistics" element={<AdminActivityListPage />} />
@@ -72,6 +78,7 @@ const App = () => {
               <Route path="list" element={<EmployeeList />} />
               <Route path="create" element={<CreateEmployee />} />
             </Route>
+
           </Route>
         </Route>
 

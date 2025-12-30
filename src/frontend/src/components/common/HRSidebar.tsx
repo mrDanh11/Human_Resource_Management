@@ -32,15 +32,18 @@ const HRSidebar: React.FC = () => {
       key: "rewards",
       submenu: [
         { label: "Tổng quan", to: "/rewards/points" },
+
         { label: "Thưởng điểm HR", to: "/rewards/hr-reward" },
         { label: "Lịch sử giao dịch", to: "/rewards/history" },
         { label: "Đổi thưởng", to: "/rewards/exchange" },
+
       ]
     },
   ];
 
   return (
     <aside className="w-56 min-h-screen bg-white border-r border-[#E6E6E6] flex flex-col pt-8 pb-4 px-2">
+
       <div className="mb-6 px-4">
         <div className="text-xl font-bold text-blue-600">HR Portal</div>
         <div className="text-xs text-gray-500">Human Resources</div>

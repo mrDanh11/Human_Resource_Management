@@ -15,7 +15,9 @@ public partial class Activity
 
     public DateTime EndDate { get; set; }
 
-    public DateTime RegisterDeadline { get; set; }
+    public DateTime registrationStartDate { get; set; }
+
+    public DateTime registrationEndDate { get; set; }
 
     public int? MaxParticipants { get; set; }
 
@@ -26,6 +28,8 @@ public partial class Activity
     public DateTime? CreatedAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }
+
+    public string? ImgActivity { get; set; }
 
     public virtual Employee? CreatedByNavigation { get; set; }
 

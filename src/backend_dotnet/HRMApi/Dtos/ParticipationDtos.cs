@@ -16,4 +16,5 @@ public class ParticipationDto
     public DateTime? CancelDate { get; set; }
     public string Status { get; set; } = null!;
     public string Result { get; set; } = null!;
+    public string imgPath { get; set; } = null!;
 }

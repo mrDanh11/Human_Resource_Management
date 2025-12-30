@@ -218,9 +218,12 @@ public class HrmDbContext : DbContext
             entity.Property(e => e.Description).HasColumnName("description");
             entity.Property(e => e.StartDate).HasColumnName("start_date");
             entity.Property(e => e.EndDate).HasColumnName("end_date");
-            entity.Property(e => e.RegisterDeadline).HasColumnName("register_deadline");
+            entity.Property(e => e.registrationStartDate).HasColumnName("registration_start_date");
+            entity.Property(e => e.registrationEndDate).HasColumnName("registration_end_date");
+            //entity.Property(e => e.RegisterDeadline).HasColumnName("register_deadline");
             entity.Property(e => e.MaxParticipants).HasColumnName("max_participants");
             entity.Property(e => e.Status).HasColumnName("status");
+            entity.Property(e => e.ImgActivity).HasColumnName("image_url");
             entity.Property(e => e.CreatedBy).HasColumnName("created_by");
             entity.Property(e => e.CreatedAt).HasColumnName("created_at");
             entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
