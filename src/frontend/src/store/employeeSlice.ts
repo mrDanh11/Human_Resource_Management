@@ -57,10 +57,12 @@ interface EmployeeState {
   detailLoading: boolean;
   createLoading: boolean;
   updateLoading: boolean;
+  deleteLoading: boolean;
   error: string | null;
   detailError: string | null;
   createError: string | null;
   updateError: string | null;
+  deleteError: string | null;
 }
 
 const initialState: EmployeeState = {
@@ -70,10 +72,12 @@ const initialState: EmployeeState = {
   detailLoading: false,
   createLoading: false,
   updateLoading: false,
+  deleteLoading: false,
   error: null,
   detailError: null,
   createError: null,
   updateError: null,
+  deleteError: null,
 };
 
 //Interface cho update employee
@@ -106,7 +110,7 @@ export const fetchEmployeeDetail = createAsyncThunk<EmployeeDetailData, number, 
   'employee/fetchEmployeeDetail',
   async (id: number, { rejectWithValue }) => {
     try {
-      const res = await employeeService.getEmployeeById(id);
+      const res = await employeeService.getEmployeeDetail(id);
       return res as EmployeeDetailData;
     } catch (error: any) {
       return rejectWithValue(error.response?.data ?? String(error.message));
@@ -139,6 +143,19 @@ export const updateEmployeeWorkingInfo = createAsyncThunk<EmployeeDetailData, { 
   }
 );
 
+// Async thunk để xóa nhân viên
+export const deleteEmployee = createAsyncThunk<number, number, { rejectValue: string }>(
+  'employee/deleteEmployee',
+  async (id: number, { rejectWithValue }) => {
+    try {
+      await employeeService.deleteEmployee(id);
+      return id;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data ?? String(error.message));
+    }
+  }
+);
+
 const employeeSlice = createSlice({
   name: 'employee',
   initialState,
@@ -151,6 +168,9 @@ const employeeSlice = createSlice({
     },
     clearCreateError: (state) => {
       state.createError = null;
+    },
+    clearDeleteError: (state) => {
+      state.deleteError = null;
     },
     clearSelectedEmployee: (state) => {
       state.selectedEmployee = null;
@@ -253,10 +273,28 @@ const employeeSlice = createSlice({
       .addCase(updateEmployeeWorkingInfo.rejected, (state, action) => {
         state.updateLoading = false;
         state.updateError = action.payload as string;
+      })
+      // Delete employee
+      .addCase(deleteEmployee.pending, (state) => {
+        state.deleteLoading = true;
+        state.deleteError = null;
+      })
+      .addCase(deleteEmployee.fulfilled, (state, action) => {
+        state.deleteLoading = false;
+        // Remove employee from list
+        state.employees = state.employees.filter(emp => emp.id !== action.payload);
+        // Clear selected employee if it was deleted
+        if (state.selectedEmployee?.id === action.payload) {
+          state.selectedEmployee = null;
+        }
+      })
+      .addCase(deleteEmployee.rejected, (state, action) => {
+        state.deleteLoading = false;
+        state.deleteError = action.payload as string;
       });
   },
 });
 
-export const { clearError, clearDetailError, clearCreateError, clearSelectedEmployee } = employeeSlice.actions;
+export const { clearError, clearDetailError, clearCreateError, clearDeleteError, clearSelectedEmployee } = employeeSlice.actions;
 
 export default employeeSlice.reducer;

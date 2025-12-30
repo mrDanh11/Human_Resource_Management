@@ -1,9 +1,10 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Users, Search, Filter, Mail, Building2, Briefcase, Loader2, AlertCircle, Eye, Pencil, Trash2 } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { fetchEmployees, updateEmployeeWorkingInfo } from '../../store/employeeSlice';
+import { fetchEmployees, updateEmployeeWorkingInfo, deleteEmployee } from '../../store/employeeSlice';
 import EmployeeDetailModal from '../../components/profile/EmployeeDetailModal';
 import UpdateEmployeeWorkingInformation from '../../components/profile/ProfileFromEmployeeForHR';
+import DeleteConfirmationModal from '../../components/profile/DeleteConfirmationModal';
 
 const EmployeeList = () => {
     const dispatch = useAppDispatch();
@@ -24,6 +25,8 @@ const EmployeeList = () => {
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [employeeToDelete, setEmployeeToDelete] = useState<{ id: number; name: string } | null>(null);
 
     // Chỉ fetch một lần khi component mount
     useEffect(() => {
@@ -81,6 +84,31 @@ const EmployeeList = () => {
         setIsDetailModalOpen(false);
         setIsUpdateModalOpen(false);
         setSelectedEmployeeId(null);
+    };
+
+    // Xử lý mở modal xác nhận xóa
+    const handleDeleteClick = (employeeId: number, employeeName: string) => {
+        setEmployeeToDelete({ id: employeeId, name: employeeName });
+        setIsDeleteModalOpen(true);
+    };
+
+    // Xử lý xác nhận xóa
+    const handleConfirmDelete = async () => {
+        if (!employeeToDelete) return;
+
+        try {
+            await dispatch(deleteEmployee(employeeToDelete.id)).unwrap();
+            setIsDeleteModalOpen(false);
+            setEmployeeToDelete(null);
+        } catch (error) {
+            console.error('Lỗi khi xóa nhân viên:', error);
+        }
+    };
+
+    // Xử lý hủy xóa
+    const handleCancelDelete = () => {
+        setIsDeleteModalOpen(false);
+        setEmployeeToDelete(null);
     };
 
     //Xử lý cập nhật
@@ -356,12 +384,7 @@ const EmployeeList = () => {
                                                         Sửa
                                                     </button>
                                                     <button
-                                                        onClick={() => {
-                                                            if (window.confirm('Bạn có chắc chắn muốn xóa nhân viên này?')) {
-                                                                console.log('Deleting employee:', employee.id);
-                                                                // TODO: Implement delete functionality
-                                                            }
-                                                        }}
+                                                        onClick={() => handleDeleteClick(employee.id, employee.fullname)}
                                                         className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-all flex items-center gap-2"
                                                         style={{
                                                             transition: 'all 0.3s ease'
@@ -460,6 +483,14 @@ const EmployeeList = () => {
                 onClose={handleCloseModal}
                 onSubmit={handleUpdateSubmit}
                 isSubmitting={isSubmitting}
+            />
+
+            {/* Delete Confirmation Modal */}
+            <DeleteConfirmationModal
+                isOpen={isDeleteModalOpen}
+                employeeName={employeeToDelete?.name || ''}
+                onConfirm={handleConfirmDelete}
+                onCancel={handleCancelDelete}
             />
 
         </div>

@@ -15,6 +15,16 @@ export const employeeService = {
     return response.data.items;
   },
 
+   getEmployeeDetail: async (id: number): Promise<EmployeeDetailData> => {
+    const response = await apiDotNet.get(`/Employee/${id}`);
+
+    if (response.data.success) {
+      return response.data.data;
+    } else {
+      throw new Error(response.data || 'Something went wrong while fetching employee details');
+    }
+  },
+
   // Lấy thông tin chi tiết nhân viên - map về frontend `Employee` shape
   getEmployeeById: async (id: number | string): Promise<Employee> => {
     const response = await apiDotNet.get(`/Employee/${id}`);
