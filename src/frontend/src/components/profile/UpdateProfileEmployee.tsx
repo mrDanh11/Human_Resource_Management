@@ -13,6 +13,9 @@ interface PersonalInfomationProps {
     address: string;
     birthday: string;
     gender: string;
+    bankAccount: string;
+    departmentId: number;
+    status: string;
 }
 
 interface UpdateEmployeePersonalInformationModalProps {
@@ -221,7 +224,7 @@ const UpdateEmployeePersonalInformation = ({ employeeId, isOpen, onClose, onSubm
                                             Họ tên (*)
                                             {employeeData?.fullname && (
                                                 <span className="text-gray-500 text-xs ml-2">
-                                                    {employeeData.fullname}
+                                                    VD: Nguyen Van A
                                                 </span>
                                             )}
                                         </label>
@@ -255,7 +258,7 @@ const UpdateEmployeePersonalInformation = ({ employeeId, isOpen, onClose, onSubm
                                             Địa chỉ (*)
                                             {employeeData?.address && (
                                                 <span className="text-gray-500 text-xs ml-2">
-                                                    {employeeData.address}
+                                                    Home number 123, ABC Street...
                                                 </span>
                                             )}
                                         </label>
@@ -291,7 +294,7 @@ const UpdateEmployeePersonalInformation = ({ employeeId, isOpen, onClose, onSubm
                                             Số điện thoại (*)
                                             {employeeData?.phone && (
                                                 <span className="text-gray-500 text-xs ml-2">
-                                                    {employeeData.phone}
+                                                    0xxxxxxxxx
                                                 </span>
                                             )}
                                         </label>
@@ -325,7 +328,7 @@ const UpdateEmployeePersonalInformation = ({ employeeId, isOpen, onClose, onSubm
                                             Email (*)
                                             {employeeData?.email && (
                                                 <span className="text-gray-500 text-xs ml-2">
-                                                    {employeeData.email}
+                                                    emailname@example.com
                                                 </span>
                                             )}
                                         </label>
@@ -359,7 +362,7 @@ const UpdateEmployeePersonalInformation = ({ employeeId, isOpen, onClose, onSubm
                                             Ngày sinh (*)
                                             {employeeData?.birthday && (
                                                 <span className="text-gray-500 text-xs ml-2">
-                                                    {new Date(employeeData.birthday).toLocaleDateString()}
+                                                    dd/mm/yyyy
                                                 </span>
                                             )}
                                         </label>

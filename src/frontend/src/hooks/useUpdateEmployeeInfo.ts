@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useAppDispatch } from "../store/hooks";
-import { updateEmployeePersonalInfo, fetchEmployeeDetail } from "../store/employeeSlice";
+import { updateEmployeeInfo, fetchEmployeeDetail } from "../store/employeeSlice";
 
-interface UpdateEmployeeFormData {
+export interface UpdateEmployeeFormData {
   employeeId: number;
   fullname: string;
   phone: string;
@@ -10,6 +10,9 @@ interface UpdateEmployeeFormData {
   birthday: string;
   address: string;
   gender: string;
+  bankAccount: string;
+  departmentId: number;
+  status: string;
 }
 
 export function useUpdateEmployeeInfo() {
@@ -22,7 +25,7 @@ export function useUpdateEmployeeInfo() {
     setIsSubmitting(true);
     try {
       await dispatch(
-        updateEmployeePersonalInfo({
+        updateEmployeeInfo({
           id: data.employeeId,
           data: {
             fullname: data.fullname,
@@ -31,12 +34,15 @@ export function useUpdateEmployeeInfo() {
             birthday: data.birthday,
             address: data.address,
             gender: data.gender,
+            bankAccount: data.bankAccount,
+            departmentId: data.departmentId,
+            status: data.status,
           },
         })
       ).unwrap();
 
     // Sau khi cập nhật thành công, có thể fetch lại chi tiết nhân viên nếu cần
-    await dispatch(fetchEmployeeDetail(data.employeeId)).unwrap();
+    //await dispatch(fetchEmployeeDetail(data.employeeId)).unwrap();
 
     } catch (error) {
       console.error("Lỗi khi cập nhật thông tin nhân viên:", error);

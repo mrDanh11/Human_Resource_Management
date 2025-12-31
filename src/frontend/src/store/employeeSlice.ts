@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, type Update } from '@reduxjs/toolkit';
 import type { PaginationParams } from '../types/pagination';
 import { employeeService } from '../services/employeeService';
 import { departmentService, type DepartmentDto } from '../services/departmentService';
@@ -113,21 +113,15 @@ const initialState: EmployeeState = {
 };
 
 //Interface cho update employee
-export interface UpdateEmployeeIndividualData {
+export interface UpdateEmployeeData {
   fullname: string;
   phone: string;
   email: string;
   address: string;
   birthday: string;
   gender: string;
-}
-
-export interface UpdateEmployeeWorkingInfoData {
-  cccd: string;
-  taxCode: string;
   bankAccount: string;
   departmentId: number;
-  joinDate: string;
   status: string;
 }
 
@@ -193,9 +187,9 @@ export const fetchEmployeeStatistics = createAsyncThunk<EmployeeStatistics, void
   }
 );
 
-// Async thunk để cập nhật thông tin cá nhân nhân viên
-export const updateEmployeePersonalInfo = createAsyncThunk<EmployeeDetailData, { id: number, data: UpdateEmployeeIndividualData }, { rejectValue: string }>(
-  'employee/updateEmployeePersonalInfo',
+// Async thunk để cập nhật thông tin nhân viên
+export const updateEmployeeInfo = createAsyncThunk<EmployeeDetailData, { id: number, data: UpdateEmployeeData }, { rejectValue: string }>(
+  'employee/updateEmployeeInfo',
   async ({ id, data }, { rejectWithValue }) => {
     try {
       const res = await employeeService.updateEmployee(id, data);
@@ -215,19 +209,6 @@ export const fetchActivityStatistics = createAsyncThunk<ActivityStatistics, void
       return await getActivityStatistics();
     } catch (error: any) {
       return rejectWithValue(error.message ?? 'Lỗi khi lấy thống kê hoạt động');
-    }
-  }
-);
-
-// Async thunk để cập nhật thông tin làm việc nhân viên
-export const updateEmployeeWorkingInfo = createAsyncThunk<EmployeeDetailData, { id: number, data: UpdateEmployeeWorkingInfoData }, { rejectValue: string }>(
-  'employee/updateEmployeeWorkingInfo',
-  async ({ id, data }, { rejectWithValue }) => {
-    try {
-      const res = await employeeService.updateEmployee(id, data);
-      return res as EmployeeDetailData;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data ?? String(error.message));
     }
   }
 );
@@ -307,59 +288,36 @@ const employeeSlice = createSlice({
         state.createLoading = false;
         state.createError = action.payload as string;
       })
-      // Update employee working info
-      .addCase(updateEmployeeWorkingInfo.pending, (state) => {
+      // Update employee info
+      .addCase(updateEmployeeInfo.pending, (state) => {
         state.updateLoading = true;
         state.updateError = null;
       })
-      .addCase(updateEmployeeWorkingInfo.fulfilled, (state, action) => {
+      .addCase(updateEmployeeInfo.fulfilled, (state, action) => {
         state.updateLoading = false;
-        // Treat payload as a partial update and merge into selectedEmployee to satisfy types
-        const payload = action.payload as Partial<EmployeeDetailData>;
 
-        if (state.selectedEmployee) {
-          state.selectedEmployee = { ...state.selectedEmployee, ...payload } as EmployeeDetailData;
-        } else {
-          // Build a full EmployeeDetailData from payload with safe defaults
-          state.selectedEmployee = {
-            id: payload.id ?? 0,
-            fullname: payload.fullname ?? '',
-            cccd: payload.cccd ?? '',
-            taxCode: payload.taxCode ?? '',
-            phone: payload.phone ?? '',
-            address: payload.address ?? '',
-            bankAccount: payload.bankAccount ?? '',
-            joinDate: payload.joinDate ?? '',
-            status: payload.status ?? '',
-            birthday: payload.birthday ?? '',
-            gender: payload.gender ?? '',
-            email: payload.email ?? '',
-            roleId: payload.roleId ?? 0,
-            roleName: payload.roleName ?? '',
-            departmentId: payload.departmentId ?? 0,
-            departmentName: payload.departmentName ?? '',
-            createdAt: payload.createdAt ?? '',
-            updatedAt: payload.updatedAt ?? '',
-          } as EmployeeDetailData;
-        }
+        const updatedEmployee = action.payload; // EmployeeDetailData
 
-        // Update list entry if present (only fields that exist on the list)
-        const idToFind = payload.id ?? state.selectedEmployee.id;
-        const index = state.employees.findIndex(emp => emp.id === idToFind);
+        // 1️⃣ Update selectedEmployee (nguồn sự thật từ backend)
+        state.selectedEmployee = updatedEmployee;
+
+        // 2️⃣ Update employee trong danh sách (EmployeeListItem)
+        const index = state.employees.findIndex(
+          emp => emp.id === updatedEmployee.id
+        );
+
         if (index !== -1) {
           state.employees[index] = {
             ...state.employees[index],
-            status: payload.status ?? state.employees[index].status,
-            departmentName: payload.departmentName ?? state.employees[index].departmentName,
-            fullname: payload.fullname ?? state.employees[index].fullname,
-            email: payload.email ?? state.employees[index].email,
-            phone: payload.phone ?? state.employees[index].phone,
-            roleName: payload.roleName ?? state.employees[index].roleName,
-            joinDate: payload.joinDate ?? state.employees[index].joinDate,
+            fullname: updatedEmployee.fullname,
+            email: updatedEmployee.email,
+            phone: updatedEmployee.phone,
+            status: updatedEmployee.status,
+            departmentName: updatedEmployee.departmentName,
           };
         }
       })
-      .addCase(updateEmployeeWorkingInfo.rejected, (state, action) => {
+      .addCase(updateEmployeeInfo.rejected, (state, action) => {
         state.updateLoading = false;
         state.updateError = action.payload as string;
       })
@@ -419,63 +377,6 @@ const employeeSlice = createSlice({
       .addCase(fetchActivityStatistics.rejected, (state, action) => {
         state.activityStatisticsLoading = false;
         state.activityStatisticsError = action.payload as string;
-      })
-
-      // Update employee personal info
-      .addCase(updateEmployeePersonalInfo.pending, (state) => {
-        state.updateLoading = true;
-        state.updateError = null;
-      })
-      .addCase(updateEmployeePersonalInfo.fulfilled, (state, action) => {
-        state.updateLoading = false;
-        // Treat payload as a partial update and merge into selectedEmployee to satisfy types
-        const payload = action.payload as Partial<EmployeeDetailData>;
-
-        if (state.selectedEmployee) {
-          state.selectedEmployee = { ...state.selectedEmployee, ...payload } as EmployeeDetailData;
-        } else {
-          // Build a full EmployeeDetailData from payload with safe defaults
-          state.selectedEmployee = {
-            id: payload.id ?? 0,
-            fullname: payload.fullname ?? '',
-            cccd: payload.cccd ?? '',
-            taxCode: payload.taxCode ?? '',
-            phone: payload.phone ?? '',
-            address: payload.address ?? '',
-            bankAccount: payload.bankAccount ?? '',
-            joinDate: payload.joinDate ?? '',
-            status: payload.status ?? '',
-            birthday: payload.birthday ?? '',
-            gender: payload.gender ?? '',
-            email: payload.email ?? '',
-            roleId: payload.roleId ?? 0,
-            roleName: payload.roleName ?? '',
-            departmentId: payload.departmentId ?? 0,
-            departmentName: payload.departmentName ?? '',
-            createdAt: payload.createdAt ?? '',
-            updatedAt: payload.updatedAt ?? '',
-          } as EmployeeDetailData;
-        }
-
-        // Update list entry if present (only fields that exist on the list)
-        const idToFind = payload.id ?? state.selectedEmployee.id;
-        const index = state.employees.findIndex(emp => emp.id === idToFind);
-        if (index !== -1) {
-          state.employees[index] = {
-            ...state.employees[index],
-            status: payload.status ?? state.employees[index].status,
-            departmentName: payload.departmentName ?? state.employees[index].departmentName,
-            fullname: payload.fullname ?? state.employees[index].fullname,
-            email: payload.email ?? state.employees[index].email,
-            phone: payload.phone ?? state.employees[index].phone,
-            roleName: payload.roleName ?? state.employees[index].roleName,
-            joinDate: payload.joinDate ?? state.employees[index].joinDate,
-          };
-        }
-      })
-      .addCase(updateEmployeePersonalInfo.rejected, (state, action) => {
-        state.updateLoading = false;
-        state.updateError = action.payload as string;
       });
   },
 });

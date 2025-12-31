@@ -99,6 +99,7 @@ public class PermissionService {
             default -> List.of(
                     // Employee permissions
                     "employee:view",
+                    "employee:update",
                     
                     // Point permissions
                     "point:view",

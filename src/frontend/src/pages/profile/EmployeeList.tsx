@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Users, Search, Filter, Mail, Building2, Briefcase, Loader2, AlertCircle, Eye, Pencil, Trash2 } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { fetchEmployees, updateEmployeeWorkingInfo, deleteEmployee } from '../../store/employeeSlice';
+import { fetchEmployees, updateEmployeeInfo, deleteEmployee } from '../../store/employeeSlice';
 import EmployeeDetailModal from '../../components/profile/EmployeeDetailModal';
-import UpdateEmployeeWorkingInformation from '../../components/profile/ProfileFromEmployeeForHR';
+import UpdateEmployeeWorkingInformation from '../../components/profile/UpdateProfileHR';
 import DeleteConfirmationModal from '../../components/profile/DeleteConfirmationModal';
 
 const EmployeeList = () => {
@@ -177,20 +177,23 @@ const EmployeeList = () => {
     };
 
     // Xử lý submit cập nhật thông tin làm việc
-    const handleUpdateSubmit = async (data: { employeeId: number; departmentId: number; status: string; bankAccount: string; cccd: string; taxCode: string; joinDate: string }) => {
+    const handleUpdateSubmit = async (data: { employeeId: number;  fullname: string, phone: string, email: string, address: string, birthday: string, gender: string, bankAccount: string, departmentId: number, status: string }) => {
         if (!data.employeeId) return;
 
         setIsSubmitting(true);
         try {
-            await dispatch(updateEmployeeWorkingInfo({
+            await dispatch(updateEmployeeInfo({
                 id: data.employeeId,
                 data: {
+                    fullname: data.fullname,
+                    phone: data.phone,
+                    email: data.email,
+                    address: data.address,
+                    birthday: data.birthday,
+                    gender: data.gender,
                     status: data.status,
                     departmentId: data.departmentId,
                     bankAccount: data.bankAccount,
-                    cccd: data.cccd,
-                    taxCode: data.taxCode,
-                    joinDate: data.joinDate,
                 }
             })).unwrap();
 
