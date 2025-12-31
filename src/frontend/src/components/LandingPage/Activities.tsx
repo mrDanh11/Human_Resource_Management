@@ -24,7 +24,7 @@ export default function Activities() {
     <section id="activities" className="w-full py-16 bg-white">
       <div className="max-w-6xl mx-auto px-6">
         <h3
-          className="text-2xl font-semibold mb-6"
+          className="text-3xl font-bold mb-6"
           style={{ color: THEME_COLORS.primary[700] }}
         >
           Hoạt động nổi bật
@@ -58,12 +58,12 @@ export default function Activities() {
 
                 <div className="p-4">
                   <h4
-                    className="text-lg font-semibold"
+                    className="text-xl font-semibold"
                     style={{ color: THEME_COLORS.primary[800] }}
                   >
                     {it.title}
                   </h4>
-                  <p className="text-sm text-gray-600 mt-1">{it.subtitle}</p>
+                  <p className="text-base text-gray-600 mt-1">{it.subtitle}</p>
                 </div>
               </div>
             ))}

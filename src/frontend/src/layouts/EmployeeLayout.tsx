@@ -11,7 +11,7 @@ const EmployeeLayout: React.FC = () => {
             <div className="flex flex-1">
                 <Sidebar />
 
-                <main className="flex-1 bg-gray-100">
+                <main className="flex-1 bg-gray-100 ml-64">
                     <Outlet />
                 </main>
             </div>

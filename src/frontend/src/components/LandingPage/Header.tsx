@@ -47,12 +47,12 @@ export default function Header() {
 
         <div>
           <div
-            className="text-lg font-semibold"
+            className="text-xl font-semibold"
             style={{ color: THEME_COLORS.primary[700] }}
           >
             HRMS — Human Resource
           </div>
-          <div className="text-xs text-gray-500">
+          <div className="text-sm text-gray-500">
             Enterprise HR • AI driven
           </div>
         </div>
@@ -60,16 +60,16 @@ export default function Header() {
 
       {/* Navigation */}
       <nav className="flex items-center gap-6">
-        {isLoggedIn && (
+        {isLoggedIn && isLandingPage && (
           <Link
             to={
               localStorage.getItem("role") === "admin"
                 ? "/admin/dashboard"
                 : `/employee/profile/${localStorage.getItem("userId")}`
             }
-            className="text-sm hover:text-gray-900 transition"
+            className="text-base hover:text-gray-900 transition"
           >
-            Dashboard
+            {localStorage.getItem("role") === "employee" ? "Hồ sơ" : "Dashboard"}
           </Link>
         )}
 
@@ -77,14 +77,14 @@ export default function Header() {
           <>
             <button
               onClick={() => scrollToSection("activities")}
-              className="text-sm text-gray-700 hover:text-gray-900 transition"
+              className="text-base text-gray-700 hover:text-gray-900 transition"
             >
               Hoạt động
             </button>
 
             <button
               onClick={() => scrollToSection("gallery")}
-              className="text-sm text-gray-700 hover:text-gray-900 transition"
+              className="text-base text-gray-700 hover:text-gray-900 transition"
             >
               Thư viện
             </button>
@@ -94,7 +94,7 @@ export default function Header() {
         {isLoggedIn ? (
           <button
             onClick={handleLogout}
-            className="ml-4 px-4 py-2 rounded-lg text-sm font-medium bg-red-500 text-white hover:bg-red-600 transition"
+            className="ml-4 px-4 py-2 rounded-lg text-base font-medium bg-red-500 text-white hover:bg-red-600 transition"
           >
             Đăng xuất
           </button>
@@ -102,7 +102,7 @@ export default function Header() {
           location.pathname !== "/login" && (
             <Link
               to="/login"
-              className="ml-4 px-4 py-2 rounded-lg text-sm font-medium"
+              className="ml-4 px-4 py-2 rounded-lg text-base font-medium"
               style={{ background: THEME_COLORS.primary[500], color: "white" }}
             >
               Đăng nhập

@@ -12,7 +12,7 @@ const Sidebar: React.FC = () => {
 
   const menuItems = [
     { label: "Trang chủ", icon: Home, to: "/landing" },
-    { label: "Hồ sơ cá nhân", icon: User, to: `/employee/profile/${userId}` },
+    { label: "Thông tin cá nhân", icon: User, to: `/employee/profile/${userId}` },
     { label: "Yêu cầu", icon: FileText, to: "/requests" },
     {
       label: "Hoạt động",
@@ -44,7 +44,7 @@ const Sidebar: React.FC = () => {
   ];
 
   return (
-    <aside className="w-56 min-h-screen bg-white border-r border-[#E6E6E6] flex flex-col pt-8 pb-4 px-2">
+    <aside className="w-64 bg-white shadow-xl border-r border-gray-200 flex flex-col py-10 px-6 fixed h-full overflow-y-auto">
       <nav className="flex flex-col gap-2">
         {menuItems.map((item, i) => {
           const Icon = item.icon;
@@ -56,7 +56,7 @@ const Sidebar: React.FC = () => {
                 <div>
                   <button
                     onClick={() => setOpenDropdown(openDropdown === item.key ? null : item.key || null)}
-                    className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium transition-all ${item.submenu.some(sub => location.pathname === sub.to)
+                    className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg font-medium transition-all ${item.submenu.some(sub => location.pathname === sub.to)
                       ? "bg-[#EDF4FF] text-[#0066FF] shadow"
                       : "text-gray-700 hover:bg-gray-100"
                       }`}
@@ -97,7 +97,7 @@ const Sidebar: React.FC = () => {
                 // Regular menu item
                 <button
                   onClick={() => navigate(item.to!)}
-                  className={`w-full text-left flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium transition-all ${location.pathname === item.to
+                  className={`w-full text-left flex items-center gap-3 px-4 py-2.5 rounded-lg font-medium transition-all ${location.pathname === item.to
                     ? "bg-[#EDF4FF] text-[#0066FF] shadow"
                     : "text-gray-700 hover:bg-gray-100"
                     }`}

@@ -35,14 +35,16 @@ const App = () => {
         {/* Protected Routes - Require Login */}
         <Route element={<ProtectedRoute />}>
           <Route path="/activities/results" element={<ActivityResultPage />} />
-          <Route path="/employee/profile/:id" element={<ProfilePage />} />
-          <Route path="/rewards/exchange" element={<PointExchange />} />
-          <Route path="/rewards/history" element={<RewardHistory />} />
+          <Route path="/employee/profile/:id" element={<ProfilePage />} />          
           
           {/* Employee Layout Routes */}
           <Route path="" element={<EmployeeLayout />}>
-            <Route path="/rewards/points" element={<RewardDashboard />} />
-            <Route path="/rewards/hr-reward" element={<RewardPointHR />} />
+            <Route path="rewards">
+              <Route path="exchange" element={<PointExchange />} />
+              <Route path="history" element={<RewardHistory />} />
+              <Route path="points" element={<RewardDashboard />} />
+              <Route path="hr-reward" element={<RewardPointHR />} />
+            </Route>
             <Route path="/rewards" element={<PointsAdmin />} />
             <Route path="/activities" element={<ActivityListPage />} />
             <Route path="/activities/history" element={<HistoryActivitiesPage />} />
@@ -52,8 +54,6 @@ const App = () => {
 
         {/* HR & Admin Routes */}
         <Route element={<ProtectedRoute allowedRoles={['HR', 'ADMIN']} />}>
-          <Route path="activities/create" element={<CreateActivityPage />} />
-          <Route path="activities/cancel" element={<CancelActivityPage />} />
           <Route path="/rewards/hr-reward" element={<RewardPointHR />} />
         </Route>
 
@@ -62,7 +62,12 @@ const App = () => {
           <Route path="admin" element={<AdminLayout />}>
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="point" element={<PointsAdmin />} />
-            <Route path="activities" element={<AdminActivityListPage />} />
+            <Route path="activities" element={<ActivityListPage />} />
+            <Route path="activities">
+              <Route path="statistics" element={<AdminActivityListPage />} />
+              <Route path="create" element={<CreateActivityPage />} />
+              <Route path="cancel" element={<CancelActivityPage />} />
+            </Route>
             <Route path="employee">
               <Route path="list" element={<EmployeeList />} />
               <Route path="create" element={<CreateEmployee />} />

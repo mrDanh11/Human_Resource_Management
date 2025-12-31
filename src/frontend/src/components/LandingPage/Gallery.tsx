@@ -17,7 +17,7 @@ export default function Gallery() {
     <section id="gallery" className="w-full py-16 px-6 bg-white">
       <div className="max-w-6xl mx-auto">
         <h3
-          className="text-2xl font-semibold mb-6"
+          className="text-3xl font-bold mb-6"
           style={{ color: THEME_COLORS.primary[700] }}
         >
           Thư viện

@@ -8,6 +8,7 @@ const AdminSidebar: React.FC = () => {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   
   const menuItems = [
+    { label: "Dashboard", to: "/admin/dashboard" },
     { 
       label: "Quản lý nhân viên", 
       key: "employees",
@@ -23,14 +24,16 @@ const AdminSidebar: React.FC = () => {
       key: "activities",
       submenu: [
         { label: "Danh sách hoạt động", to: "/admin/activities" },
+        { label: "Thống kê hoạt động", to: "/admin/activities/statistics" },
         { label: "Thêm hoạt động", to: "/admin/activities/create" },
+        { label: "Hủy hoạt động", to: "/admin/activities/cancel" },
       ]
     },
     { label: "Bảng công", to: "/admin/timesheet" },
   ];
 
   return (
-    <aside className="w-64 bg-white shadow-xl border-r border-gray-200 flex flex-col py-10 px-6">
+    <aside className="w-64 bg-white shadow-xl border-r border-gray-200 flex flex-col py-10 px-6 fixed h-full overflow-y-auto">
       <div className="mb-10 text-3xl font-extrabold text-blue-600 tracking-wide">
         HRM Admin
       </div>
@@ -59,7 +62,7 @@ const AdminSidebar: React.FC = () => {
                 <div 
                   className={`overflow-hidden transition-all duration-300 ease-in-out ${
                     openDropdown === item.key 
-                      ? 'max-h-40 opacity-100 mt-2' 
+                      ? 'max-h-60 opacity-100 mt-2' 
                       : 'max-h-0 opacity-0'
                   }`}
                 >

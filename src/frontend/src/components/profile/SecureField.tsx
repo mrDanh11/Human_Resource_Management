@@ -9,19 +9,23 @@ const mask = (v?: string, keep = 4) => {
 
 export default function SecureRow({ label, value, show, onToggle }: any) {
   return (
-    <div className="flex flex-col items-start text-left gap-1.5">
-      <div className="flex items-center gap-2 text-sm text-gray-500">
-        <HiOutlineIdentification size={16} color="#2563eb" />
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center gap-2 text-sm text-gray-600">
+        <HiOutlineIdentification size={16} className="text-gray-400" />
         {label}
       </div>
 
-      <div className="flex items-center justify-between w-full">
-        <div className="text-[15px] font-semibold font-mono text-gray-900">
-          {show ? value : mask(value)}
+      <div className="flex items-center justify-between bg-gray-50 px-4 py-3 rounded-lg">
+        <div className="text-base font-semibold font-mono text-gray-900">
+          {show ? (value || "-") : mask(value)}
         </div>
 
-        <button className="text-gray-500 hover:text-black" onClick={onToggle} type="button">
-          {show ? <HiOutlineEyeOff size={20} color="black" /> : <HiOutlineEye size={20} color="black" />}
+        <button 
+          className="text-gray-400 hover:text-gray-600 transition" 
+          onClick={onToggle} 
+          type="button"
+        >
+          {show ? <HiOutlineEyeOff size={20} /> : <HiOutlineEye size={20} />}
         </button>
       </div>
     </div>

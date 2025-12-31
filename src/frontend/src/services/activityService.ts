@@ -129,3 +129,50 @@ export const getMyParticipations = async (): Promise<MyParticipationResponse[]> 
   const response = await apiSpring.get<MyParticipationResponse[]>('/participations/my-participations');
   return response.data;
 };
+
+/**
+ * Get activity statistics
+ */
+export const getActivityStatistics = async (): Promise<{
+  totalActivities: number;
+  openRegistration: number;
+  closedRegistration: number;
+  statusDistribution: { status: string; count: number }[];
+}> => {
+  const response = await apiSpring.get<ActivityListResponse>('/activities', {
+    params: { page: 1, pageSize: 10000 }
+  });
+  
+  const activities = response.data.activities || [];
+  const totalActivities = activities.length;
+  
+  // Đếm theo trạng thái
+  let openRegistration = 0;
+  let closedRegistration = 0;
+  const statusMap = new Map<string, number>();
+  
+  activities.forEach(activity => {
+    const status = activity.status?.toLowerCase() || 'unknown';
+    statusMap.set(status, (statusMap.get(status) || 0) + 1);
+    
+    if (status === 'upcoming') {
+      openRegistration++;
+    } else if (status === 'completed') {
+      closedRegistration++;
+    }
+  });
+  
+  const statusDistribution = Array.from(statusMap.entries()).map(([status, count]) => ({
+    status: status === 'upcoming' ? 'Đang mở đăng ký' : 
+            status === 'completed' ? 'Đã hoàn thành' : 
+            status,
+    count,
+  }));
+  
+  return {
+    totalActivities,
+    openRegistration,
+    closedRegistration,
+    statusDistribution,
+  };
+};

@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import Header from "../components/LandingPage/Header";
 import Sidebar from "../components/common/Sidebar";
 import { BACKGROUNDS } from "../constants/styles";
-import Footer from "../components/LandingPage/Footer";
 
 interface ProfileLayoutProps {
   children: ReactNode;
@@ -14,9 +13,8 @@ export default function ProfileLayout({ children }: ProfileLayoutProps) {
       <Header />
       <div className="flex" style={BACKGROUNDS.page}>
         <Sidebar />
-        <div className="flex-1 flex flex-col items-center pt-2" style={BACKGROUNDS.page}>
+        <div className="flex-1 flex flex-col items-center ml-64" style={BACKGROUNDS.page}>
           {children}
-          <Footer />
         </div>
       </div>
     </>

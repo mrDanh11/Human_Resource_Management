@@ -25,6 +25,10 @@ export default function ActivityListPage() {
   const [activities, setActivities] = useState<ActivityData[]>([]);
   const [myParticipations, setMyParticipations] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 9;
 
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
@@ -182,8 +186,31 @@ export default function ActivityListPage() {
     return matchesSearch && matchesType && matchesStatus;
   });
 
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedType, selectedStatus]);
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredActivities.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentActivities = filteredActivities.slice(startIndex, endIndex);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // Scroll to top of the page
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'auto'
+    });
+    // Also try scrolling the document element
+    document.documentElement.scrollTop = 0;
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="h-full bg-gray-50">
       {/* Header and Filters Combined */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
@@ -195,9 +222,6 @@ export default function ActivityListPage() {
                 Danh sách hoạt động
               </h1>
             </div>
-            <p className="text-blue-100">
-              Khám phá và đăng ký tham gia các hoạt động của công ty
-            </p>
           </div>
 
           {/* Filters Section */}
@@ -249,7 +273,7 @@ export default function ActivityListPage() {
 
             {/* Results Count */}
             <div className="mt-4 text-sm text-gray-600">
-              Hiển thị <span className="font-semibold">{filteredActivities.length}</span> hoạt động
+              Hiển thị <span className="font-semibold">{startIndex + 1}-{Math.min(endIndex, filteredActivities.length)}</span> trong tổng số <span className="font-semibold">{filteredActivities.length}</span> hoạt động
             </div>
           </div>
         </div>
@@ -263,8 +287,9 @@ export default function ActivityListPage() {
             </h2>
             
             {filteredActivities.length > 0 ? (
+              <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredActivities.map((activity) => (
+                {currentActivities.map((activity) => (
                   <ActivityListCard
                     key={activity.id}
                     activity={activity}
@@ -278,6 +303,65 @@ export default function ActivityListPage() {
                   />
                 ))}
               </div>
+              
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="flex justify-center items-center gap-2 mt-8">
+                  <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                      currentPage === 1
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        : 'bg-white text-gray-700 hover:bg-blue-50 hover:text-blue-600 border border-gray-300'
+                    }`}
+                  >
+                    Trước
+                  </button>
+                  
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                    // Show first page, last page, current page, and pages around current
+                    const showPage = page === 1 || 
+                                   page === totalPages || 
+                                   (page >= currentPage - 1 && page <= currentPage + 1);
+                    
+                    if (!showPage && page === currentPage - 2) {
+                      return <span key={page} className="px-2 text-gray-400">...</span>;
+                    }
+                    if (!showPage && page === currentPage + 2) {
+                      return <span key={page} className="px-2 text-gray-400">...</span>;
+                    }
+                    if (!showPage) return null;
+                    
+                    return (
+                      <button
+                        key={page}
+                        onClick={() => handlePageChange(page)}
+                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                          currentPage === page
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-white text-gray-700 hover:bg-blue-50 hover:text-blue-600 border border-gray-300'
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    );
+                  })}
+                  
+                  <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                      currentPage === totalPages
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        : 'bg-white text-gray-700 hover:bg-blue-50 hover:text-blue-600 border border-gray-300'
+                    }`}
+                  >
+                    Sau
+                  </button>
+                </div>
+              )}
+              </>
             ) : (
               <div className="bg-white rounded-lg shadow-sm p-12 text-center">
                 <div className="flex flex-col items-center gap-4">
@@ -318,6 +402,7 @@ export default function ActivityListPage() {
           onRegister={handleRegister}
           onUnregister={handleUnregister}
           isRegistered={myParticipations.includes(Number(selectedActivity.id))}
+          userRole={userRole}
         />
       )}
 

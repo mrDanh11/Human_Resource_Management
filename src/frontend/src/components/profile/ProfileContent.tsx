@@ -1,9 +1,9 @@
-import { HiOutlineUser, HiOutlineOfficeBuilding } from "react-icons/hi";
+import { HiOutlineOfficeBuilding, HiOutlineLockClosed } from "react-icons/hi";
 import { BACKGROUNDS } from "../../constants/styles";
 import Card from "./ProfileCard";
 import ProfileBasicInfo from "./ProfileBasicInfo";
 import ProfileWorkInfo from "./ProfileWorkInfo";
-import UpdateProfileButton from "./UpdateProfileButton";
+import ProfileSecurityInfo from "./ProfileSecurityInfo";
 
 interface EmployeeData {
   fullName?: string;
@@ -44,34 +44,49 @@ export default function ProfileContent({
   onUpdateClick,
 }: ProfileContentProps) {
   return (
-    <div className="flex-1 p-6 flex justify-center" style={BACKGROUNDS.page}>
-      <div className="w-full max-w-5xl flex flex-col gap-6" style={BACKGROUNDS.page}>
+    <div className="flex-1 p-6 w-full" style={BACKGROUNDS.page}>
+      <div className="mx-auto" style={BACKGROUNDS.page}>
         {/* CARD 1: Thông tin cơ bản */}
         <Card
-          title="Thông tin cơ bản"
-          icon={<HiOutlineUser />}
-          right={<UpdateProfileButton onClick={onUpdateClick} />}
+          title=""
+          iconColor="#3b82f6"
+          hideHeader={true}
         >
-          <ProfileBasicInfo
-            data={data}
-            showCccd={showCccd}
-            showBank={showBank}
-            showTax={showTax}
-            onToggleCccd={onToggleCccd}
-            onToggleBank={onToggleBank}
-            onToggleTax={onToggleTax}
-          />
+          <ProfileBasicInfo data={data} onUpdateClick={onUpdateClick} />
         </Card>
 
-        {/* CARD 2: Công việc */}
-        <Card title="Công việc" icon={<HiOutlineOfficeBuilding />}>
-          <ProfileWorkInfo
-            department={data.department}
-            position={data.position}
-            joinDate={data.joinDate}
-            birthDate={data.birthDate}
-          />
-        </Card>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+          {/* CARD 2: Công việc */}
+          <Card 
+            title="Công việc" 
+            icon={<HiOutlineOfficeBuilding />}
+            iconColor="#10b981"
+          >
+            <ProfileWorkInfo
+              department={data.department}
+              position={data.position}
+              joinDate={data.joinDate}
+              birthDate={data.birthDate}
+            />
+          </Card>
+
+          {/* CARD 3: Bảo mật */}
+          <Card 
+            title="Cá nhân & Bảo mật" 
+            icon={<HiOutlineLockClosed />}
+            iconColor="#f97316"
+          >
+            <ProfileSecurityInfo
+              data={data}
+              showCccd={showCccd}
+              showBank={showBank}
+              showTax={showTax}
+              onToggleCccd={onToggleCccd}
+              onToggleBank={onToggleBank}
+              onToggleTax={onToggleTax}
+            />
+          </Card>
+        </div>
       </div>
     </div>
   );
