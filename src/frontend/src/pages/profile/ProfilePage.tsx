@@ -24,7 +24,7 @@ export default function ProfilePage() {
   setShowUpdateForm(false);
 };
 
-  console.log("Employee Data:", data);
+  // console.log("Employee Data:", data);
 
   // Loading state
   if (loading) {
