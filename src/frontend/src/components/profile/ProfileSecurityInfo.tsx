@@ -2,11 +2,9 @@ import SecureRow from "./SecureField";
 
 interface ProfileSecurityInfoProps {
   data: {
-    citizenId?: string;
+    cccd?: string;
     taxCode?: string;
-    bankAccount?: {
-      accountNumber?: string;
-    };
+    bankAccount?: string;
   };
   showCccd: boolean;
   showBank: boolean;
@@ -29,14 +27,14 @@ export default function ProfileSecurityInfo({
     <div className="flex flex-col gap-4">
       <SecureRow
         label="Số CCCD"
-        value={data.citizenId}
+        value={data.cccd}
         show={showCccd}
         onToggle={onToggleCccd}
       />
       {data.bankAccount && (
         <SecureRow
           label="Tài khoản ngân hàng"
-          value={data.bankAccount.accountNumber}
+          value={data.bankAccount}
           show={showBank}
           onToggle={onToggleBank}
         />

@@ -8,8 +8,9 @@ import UpdateProfileButton from "./UpdateProfileButton";
 
 interface ProfileBasicInfoProps {
   data: {
-    fullName?: string;
-    employeeCode?: string;
+    id?: number;
+    fullname?: string;
+    //employeeCode?: string;
     email?: string;
     phone?: string;
     address?: string;
@@ -32,12 +33,12 @@ export default function ProfileBasicInfo({
           </div>
           <div className="flex flex-col gap-1">
             <div className="text-xl font-bold text-gray-900">
-              {data.fullName || "Không có tên"}
+              {data.fullname || "Không có tên"}
             </div>
             <div className="flex items-center gap-4 text-sm text-gray-600">
               <div className="flex items-center gap-1">
                 <HiOutlineUser className="w-4 h-4 text-blue-600" />
-                <span>{data.employeeCode || "-"}</span>
+                <span>{data.id ? `EMP${data.id.toString().padStart(4, '0')}` : "-"}</span>
               </div>
               <div className="flex items-center gap-1">
                 <HiOutlineMail className="w-4 h-4 text-blue-600" />

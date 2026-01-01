@@ -1,4 +1,4 @@
-import { DocumentTextIcon } from '@heroicons/react/24/outline';
+import { UserRoundPen, User, Code, Hash, Building2, MapPin, Wallet, UserCircle, IdCard, Calendar, Mail, Phone, Activity } from 'lucide-react';
 import Modal from '../common/Modal';
 import { useForm, Controller } from 'react-hook-form';
 import { useState, useEffect } from 'react';
@@ -7,16 +7,16 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { fetchEmployeeDetail, clearSelectedEmployee } from '../../store/employeeSlice';
 
 interface WorkingInformationProps {
-    employeeId: number,
+    employeeId: number;
     fullname: string;
     phone: string;
     email: string;
     address: string;
-    bankAccount: string;
-    status: string;
     birthday: string;
     gender: string;
+    bankAccount: string;
     departmentId: number;
+    status: string;
 }
 
 interface UpdateEmployeeWorkingInformationModalProps {
@@ -70,14 +70,14 @@ const UpdateEmployeeWorkingInformation = ({ employeeId, isOpen, onClose, onSubmi
     useEffect(() => {
         if (employeeData && isOpen) {
             reset({
-                employeeId: employeeData.id,
-                fullname: employeeData.fullname,
+                fullname: employeeData.fullname || '',
                 phone: employeeData.phone || '',
                 email: employeeData.email || '',
                 address: employeeData.address || '',
-                bankAccount: employeeData.bankAccount || '',
                 birthday: employeeData.birthday || '',
                 gender: employeeData.gender || '',
+                bankAccount: employeeData.bankAccount || '',
+                employeeId: employeeData.id,
                 departmentId: employeeData.departmentId || 0,
                 status: employeeData.status || 'active',
             });
@@ -102,6 +102,8 @@ const UpdateEmployeeWorkingInformation = ({ employeeId, isOpen, onClose, onSubmi
             ...data,
             employeeId: employeeId,
         };
+
+        console.log('Form data to submit:', payload);
 
         if (data.status === 'suspended' && employeeData?.status !== 'suspended') {
             setFormDataToSubmit(payload);
@@ -148,7 +150,7 @@ const UpdateEmployeeWorkingInformation = ({ employeeId, isOpen, onClose, onSubmi
                 isOpen={isOpen}
                 onClose={onClose}
                 title="Chỉnh sửa thông tin làm việc của nhân viên"
-                titleIcon={<DocumentTextIcon className="w-7 h-7" />}
+                titleIcon={<UserRoundPen className="w-7 h-7" />}
                 size="xl"
             >
                 {loading ? (
@@ -172,8 +174,9 @@ const UpdateEmployeeWorkingInformation = ({ employeeId, isOpen, onClose, onSubmi
                         <p className="text-gray-500">Thông tin cá nhân( chỉ đọc)</p>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-light text-gray-700 mb-2 text-left">
-                                    Họ và tên
+                                <label className="flex items-center gap-2 text-sm font-medium text-blue-600 mb-2">
+                                    <User className="w-4 h-4" />
+                                    Họ và Tên
                                 </label>
                                 <input
                                     type="text"
@@ -183,7 +186,8 @@ const UpdateEmployeeWorkingInformation = ({ employeeId, isOpen, onClose, onSubmi
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-light text-gray-700 mb-2 text-left">
+                                <label className="flex items-center gap-2 text-sm font-medium text-blue-600 mb-2">
+                                    <Code className="w-4 h-4" />
                                     Mã nhân viên
                                 </label>
                                 <input
@@ -196,7 +200,8 @@ const UpdateEmployeeWorkingInformation = ({ employeeId, isOpen, onClose, onSubmi
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-light text-gray-700 mb-2 text-left">
+                                <label className="flex items-center gap-2 text-sm font-medium text-blue-600 mb-2">
+                                    <Mail className="w-4 h-4" />
                                     Email
                                 </label>
                                 <input
@@ -207,7 +212,8 @@ const UpdateEmployeeWorkingInformation = ({ employeeId, isOpen, onClose, onSubmi
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-light text-gray-700 mb-2 text-left">
+                                <label className="flex items-center gap-2 text-sm font-medium text-blue-600 mb-2">
+                                    <Phone className="w-4 h-4" />
                                     Số điện thoại
                                 </label>
                                 <input
@@ -220,7 +226,8 @@ const UpdateEmployeeWorkingInformation = ({ employeeId, isOpen, onClose, onSubmi
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-light text-gray-700 mb-2 text-left">
+                                <label className="flex items-center gap-2 text-sm font-medium text-blue-600 mb-2">
+                                    <MapPin className="w-4 h-4" />
                                     Địa chỉ
                                 </label>
                                 <input
@@ -230,21 +237,11 @@ const UpdateEmployeeWorkingInformation = ({ employeeId, isOpen, onClose, onSubmi
                                     className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none"
                                 />
                             </div>
-                            <div>
-                                <label className="block text-sm font-light text-gray-700 mb-2 text-left">
-                                    Tài khoản ngân hàng
-                                </label>
-                                <input
-                                    type="text"
-                                    value={employeeData?.bankAccount}
-                                    readOnly
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none"
-                                />
-                            </div>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-light text-gray-700 mb-2 text-left">
+                                <label className="flex items-center gap-2 text-sm font-medium text-blue-600 mb-2">
+                                    <Calendar className="w-4 h-4" />
                                     Ngày sinh
                                 </label>
                                 <input
@@ -255,7 +252,8 @@ const UpdateEmployeeWorkingInformation = ({ employeeId, isOpen, onClose, onSubmi
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-light text-gray-700 mb-2 text-left">
+                                <label className="flex items-center gap-2 text-sm font-medium text-blue-600 mb-2">
+                                    <UserCircle className="w-4 h-4" />
                                     Giới tính
                                 </label>
                                 <input
@@ -266,114 +264,127 @@ const UpdateEmployeeWorkingInformation = ({ employeeId, isOpen, onClose, onSubmi
                                 />
                             </div>
                         </div>
-
-                        <p className="text-gray-500">Thông tin làm việc</p>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {/* Phòng ban */}
-                            <Controller
-                                name="departmentId"
-                                defaultValue={employeeData?.departmentId || 0}
-                                control={control}
-                                rules={{
-                                    required: 'Nhân viên phải có bộ phận',
-                                    validate: (value) => value > 0 || 'Vui lòng chọn bộ phận hợp lệ'
-                                }}
-                                render={({ field }) => (
-                                    <div>
-                                        <label className="block text-sm font-light text-gray-700 mb-2 text-left">
-                                            Bộ phận (*)
-                                            {employeeData?.departmentName && (
-                                                <span className="text-gray-500 text-xs ml-2">
-                                                    (Hiện tại: {employeeData.departmentName})
-                                                </span>
-                                            )}
-                                        </label>
-
-                                        <select
-                                            {...field}
-                                            value={field.value || ""}
-                                            onChange={(e) => field.onChange(Number(e.target.value))}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        >
-                                            <option value="">-- Chọn bộ phận --</option>
-
-                                            {departments.map((dept) => (
-                                                <option key={dept.id} value={dept.id}>
-                                                    {dept.name}
-                                                </option>
-                                            ))}
-                                        </select>
-
-                                        {errors.departmentId && (
-                                            <p className="text-red-500 text-sm mt-1">
-                                                {errors.departmentId.message}
-                                            </p>
-                                        )}
-                                    </div>
-                                )}
+                        <div>
+                            <label className="flex items-center gap-2 text-sm font-medium text-blue-600 mb-2">
+                                <Wallet className="w-4 h-4" />
+                                Tài khoản ngân hàng
+                            </label>
+                            <input
+                                type="text"
+                                value={employeeData?.bankAccount || 'Chưa cập nhật'}
+                                readOnly
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none"
                             />
+                        </div>
+
+                            {/* Phòng ban */}
+                        <Controller
+                            name="departmentId"
+                            defaultValue={employeeData?.departmentId || 0}
+                            control={control}
+                            rules={{
+                                required: 'Nhân viên phải có bộ phận',
+                                validate: (value) => value > 0 || 'Vui lòng chọn bộ phận hợp lệ'
+                            }}
+                            render={({ field }) => (
+                                <div>
+                                    <label className="flex items-center gap-2 text-sm font-medium text-blue-600 mb-2">
+                                        <Building2 className="w-4 h-4" />
+                                        Bộ phận (*)
+                                        {employeeData?.departmentName && (
+                                            <span className="text-gray-500 text-xs ml-2">
+                                                    {employeeData.departmentName}
+                                            </span>
+                                        )}
+                                    </label>
+
+                                    <select
+                                        {...field}
+                                        value={field.value || ""}
+                                        onChange={(e) => field.onChange(Number(e.target.value))}
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    >
+                                        <option value="">-- Chọn bộ phận --</option>
+
+                                        {departments.map((dept) => (
+                                            <option key={dept.id} value={dept.id}>
+                                                {dept.name}
+                                            </option>
+                                            ))}
+                                    </select>
+
+                                    {errors.departmentId && (
+                                        <p className="text-red-500 text-sm mt-1">
+                                            {errors.departmentId.message}
+                                        </p>
+                                    )}
+                                </div>
+                            )}
+                        />
 
                             {/* Trạng thái */}
-                            <Controller
-                                name="status"
-                                defaultValue={employeeData?.status}
-                                control={control}
-                                rules={{ required: 'Nhân viên phải có trạng hái làm việc', pattern: { value: /^(active|inactive|suspended)$/, message: 'Trạng thái không hợp lệ' } }}
-                                render={({ field }) => (
-                                    <div>
-                                        <label className="block text-sm font-light text-gray-700 mb-2 text-left">Trạng thái (*)</label>
-                                        <select {...field} className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none">
-                                            <option value="active">Đang làm việc</option>
-                                            <option value="inactive">Tạm nghỉ</option>
-                                            <option value="suspended">Đã thôi việc (Vô hiệu hóa)</option>
-                                        </select>
-                                        {errors.status && <p className="text-red-500 text-sm mt-1">{errors.status.message}</p>}
-                                    </div>
-                                )}
-                            />
-                        </div>
-                        <div className="flex justify-end gap-3 pt-6 border-t">
-                            <button
-                                type="button"
-                                onClick={handleClose}
-                                className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-all"
-                                style={{
-                                    transition: 'all 0.3s ease'
-                                }}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.transform = 'translateY(-2px)';
-                                    e.currentTarget.style.boxShadow = '0 5px 20px rgba(102, 126, 234, 0.4)';
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.transform = 'translateY(0)';
-                                    e.currentTarget.style.boxShadow = 'none';
-                                }}
-                                disabled={isSubmitting}
-                            >
-                                Hủy
-                            </button>
-                            <button
-                                type="submit"
-                                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all"
-                                style={{
-                                    transition: 'all 0.3s ease'
-                                }}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.transform = 'translateY(-2px)';
-                                    e.currentTarget.style.boxShadow = '0 5px 20px rgba(102, 126, 234, 0.4)';
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.transform = 'translateY(0)';
-                                    e.currentTarget.style.boxShadow = 'none';
-                                }}
-                                disabled={isSubmitting}
-                            >
-                                {isSubmitting ? 'Đang Lưu...' : 'Lưu Thay Đổi'}
-                            </button>
-                        </div>
-                    </form>
-                ) : null}
-            </Modal>
+                        <Controller
+                            name="status"
+                            defaultValue={employeeData?.status}
+                            control={control}
+                            rules={{ required: 'Nhân viên phải có trạng thái làm việc', pattern: { value: /^(active|inactive|suspended)$/, message: 'Trạng thái không hợp lệ' } }}
+                            render={({ field }) => (
+                                <div>
+                                    <label className="flex items-center gap-2 text-sm font-medium text-blue-600 mb-2">
+                                        <Activity className="w-4 h-4" />
+                                            Trạng thái (*)
+                                    </label>
+                                    <select {...field} className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none">
+                                        <option value="active">Đang làm việc</option>
+                                        <option value="inactive">Tạm nghỉ</option>
+                                        <option value="suspended">Đã thôi việc (Vô hiệu hóa)</option>
+                                    </select>
+                                    {errors.status && <p className="text-red-500 text-sm mt-1">{errors.status.message}</p>}
+                                </div>
+                            )}
+                        />
+                    <div className="flex justify-end gap-3 pt-6 border-t">
+                        <button
+                            type="button"
+                            onClick={handleClose}
+                            className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-all"
+                            style={{
+                                transition: 'all 0.3s ease'
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = 'translateY(-2px)';
+                                e.currentTarget.style.boxShadow = '0 5px 20px rgba(102, 126, 234, 0.4)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = 'translateY(0)';
+                                e.currentTarget.style.boxShadow = 'none';
+                            }}
+                            disabled={isSubmitting}
+                        >
+                            Hủy
+                        </button>
+                        <button
+                            type="submit"
+                            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all"
+                            style={{
+                                transition: 'all 0.3s ease'
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = 'translateY(-2px)';
+                                e.currentTarget.style.boxShadow = '0 5px 20px rgba(102, 126, 234, 0.4)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = 'translateY(0)';
+                                e.currentTarget.style.boxShadow = 'none';
+                            }}
+                            disabled={isSubmitting}
+                        >
+                            {isSubmitting ? 'Đang Lưu...' : 'Lưu Thay Đổi'}
+                        </button>
+                    </div>
+                </form>
+            ) : null}
+        </Modal>
             {/* Modal Xác nhận Vô hiệu hóa (Deactivation Confirmation Modal) */}
             {employeeId && (
                 <ConfirmStatusEmployee

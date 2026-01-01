@@ -82,7 +82,7 @@ export const employeeService = {
 
   // Cập nhật thông tin nhân viên
   updateEmployee: async (id: number, data: Partial<CreateEmployeeData>): Promise<EmployeeDetailData> => {
-    const response = await apiDotNet.put(`/Employee/${id}`, data);
+    const response = await apiDotNet.put(`/employee/${id}`, data);
 
     if (response.data.success) {
       return response.data;

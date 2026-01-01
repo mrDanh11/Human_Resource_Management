@@ -11,7 +11,7 @@ interface EmployeeData {
   email?: string;
   phone?: string;
   address?: string;
-  citizenId?: string;
+  cccd?: string;
   taxCode?: string;
   bankAccount?: {
     accountNumber?: string;
@@ -22,8 +22,25 @@ interface EmployeeData {
   birthDate?: string | Date;
 }
 
+interface EmployeeData2 {
+  id?: number;
+  fullname?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  cccd?: string;
+  taxCode?: string;
+  bankAccount?: string;
+  departmentName?: string;
+  roleName?: string;
+  birthday?: string;
+  position?: string;
+  joinDate?: string | Date;
+  birthDate?: string | Date;
+}
+
 interface ProfileContentProps {
-  data: EmployeeData;
+  data: EmployeeData2;
   showCccd: boolean;
   showBank: boolean;
   showTax: boolean;
@@ -63,10 +80,10 @@ export default function ProfileContent({
             iconColor="#10b981"
           >
             <ProfileWorkInfo
-              department={data.department}
-              position={data.position}
+              department={data.departmentName}
+              position={data.roleName}
               joinDate={data.joinDate}
-              birthDate={data.birthDate}
+              birthDate={data.birthday}
             />
           </Card>
 
