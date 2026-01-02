@@ -52,7 +52,7 @@ public class PointConversionRuleDto
 {
     public int Id { get; set; }
     public int PointValue { get; set; }
-    public double MoneyValue { get; set; }
+    public decimal MoneyValue { get; set; }
     public int? UpdatedBy { get; set; }
     public string? UpdatedByName { get; set; }
     public DateTime? UpdatedAt { get; set; }
@@ -68,7 +68,7 @@ public class UpsertPointConversionRuleDto
 
     [Required(ErrorMessage = "Giá trị tiền là bắt buộc")]
     [Range(0.01, 1000000000, ErrorMessage = "Giá trị tiền phải lớn hơn 0")]
-    public double MoneyValue { get; set; }
+    public decimal MoneyValue { get; set; }
 
     // UpdatedBy sẽ được lấy từ token của user đang đăng nhập
     public int? UpdatedBy { get; set; }
@@ -82,7 +82,7 @@ public class PointToMoneyHistoryDto
     public string EmployeeName { get; set; } = null!;
     public string Email { get; set; } = null!;
     public int PointRequested { get; set; }
-    public double MoneyReceived { get; set; }
+    public decimal MoneyReceived { get; set; }
     public string Status { get; set; } = null!;
     public string StatusDisplay { get; set; } = null!;
     public DateTime? CreatedAt { get; set; }

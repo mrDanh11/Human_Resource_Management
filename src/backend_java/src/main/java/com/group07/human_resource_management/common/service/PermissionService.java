@@ -38,7 +38,9 @@ public class PermissionService {
 
                     //Participation
                     "participate:list",
-                    "participate:view"
+                    "participate:view",
+                    "participate:update",
+                    "participate:attendance"
             );
 
             case "hr" -> List.of(
@@ -68,7 +70,9 @@ public class PermissionService {
 
                     //Participation
                     "participate:list",
-                    "participate:view"
+                    "participate:view",
+                    "participate:update",
+                    "participate:attendance"
             );
 
             case "manager" -> List.of(
@@ -93,7 +97,9 @@ public class PermissionService {
 
                     //Participation
                     "participate:list",
-                    "participate:view"
+                    "participate:view",
+                    "participate:update",
+                    "participate:attendance"
             );
 
             default -> List.of(
