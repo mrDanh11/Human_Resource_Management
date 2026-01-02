@@ -97,6 +97,7 @@ public class PointController : ControllerBase
     {
         try
         {
+            _logger.LogInformation("Updated points for employee: {dto})", dto);
             if (!ModelState.IsValid)
             {
                 var errors = ModelState.Values
@@ -109,7 +110,8 @@ public class PointController : ControllerBase
             }
 
             var result = await _pointService.UpdateEmployeePointAsync(employeeId, dto);
-
+            _logger.LogInformation("Updated points for employee {EmployeeId} by {Value} points",
+                employeeId, dto.Value);
             if (!result.Success)
             {
                 if (result.Message.Contains("Không tìm thấy"))

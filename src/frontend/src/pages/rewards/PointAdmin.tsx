@@ -99,6 +99,10 @@ export default function PointsAdmin() {
         ));
     };
 
+    const fotmatMoney = (amount: number) => {
+        return amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+    }
+
     const updateConversionRule = (ruleId: number, newPoints: number, newMoney: number) => {
 
     };
@@ -593,7 +597,7 @@ export default function PointsAdmin() {
                                                                     <>
                                                                         <div className="text-center">
                                                                             <div className="text-sm text-gray-500">Số tiền</div>
-                                                                            <div className="text-xl font-bold text-blue-600">{rule.moneyValue} VND</div>
+                                                                            <div className="text-xl font-bold text-blue-600">{fotmatMoney(rule.moneyValue)}</div>
                                                                         </div>
                                                                         <div
                                                                             className={`text-xs font-semibold ${rule.isActive ? 'text-green-600' : 'text-red-600'}`}

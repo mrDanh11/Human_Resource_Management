@@ -124,6 +124,8 @@ public class PointService : IPointService
                     new List<string> { "Nhân viên chưa có thông tin điểm thưởng" });
             }
 
+            Console.WriteLine($"Current Point Total for Employee: {dto}");
+
             // Calculate new point total
             int newTotal = point.PointTotal ?? 0;
             
@@ -173,7 +175,7 @@ public class PointService : IPointService
 
             return ApiResponse<EmployeePointDto>.SuccessResponse(
                 resultDto,
-                "Cập nhật điểm thành công");
+                $"Cập nhật điểm thành công với {dto.Value} điểm");
         }
         catch (Exception ex)
         {
@@ -434,7 +436,7 @@ public class PointService : IPointService
             }
 
             // Calculate money
-            decimal moneyReceived = (decimal)dto.PointRequested / rule.PointValue * rule.MoneyValue;
+            double moneyReceived = dto.PointRequested / rule.PointValue * rule.MoneyValue;
 
             // Create conversion request
             var history = new PointToMoneyHistory
