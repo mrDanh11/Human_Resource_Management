@@ -89,7 +89,7 @@ export default function CompletedActivityDetailModal({
           </div>
 
           {/* Quick Stats Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             <div className="bg-blue-50 rounded-lg p-4 text-center">
               <Users className="w-8 h-8 text-blue-600 mx-auto mb-2" />
               <p className="text-2xl font-bold text-blue-700">{activity.currentParticipants}</p>
@@ -106,29 +106,6 @@ export default function CompletedActivityDetailModal({
               <Award className="w-8 h-8 text-yellow-600 mx-auto mb-2" />
               <p className="text-2xl font-bold text-yellow-700">{activity.excellentEmployees}</p>
               <p className="text-xs text-gray-600">Xuất sắc</p>
-            </div>
-            <div className="bg-red-50 rounded-lg p-4 text-center">
-              <UserX className="w-8 h-8 text-red-600 mx-auto mb-2" />
-              <p className="text-2xl font-bold text-red-700">{activity.absentees}</p>
-              <p className="text-xs text-gray-600">Vắng mặt</p>
-            </div>
-          </div>
-
-          {/* Attendance Bar */}
-          <div className="bg-gray-50 rounded-lg p-4">
-            <div className="flex justify-between text-sm mb-2">
-              <span className="text-gray-700 font-medium">Tỷ lệ tham dự</span>
-              <span className="text-green-600 font-bold">{attendanceRate}%</span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-3">
-              <div 
-                className="bg-green-500 h-3 rounded-full transition-all"
-                style={{ width: `${attendanceRate}%` }}
-              />
-            </div>
-            <div className="flex justify-between text-xs text-gray-600 mt-2">
-              <span>Có mặt: {activity.currentParticipants - activity.absentees}</span>
-              <span>Vắng: {activity.absentees}</span>
             </div>
           </div>
 
@@ -153,15 +130,6 @@ export default function CompletedActivityDetailModal({
                 <div className="flex-1">
                   <p className="text-sm text-gray-600 mb-1">Địa điểm</p>
                   <p className="font-semibold text-gray-900">{activity.location}</p>
-                </div>
-              </div>
-
-              {/* Organizer */}
-              <div className="flex items-start gap-3">
-                <Users className="w-5 h-5 text-purple-600 mt-1 shrink-0" />
-                <div className="flex-1">
-                  <p className="text-sm text-gray-600 mb-1">Đơn vị tổ chức</p>
-                  <p className="font-semibold text-gray-900">{activity.organizer}</p>
                 </div>
               </div>
             </div>

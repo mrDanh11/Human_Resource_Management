@@ -14,9 +14,6 @@ import StatCard from '../../components/rewards/StatCard';
 import FilterPanel from '../../components/rewards/FilterPanel';
 import TransactionList from '../../components/rewards/TransactionList';
 import type { TransactionFilter } from '../../types/reward';
-import Header from '../../components/LandingPage/Header';
-import Sidebar from '../../components/common/Sidebar';
-import Footer from '../../components/LandingPage/Footer';
 
 export default function RewardHistory() {
   const [employeeId, setEmployeeId] = useState<number>(0);
@@ -59,19 +56,16 @@ export default function RewardHistory() {
 
   return (
     <>
-      <Header />
-      <div className="flex" style={{ background: '#fafdff' }}>
-        <Sidebar />
-        
+      <div className="flex" style={{ background: '#fafdff' }}>       
         <div className="flex-1 flex flex-col" style={{ background: '#fafdff' }}>
           <div className="min-h-screen p-8">
             {/* Page Header */}
             <header className="mb-8">
-              <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-3">
-                <Award className="text-blue-600" size={32} />
+              <h1 className="text-4xl font-bold text-slate-900 flex items-center gap-3">
+                <Award className="text-blue-600" size={36} />
                 Lịch sử điểm thưởng
               </h1>
-              <p className="text-slate-600 mt-2">
+              <p className="text-slate-600 text-lg mt-2">
                 Theo dõi toàn bộ lịch sử nhận và đổi điểm thưởng của bạn
               </p>
             </header>
@@ -123,8 +117,6 @@ export default function RewardHistory() {
               </div>
             </div>
           </div>
-          
-          <Footer />
         </div>
       </div>
     </>

@@ -1,17 +1,17 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
 import Header from "../components/LandingPage/Header";
-import AdminSidebar from "../components/common/AdminSidebar.tsx";
+import HRSidebar from "../components/common/HRSidebar";
 
-const AdminLayout: React.FC = () => {
+const HRLayout: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
 
       <div className="flex flex-1">
-        <AdminSidebar />
+        <HRSidebar />
 
-        <main className="flex-1 bg-gray-100 ml-64">
+        <main className="flex-1 bg-gray-100">
           <Outlet />
         </main>
       </div>
@@ -19,4 +19,4 @@ const AdminLayout: React.FC = () => {
   );
 };
 
-export default AdminLayout;
+export default HRLayout;

@@ -1,5 +1,6 @@
 using HRMApi.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HRMApi.Data;
 
@@ -25,14 +26,38 @@ public class HrmDbContext : DbContext
     public DbSet<Attendance> Attendances { get; set; }
     public DbSet<Request> Requests { get; set; }
     public DbSet<ApprovalHistory> ApprovalHistories { get; set; }
-    
-    // New DbSets for monthly point allocation
     public DbSet<MonthlyPointRule> MonthlyPointRules { get; set; }
     public DbSet<MonthlyPointAllocationHistory> MonthlyPointAllocationHistories { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        
+        // ============================================
+        // DATETIME UTC CONVERTER - FIX POSTGRESQL ISSUE
+        // ============================================
+        var dateTimeConverter = new ValueConverter<DateTime, DateTime>(
+            v => v.ToUniversalTime(),
+            v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+
+        var nullableDateTimeConverter = new ValueConverter<DateTime?, DateTime?>(
+            v => v.HasValue ? v.Value.ToUniversalTime() : v,
+            v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : v);
+
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            foreach (var property in entityType.GetProperties())
+            {
+                if (property.ClrType == typeof(DateTime))
+                {
+                    property.SetValueConverter(dateTimeConverter);
+                }
+                else if (property.ClrType == typeof(DateTime?))
+                {
+                    property.SetValueConverter(nullableDateTimeConverter);
+                }
+            }
+        }
         
         // ============================================
         // TABLE MAPPINGS
@@ -193,9 +218,12 @@ public class HrmDbContext : DbContext
             entity.Property(e => e.Description).HasColumnName("description");
             entity.Property(e => e.StartDate).HasColumnName("start_date");
             entity.Property(e => e.EndDate).HasColumnName("end_date");
-            entity.Property(e => e.RegisterDeadline).HasColumnName("register_deadline");
+            entity.Property(e => e.registrationStartDate).HasColumnName("registration_start_date");
+            entity.Property(e => e.registrationEndDate).HasColumnName("registration_end_date");
+            //entity.Property(e => e.RegisterDeadline).HasColumnName("register_deadline");
             entity.Property(e => e.MaxParticipants).HasColumnName("max_participants");
             entity.Property(e => e.Status).HasColumnName("status");
+            entity.Property(e => e.ImgActivity).HasColumnName("image_url");
             entity.Property(e => e.CreatedBy).HasColumnName("created_by");
             entity.Property(e => e.CreatedAt).HasColumnName("created_at");
             entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");

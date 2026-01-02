@@ -3,6 +3,7 @@
  * API calls: xem điểm, lịch sử giao dịch, quy đổi điểm
  */
 
+import type { Update } from '@reduxjs/toolkit';
 import { apiDotNet } from './api';
 
 // ============================================
@@ -69,6 +70,13 @@ export interface PagedResult<T> {
   totalPages: number;
   hasPreviousPage: boolean;
   hasNextPage: boolean;
+}
+
+export interface UpdatePointDto {
+  value: number;
+  type: string;
+  description?: string;
+  actorId?: number;
 }
 
 // ============================================
@@ -252,4 +260,21 @@ export const pointService = {
 
     return response.data;
   },
-};
+
+  updatePoint: async (
+    employeeId: number,
+    updateData: UpdatePointDto
+  ): Promise<UpdatePointDto> => {
+    const response = await apiDotNet.put<ApiResponse<UpdatePointDto>>(
+      `/Point/employee/${employeeId}`,
+      updateData
+    );
+
+    console.log("updatePoint:", updateData);
+
+    if (response.data.success) {
+      return response.data.data;
+    }
+    throw new Error(response.data.message || 'Lỗi khi cập nhật điểm');
+  }
+};  

@@ -52,7 +52,7 @@ export default function ActivityResultModal({ participation, isOpen, onClose }: 
                     {participation.id && (
                         <div className="h-64 overflow-hidden relative">
                             <img
-                                src={"https://placehold.co/600x400"}
+                                src={participation.imgPath}
                                 alt={participation.activityName}
                                 className="w-full h-full object-cover"
                             />

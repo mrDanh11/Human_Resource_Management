@@ -3,16 +3,16 @@ import { Home, User, FileText, Activity, Award, ChevronDown } from "lucide-react
 import { useLocation, useNavigate } from "react-router-dom";
 
 const userId = localStorage.getItem('userId');
-const userRole = localStorage.getItem('role');
 
-const Sidebar: React.FC = () => {
+const HRSidebar: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   const menuItems = [
     { label: "Trang chủ", icon: Home, to: "/landing" },
-    { label: "Thông tin cá nhân", icon: User, to: `/employee/profile/${userId}` },
+    { label: "Dashboard", icon: FileText, to: "/hr/dashboard" },
+    { label: "Hồ sơ cá nhân", icon: User, to: `/employee/profile/${userId}` },
     { label: "Yêu cầu", icon: FileText, to: "/requests" },
     {
       label: "Hoạt động",
@@ -20,10 +20,8 @@ const Sidebar: React.FC = () => {
       key: "activities",
       submenu: [
         { label: "Đang mở", to: "/activities" },
-        ...(userRole === 'hr' ? [
-          { label: "Tạo hoạt động", to: "/activities/create" },
-          { label: "Hủy hoạt động", to: "/activities/cancel" },
-        ] : []),
+        { label: "Tạo hoạt động", to: "/activities/create" },
+        { label: "Hủy hoạt động", to: "/activities/cancel" },
         { label: "Đã đăng ký", to: "/activities/history" },
         { label: "Kết quả", to: "/activities/result" }
       ]
@@ -34,17 +32,23 @@ const Sidebar: React.FC = () => {
       key: "rewards",
       submenu: [
         { label: "Tổng quan", to: "/rewards/points" },
-        ...(userRole === 'hr' ? [
-          { label: "Thưởng điểm HR", to: "/rewards/hr-reward" },
-        ] : []),
+
+        { label: "Thưởng điểm HR", to: "/rewards/hr-reward" },
         { label: "Lịch sử giao dịch", to: "/rewards/history" },
         { label: "Đổi thưởng", to: "/rewards/exchange" },
+
       ]
     },
   ];
 
   return (
-    <aside className="w-64 bg-white shadow-xl border-r border-gray-200 flex flex-col py-10 px-6 fixed h-full overflow-y-auto">
+    <aside className="w-56 min-h-screen bg-white border-r border-[#E6E6E6] flex flex-col pt-8 pb-4 px-2">
+
+      <div className="mb-6 px-4">
+        <div className="text-xl font-bold text-blue-600">HR Portal</div>
+        <div className="text-xs text-gray-500">Human Resources</div>
+      </div>
+
       <nav className="flex flex-col gap-2">
         {menuItems.map((item, i) => {
           const Icon = item.icon;
@@ -56,7 +60,7 @@ const Sidebar: React.FC = () => {
                 <div>
                   <button
                     onClick={() => setOpenDropdown(openDropdown === item.key ? null : item.key || null)}
-                    className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg font-medium transition-all ${item.submenu.some(sub => location.pathname === sub.to)
+                    className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium transition-all ${item.submenu.some(sub => location.pathname === sub.to)
                       ? "bg-[#EDF4FF] text-[#0066FF] shadow"
                       : "text-gray-700 hover:bg-gray-100"
                       }`}
@@ -97,7 +101,7 @@ const Sidebar: React.FC = () => {
                 // Regular menu item
                 <button
                   onClick={() => navigate(item.to!)}
-                  className={`w-full text-left flex items-center gap-3 px-4 py-2.5 rounded-lg font-medium transition-all ${location.pathname === item.to
+                  className={`w-full text-left flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium transition-all ${location.pathname === item.to
                     ? "bg-[#EDF4FF] text-[#0066FF] shadow"
                     : "text-gray-700 hover:bg-gray-100"
                     }`}
@@ -114,4 +118,4 @@ const Sidebar: React.FC = () => {
   );
 }
 
-export default Sidebar;
+export default HRSidebar;

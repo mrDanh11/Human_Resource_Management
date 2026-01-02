@@ -11,13 +11,15 @@ export default function ActivityListResultCard({
     onViewResult
 }: ActivityListCardProps) {
 
+    console.log("Activity:", activity);
+
     return (
         <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
             {/* Image */}
             {activity.activityId && (
                 <div className="h-48 overflow-hidden">
                     <img
-                        src={"https://placehold.co/600x400"}
+                        src={activity.imgPath}
                         alt={activity.activityName}
                         className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                     />
@@ -25,6 +27,10 @@ export default function ActivityListResultCard({
             )}
 
             <div className="p-6">
+                {/* Activity Name */}
+                <h3 className="text-xl font-bold text-gray-900 flex-1">
+                    {activity.activityName}
+                </h3>
 
                 {/* Description */}
                 <p className="text-gray-600 text-sm mb-4 line-clamp-2">

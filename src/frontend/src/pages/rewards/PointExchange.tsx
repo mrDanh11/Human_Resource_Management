@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import PointExchangeLayout from "../../components/rewards/PointExchangeLayout";
 import HalfCircleProgress from "../../components/rewards/HalfCircleProgress";
 import ConversionRateInfo from "../../components/rewards/ConversionRateInfo";
@@ -17,7 +16,6 @@ import ExchangePointSuccessToast from "../../components/rewards/ExchangePointSuc
 /* -------------------------------------------------------------------------- */
 
 export default function PointExchange() {
-  const navigate = useNavigate();
   const employeeId = parseInt(localStorage.getItem("userId") || "1");
   const { currentPoints, conversionRate, loading } = usePointExchange(employeeId);
   const [percent, setPercent] = useState(0);
@@ -103,10 +101,10 @@ export default function PointExchange() {
       <div className="w-full p-6 md:p-10" style={{ background: '#fafdff' }}>
         {/* HEADER */}
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-blue-600">
+          <h1 className="text-4xl font-bold text-blue-600">
             Quy đổi điểm thưởng
           </h1>
-          <p className="text-gray-600 text-sm mt-1">
+          <p className="text-gray-600 text-lg mt-1">
             Chuyển đổi điểm thưởng của bạn thành tiền mặt
           </p>
         </div>
@@ -121,16 +119,16 @@ export default function PointExchange() {
             <div className="flex items-start gap-3">
               <Clock className="w-5 h-5 text-yellow-600 shrink-0 mt-0.5" />
               <div className="flex-1">
-                <h3 className="font-semibold text-yellow-800 text-base sm:text-lg mb-2">
+                <h3 className="font-semibold text-yellow-800 text-lg sm:text-xl mb-2">
                   Yêu cầu đang chờ xử lý
                 </h3>
-                <p className="text-sm text-yellow-700 mb-3">
+                <p className="text-base text-yellow-700 mb-3">
                   Bạn có {pendingRequests.length} yêu cầu quy đổi đang chờ admin duyệt. 
                   Vui lòng đợi trước khi gửi yêu cầu mới.
                 </p>
                 <div className="space-y-2">
                   {pendingRequests.map((req) => (
-                    <div key={req.id} className="bg-yellow-100 rounded-lg px-3 py-2 text-sm">
+                    <div key={req.id} className="bg-yellow-100 rounded-lg px-3 py-2 text-base">
                       <span className="font-medium">{req.pointRequested} điểm</span> → {req.moneyReceived.toLocaleString('vi-VN')}đ
                       <span className="text-gray-600 ml-2">
                         ({new Date(req.createdAt).toLocaleDateString('vi-VN')})
@@ -161,7 +159,7 @@ export default function PointExchange() {
               {/* BEAUTIFUL DIVIDER */}
               <div className="relative w-full my-8 flex justify-center">
                 <div
-                  className="w-full h-[2px] rounded-full backdrop-blur-sm"
+                  className="w-full h-0.5 rounded-full backdrop-blur-sm"
                   style={{
                     background: `
                       linear-gradient(
