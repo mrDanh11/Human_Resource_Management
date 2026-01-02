@@ -2,6 +2,13 @@
  * completedActivityData.ts - Mock data cho các hoạt động đã hoàn thành
  */
 
+export interface ExcellentEmployee {
+  id: number;
+  name: string;
+  department: string;
+  achievement: string;
+}
+
 export interface CompletedActivityData {
   id: string;
   name: string;
@@ -11,6 +18,7 @@ export interface CompletedActivityData {
   maxParticipants: number;
   currentParticipants: number;
   excellentEmployees: number;
+  excellentEmployeeList?: ExcellentEmployee[];
   absentees: number;
   location: string;
   type: 'sports' | 'charity' | 'training' | 'team-building' | 'volunteer';
@@ -28,6 +36,20 @@ export const mockCompletedActivities: CompletedActivityData[] = [
     maxParticipants: 100,
     currentParticipants: 87,
     excellentEmployees: 12,
+    excellentEmployeeList: [
+      { id: 1, name: 'Nguyễn Văn A', department: 'Công nghệ', achievement: 'Hoàn thành xuất sắc' },
+      { id: 2, name: 'Trần Thị B', department: 'Nhân sự', achievement: 'Đóng góp tích cực' },
+      { id: 3, name: 'Lê Văn C', department: 'Kinh doanh', achievement: 'Tinh thần cao' },
+      { id: 4, name: 'Phạm Thị D', department: 'Marketing', achievement: 'Hoàn thành xuất sắc' },
+      { id: 5, name: 'Hoàng Văn E', department: 'Kế toán', achievement: 'Đóng góp tích cực' },
+      { id: 6, name: 'Vũ Thị F', department: 'Công nghệ', achievement: 'Tinh thần cao' },
+      { id: 7, name: 'Đỗ Văn G', department: 'Nhân sự', achievement: 'Hoàn thành xuất sắc' },
+      { id: 8, name: 'Bùi Thị H', department: 'Kinh doanh', achievement: 'Đóng góp tích cực' },
+      { id: 9, name: 'Đinh Văn I', department: 'Marketing', achievement: 'Tinh thần cao' },
+      { id: 10, name: 'Mai Thị K', department: 'Kế toán', achievement: 'Hoàn thành xuất sắc' },
+      { id: 11, name: 'Võ Văn L', department: 'Công nghệ', achievement: 'Đóng góp tích cực' },
+      { id: 12, name: 'Trương Thị M', department: 'Nhân sự', achievement: 'Tinh thần cao' }
+    ],
     absentees: 8,
     location: 'Công viên Thống Nhất',
     type: 'sports',
@@ -43,6 +65,16 @@ export const mockCompletedActivities: CompletedActivityData[] = [
     maxParticipants: 30,
     currentParticipants: 30,
     excellentEmployees: 8,
+    excellentEmployeeList: [
+      { id: 1, name: 'Ngô Văn N', department: 'Nhân sự', achievement: 'Tinh thần cao' },
+      { id: 2, name: 'Lý Thị O', department: 'Marketing', achievement: 'Hoàn thành xuất sắc' },
+      { id: 3, name: 'Dương Văn P', department: 'Kinh doanh', achievement: 'Đóng góp tích cực' },
+      { id: 4, name: 'Phan Thị Q', department: 'Công nghệ', achievement: 'Tinh thần cao' },
+      { id: 5, name: 'Tô Văn R', department: 'Kế toán', achievement: 'Hoàn thành xuất sắc' },
+      { id: 6, name: 'Hồ Thị S', department: 'Nhân sự', achievement: 'Đóng góp tích cực' },
+      { id: 7, name: 'Châu Văn T', department: 'Marketing', achievement: 'Tinh thần cao' },
+      { id: 8, name: 'Khương Thị U', department: 'Kinh doanh', achievement: 'Hoàn thành xuất sắc' }
+    ],
     absentees: 2,
     location: 'Sapa, Lào Cai',
     type: 'charity',

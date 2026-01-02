@@ -97,6 +97,7 @@ export interface ParticipationData {
   cancelDate: Date,
   status: string,
   result: string,
+  imgPath: string,
 }
 
 export interface MyParticipationResponse {

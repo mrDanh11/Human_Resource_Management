@@ -9,6 +9,7 @@ interface ActivityDetailModalProps {
   onRegister: (activityId: string) => void;
   onUnregister?: (activityId: string) => void;
   isRegistered?: boolean;
+  userRole?: string;
 }
 
 const activityTypeLabels: Record<ActivityData['type'], string> = {
@@ -33,7 +34,8 @@ export default function ActivityDetailModal({
   onClose, 
   onRegister,
   onUnregister,
-  isRegistered = false
+  isRegistered = false,
+  userRole
 }: ActivityDetailModalProps) {
   const [isHovered, setIsHovered] = useState(false);
   
@@ -268,72 +270,75 @@ export default function ActivityDetailModal({
                 Đóng
               </button>              
               
-              {isRegistered ? (
-                !isRegistrationOpen() ? (
-                  <button
-                    disabled
-                    className="flex-1 px-6 py-3 bg-gray-400 text-white rounded-lg font-medium cursor-not-allowed"
-                  >
-                    Đã đăng ký
-                  </button>
+              {/* Chỉ hiển thị nút đăng ký cho EMPLOYEE */}
+              {!['HR', 'ADMIN'].includes(userRole?.toUpperCase() || '') && (
+                isRegistered ? (
+                  !isRegistrationOpen() ? (
+                    <button
+                      disabled
+                      className="flex-1 px-6 py-3 bg-gray-400 text-white rounded-lg font-medium cursor-not-allowed"
+                    >
+                      Đã đăng ký
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        if (onUnregister) {
+                          onUnregister(activity.id);
+                          onClose();
+                        }
+                      }}
+                      className="flex-1 px-6 py-3 bg-green-600 hover:bg-red-600 text-white rounded-lg font-medium transition-all"
+                      style={{
+                        transition: 'all 0.3s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        setIsHovered(true);
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                        e.currentTarget.style.boxShadow = '0 5px 20px rgba(22, 163, 74, 0.4)';
+                      }}
+                      onMouseLeave={(e) => {
+                        setIsHovered(false);
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = 'none';
+                      }}
+                    >
+                      {!isHovered ? (
+                        <span>Đã đăng ký</span>
+                      ) : (
+                        <span>Hủy đăng ký</span>
+                      )}
+                    </button>
+                  )
                 ) : (
                   <button
                     onClick={() => {
-                      if (onUnregister) {
-                        onUnregister(activity.id);
-                        onClose();
-                      }
+                      onRegister(activity.id);
+                      onClose();
                     }}
-                    className="flex-1 px-6 py-3 bg-green-600 hover:bg-red-600 text-white rounded-lg font-medium transition-all"
+                    disabled={!canRegister}
+                    className={`flex-1 px-6 py-3 rounded-lg font-medium transition-all ${
+                      canRegister
+                        ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    }`}
                     style={{
                       transition: 'all 0.3s ease'
                     }}
                     onMouseEnter={(e) => {
-                      setIsHovered(true);
-                      e.currentTarget.style.transform = 'translateY(-2px)';
-                      e.currentTarget.style.boxShadow = '0 5px 20px rgba(22, 163, 74, 0.4)';
+                      if (canRegister) {
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                        e.currentTarget.style.boxShadow = '0 5px 20px rgba(37, 99, 235, 0.4)';
+                      }
                     }}
                     onMouseLeave={(e) => {
-                      setIsHovered(false);
                       e.currentTarget.style.transform = 'translateY(0)';
                       e.currentTarget.style.boxShadow = 'none';
                     }}
                   >
-                    {!isHovered ? (
-                      <span>Đã đăng ký</span>
-                    ) : (
-                      <span>Hủy đăng ký</span>
-                    )}
+                    {isFullyBooked() ? 'Đã đủ số lượng' : !isRegistrationOpen() ? 'Đã đóng đăng ký' : 'Đăng ký ngay'}
                   </button>
                 )
-              ) : (
-                <button
-                  onClick={() => {
-                    onRegister(activity.id);
-                    onClose();
-                  }}
-                  disabled={!canRegister}
-                  className={`flex-1 px-6 py-3 rounded-lg font-medium transition-all ${
-                    canRegister
-                      ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  }`}
-                  style={{
-                    transition: 'all 0.3s ease'
-                  }}
-                  onMouseEnter={(e) => {
-                    if (canRegister) {
-                      e.currentTarget.style.transform = 'translateY(-2px)';
-                      e.currentTarget.style.boxShadow = '0 5px 20px rgba(37, 99, 235, 0.4)';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = 'none';
-                  }}
-                >
-                  {isFullyBooked() ? 'Đã đủ số lượng' : !isRegistrationOpen() ? 'Đã đóng đăng ký' : 'Đăng ký ngay'}
-                </button>
               )}
             </div>
           </div>

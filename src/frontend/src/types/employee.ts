@@ -51,3 +51,25 @@ export interface UpdateEmployeeRequest extends Partial<CreateEmployeeRequest> {
   currentPoints: number,
   totalPoints: number,
 }
+
+export interface EmployeeProfile
+{
+  id: number;
+  fullname: string;
+  cccd: string;
+  taxCode: string;
+  phone: string;
+  address: string;
+  bankAccount: string;
+  joinDate: string;
+  status: string;
+  birthday: string;
+  gender: string;
+  email: string;
+  roleId: number;
+  roleName: string;
+  departmentId: number;
+  departmentName: string;
+  createdAt: string;
+  updatedAt: string;
+}

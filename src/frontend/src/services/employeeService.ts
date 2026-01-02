@@ -15,6 +15,16 @@ export const employeeService = {
     return response.data.items;
   },
 
+   getEmployeeDetail: async (id: number): Promise<EmployeeDetailData> => {
+    const response = await apiDotNet.get(`/Employee/${id}`);
+
+    if (response.data.success) {
+      return response.data.data;
+    } else {
+      throw new Error(response.data || 'Something went wrong while fetching employee details');
+    }
+  },
+
   // Lấy thông tin chi tiết nhân viên - map về frontend `Employee` shape
   getEmployeeById: async (id: number | string): Promise<Employee> => {
     const response = await apiDotNet.get(`/Employee/${id}`);
@@ -62,7 +72,7 @@ export const employeeService = {
 
   // Tạo nhân viên mới
   createEmployee: async (data: CreateEmployeeData) => {
-    const response = await apiSpring.post('/v1/employee', data, {
+    const response = await apiSpring.post('/employee', data, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
       },
@@ -72,7 +82,7 @@ export const employeeService = {
 
   // Cập nhật thông tin nhân viên
   updateEmployee: async (id: number, data: Partial<CreateEmployeeData>): Promise<EmployeeDetailData> => {
-    const response = await apiDotNet.put(`/Employee/${id}`, data);
+    const response = await apiDotNet.put(`/employee/${id}`, data);
 
     if (response.data.success) {
       return response.data;
@@ -88,5 +98,38 @@ export const employeeService = {
     if (!response.data.success) {
       throw new Error(response.data || 'Something went wrong while deleting employee');
     }
+  },
+
+  // Lấy thống kê nhân viên
+  getEmployeeStatistics: async (): Promise<{
+    totalEmployees: number;
+    roleDistribution: { roleName: string; count: number }[];
+  }> => {
+    const response = await apiDotNet.get<{ items: EmployeeListItem[] }>('/Employee', {
+      params: {
+        pageNumber: 1,
+        pageSize: 10000,
+      },
+    });
+    
+    const employees = response.data.items;
+    const totalEmployees = employees.length;
+    
+    // Tính phân bổ theo role
+    const roleMap = new Map<string, number>();
+    employees.forEach(emp => {
+      const role = emp.roleName || 'Unknown';
+      roleMap.set(role, (roleMap.get(role) || 0) + 1);
+    });
+    
+    const roleDistribution = Array.from(roleMap.entries()).map(([roleName, count]) => ({
+      roleName,
+      count,
+    }));
+    
+    return {
+      totalEmployees,
+      roleDistribution,
+    };
   },
 };

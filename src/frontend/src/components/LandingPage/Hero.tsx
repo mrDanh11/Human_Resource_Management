@@ -2,7 +2,7 @@
 import { motion } from "framer-motion";
 import { THEME_COLORS } from "../common/THEME_COLORS";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Hero() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -22,7 +22,7 @@ export default function Hero() {
           initial={{ y: 10, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6 }}
-          className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight"
+          className="text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight"
           style={{ color: THEME_COLORS.primary[800] }}
         >
           Human Resource Management System
@@ -32,7 +32,7 @@ export default function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.25 }}
-          className="mt-6 text-base md:text-lg text-gray-600 max-w-3xl mx-auto"
+          className="mt-6 text-lg md:text-xl text-gray-600 max-w-3xl mx-auto"
         >
           Hệ thống quản lý nhân sự toàn diện — AI hỗ trợ, bảo mật, hiệu năng cao. Quản lý hồ sơ,
           yêu cầu, hoạt động và hệ thống khen thưởng cho doanh nghiệp hiện đại.
@@ -47,7 +47,7 @@ export default function Hero() {
           {!isLoggedIn && (
             <a
               href="/login"
-              className="px-6 py-3 rounded-lg font-medium shadow"
+              className="px-6 py-3 rounded-lg text-base font-medium shadow"
               style={{ background: THEME_COLORS.primary[600], color: "white" }}
             >
               Đăng nhập hệ thống
@@ -56,7 +56,7 @@ export default function Hero() {
 
           <a
             href="#features"
-            className="px-6 py-3 rounded-lg font-medium border"
+            className="px-6 py-3 rounded-lg text-base font-medium border"
             style={{ borderColor: THEME_COLORS.secondary[200], color: THEME_COLORS.secondary[700] }}
           >
             Tìm hiểu thêm

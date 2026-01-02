@@ -3,6 +3,7 @@
  * API calls: xem điểm, lịch sử giao dịch, quy đổi điểm
  */
 
+import type { Update } from '@reduxjs/toolkit';
 import { apiDotNet } from './api';
 
 // ============================================

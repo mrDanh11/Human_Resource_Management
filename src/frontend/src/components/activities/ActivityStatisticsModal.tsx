@@ -1,4 +1,4 @@
-import { X, Users, Award, UserX, TrendingUp, Download, FileText, Table } from 'lucide-react';
+import { X, Award, TrendingUp, Download, FileText, Table } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
@@ -16,6 +16,14 @@ interface ActivityStatisticsModalProps {
 export default function ActivityStatisticsModal({ activity, isOpen, onClose }: ActivityStatisticsModalProps) {
   const [showDownloadMenu, setShowDownloadMenu] = useState(false);
 
+  // Use real data if available, otherwise generate mock data
+  const excellentEmployees = activity.excellentEmployeeList || Array.from({ length: activity.excellentEmployees }, (_, i) => ({
+    id: i + 1,
+    name: `Nhân viên ${i + 1}`,
+    department: ['Công nghệ', 'Nhân sự', 'Kinh doanh', 'Marketing', 'Kế toán'][i % 5],
+    achievement: ['Hoàn thành xuất sắc', 'Đóng góp tích cực', 'Tinh thần cao'][i % 3]
+  }));
+
   // Prevent body scroll when modal is open
   useEffect(() => {
     if (isOpen) {
@@ -32,30 +40,28 @@ export default function ActivityStatisticsModal({ activity, isOpen, onClose }: A
   if (!isOpen) return null;
 
   // Calculate statistics
-  const participationRate = ((activity.currentParticipants / activity.maxParticipants) * 100).toFixed(1);
-  const absenteeRate = ((activity.absentees / activity.currentParticipants) * 100).toFixed(1);
-  const attendanceRate = (100 - parseFloat(absenteeRate)).toFixed(1);
+  const registrationRate = ((activity.currentParticipants / activity.maxParticipants) * 100).toFixed(1);
 
   // Download as CSV
   const downloadCSV = () => {
+    const excellentEmployeeList = excellentEmployees.map(emp => 
+      `${emp.name} (${emp.department} - ${emp.achievement})`
+    ).join('; ');
+
     const csvData = [
       ['Thống kê hoạt động', activity.name],
       [''],
       ['Chỉ số', 'Giá trị'],
-      ['Tỷ lệ tham gia', `${participationRate}%`],
-      ['Người đăng ký', `${activity.currentParticipants}/${activity.maxParticipants}`],
+      ['Tỷ lệ đăng ký', `${registrationRate}%`],
+      ['Tổng đăng ký', `${activity.currentParticipants}/${activity.maxParticipants}`],
       ['Nhân viên xuất sắc', activity.excellentEmployees],
       ['Tỷ lệ xuất sắc', `${((activity.excellentEmployees / activity.currentParticipants) * 100).toFixed(1)}%`],
-      ['Tổng đăng ký', activity.currentParticipants],
-      ['Có mặt', activity.currentParticipants - activity.absentees],
-      ['Vắng mặt', activity.absentees],
-      ['Tỷ lệ tham dự', `${attendanceRate}%`],
-      ['Tỷ lệ vắng mặt', `${absenteeRate}%`],
+      [''],
+      ['Danh sách nhân viên xuất sắc', excellentEmployeeList],
       [''],
       ['Thông tin hoạt động'],
       ['Thời gian', new Date(activity.startDate).toLocaleDateString('vi-VN')],
       ['Địa điểm', activity.location],
-      ['Tổ chức', activity.organizer],
       ['Loại hoạt động', activity.type === 'sports' ? 'Thể thao' :
                          activity.type === 'charity' ? 'Từ thiện' :
                          activity.type === 'training' ? 'Đào tạo' :
@@ -84,6 +90,45 @@ export default function ActivityStatisticsModal({ activity, isOpen, onClose }: A
 
     const excellentRate = ((activity.excellentEmployees / activity.currentParticipants) * 100).toFixed(1);
 
+    // Prepare excellent employees table
+    const excellentEmployeesTable = excellentEmployees.length > 0 ? [
+      {
+        text: 'Danh sách nhân viên xuất sắc',
+        style: 'sectionHeader',
+        margin: [0, 10, 0, 10]
+      },
+      {
+        table: {
+          widths: ['10%', '30%', '30%', '30%'],
+          body: [
+            [
+              { text: 'STT', style: 'tableLabel', fillColor: '#f9fafb', alignment: 'center' },
+              { text: 'Họ tên', style: 'tableLabel', fillColor: '#f9fafb' },
+              { text: 'Phòng ban', style: 'tableLabel', fillColor: '#f9fafb' },
+              { text: 'Đánh giá', style: 'tableLabel', fillColor: '#f9fafb' }
+            ],
+            ...excellentEmployees.map((emp, index) => [
+              { text: (index + 1).toString(), style: 'tableValue', alignment: 'center' },
+              { text: emp.name, style: 'tableValue' },
+              { text: emp.department, style: 'tableValue' },
+              { text: emp.achievement, style: 'tableValue' }
+            ])
+          ]
+        },
+        layout: {
+          hLineWidth: () => 1,
+          vLineWidth: () => 1,
+          hLineColor: () => '#e5e7eb',
+          vLineColor: () => '#e5e7eb',
+          paddingLeft: () => 8,
+          paddingRight: () => 8,
+          paddingTop: () => 6,
+          paddingBottom: () => 6
+        },
+        margin: [0, 0, 0, 20]
+      }
+    ] : [];
+
     const docDefinition: any = {
       pageMargins: [40, 60, 40, 60],
       content: [
@@ -107,6 +152,56 @@ export default function ActivityStatisticsModal({ activity, isOpen, onClose }: A
           layout: 'noBorders',
           margin: [0, 0, 0, 20]
         },
+
+        // Activity Basic Info
+        {
+          table: {
+            widths: ['25%', '25%', '50%'],
+            body: [
+              [
+                {
+                  stack: [
+                    { text: 'Loại hoạt động', style: 'infoLabel', alignment: 'center' },
+                    { text: typeLabel, style: 'infoValue', alignment: 'center' }
+                  ],
+                  fillColor: '#f0fdf4',
+                  margin: [5, 8, 5, 8]
+                },
+                {
+                  stack: [
+                    { text: 'Thời gian', style: 'infoLabel', alignment: 'center' },
+                    { 
+                      text: new Date(activity.startDate).toLocaleDateString('vi-VN', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric'
+                      }), 
+                      style: 'infoValue', 
+                      alignment: 'center' 
+                    }
+                  ],
+                  fillColor: '#eff6ff',
+                  margin: [5, 8, 5, 8]
+                },
+                {
+                  stack: [
+                    { text: 'Địa điểm', style: 'infoLabel', alignment: 'center' },
+                    { text: activity.location, style: 'infoValue', alignment: 'center' }
+                  ],
+                  fillColor: '#fef3c7',
+                  margin: [5, 8, 5, 8]
+                }
+              ]
+            ]
+          },
+          layout: {
+            hLineWidth: () => 1,
+            vLineWidth: () => 1,
+            hLineColor: () => '#e5e7eb',
+            vLineColor: () => '#e5e7eb'
+          },
+          margin: [0, 0, 0, 20]
+        },
         
         // Overview Section with boxes
         {
@@ -121,8 +216,8 @@ export default function ActivityStatisticsModal({ activity, isOpen, onClose }: A
               [
                 {
                   stack: [
-                    { text: 'Tỷ lệ tham gia', style: 'label', alignment: 'center' },
-                    { text: `${participationRate}%`, style: 'bigNumber', color: '#1d4ed8', alignment: 'center' },
+                    { text: 'Tỷ lệ đăng ký', style: 'label', alignment: 'center' },
+                    { text: `${registrationRate}%`, style: 'bigNumber', color: '#1d4ed8', alignment: 'center' },
                     { text: `${activity.currentParticipants}/${activity.maxParticipants} người đăng ký`, style: 'detail', alignment: 'center' }
                   ],
                   fillColor: '#eff6ff',
@@ -149,53 +244,8 @@ export default function ActivityStatisticsModal({ activity, isOpen, onClose }: A
           margin: [0, 0, 0, 20]
         },
 
-        // Attendance Statistics Section with table
-        {
-          text: 'Thống kê tham dự',
-          style: 'sectionHeader',
-          margin: [0, 10, 0, 10]
-        },
-        {
-          table: {
-            widths: ['*', '*', '*'],
-            body: [
-              [
-                {
-                  stack: [
-                    { text: 'Tổng đăng ký', style: 'label', alignment: 'center' },
-                    { text: `${activity.currentParticipants}`, style: 'mediumNumber', alignment: 'center' }
-                  ],
-                  margin: [5, 10, 5, 10]
-                },
-                {
-                  stack: [
-                    { text: 'Có mặt', style: 'label', alignment: 'center' },
-                    { text: `${activity.currentParticipants - activity.absentees}`, style: 'mediumNumber', color: '#059669', alignment: 'center' },
-                    { text: `${attendanceRate}%`, style: 'detail', alignment: 'center' }
-                  ],
-                  fillColor: '#f0fdf4',
-                  margin: [5, 10, 5, 10]
-                },
-                {
-                  stack: [
-                    { text: 'Vắng mặt', style: 'label', alignment: 'center' },
-                    { text: `${activity.absentees}`, style: 'mediumNumber', color: '#dc2626', alignment: 'center' },
-                    { text: `${absenteeRate}%`, style: 'detail', alignment: 'center' }
-                  ],
-                  fillColor: '#fef2f2',
-                  margin: [5, 10, 5, 10]
-                }
-              ]
-            ]
-          },
-          layout: {
-            hLineWidth: () => 1,
-            vLineWidth: () => 1,
-            hLineColor: () => '#e5e7eb',
-            vLineColor: () => '#e5e7eb'
-          },
-          margin: [0, 0, 0, 20]
-        },
+        // Excellent Employees List
+        ...excellentEmployeesTable,
 
         // Activity Info Section with table
         {
@@ -221,10 +271,6 @@ export default function ActivityStatisticsModal({ activity, isOpen, onClose }: A
               [
                 { text: 'Địa điểm', style: 'tableLabel', fillColor: '#f9fafb' },
                 { text: activity.location, style: 'tableValue' }
-              ],
-              [
-                { text: 'Đơn vị tổ chức', style: 'tableLabel', fillColor: '#f9fafb' },
-                { text: activity.organizer, style: 'tableValue' }
               ],
               [
                 { text: 'Loại hoạt động', style: 'tableLabel', fillColor: '#f9fafb' },
@@ -275,6 +321,17 @@ export default function ActivityStatisticsModal({ activity, isOpen, onClose }: A
         subheader: {
           fontSize: 14,
           color: '#64748b'
+        },
+        infoLabel: {
+          fontSize: 9,
+          color: '#6b7280',
+          bold: true,
+          margin: [0, 0, 0, 3]
+        },
+        infoValue: {
+          fontSize: 11,
+          color: '#1f2937',
+          bold: true
         },
         sectionHeader: {
           fontSize: 16,
@@ -363,8 +420,8 @@ export default function ActivityStatisticsModal({ activity, isOpen, onClose }: A
                   <TrendingUp className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600 font-medium">Tỷ lệ tham gia</p>
-                  <p className="text-3xl font-bold text-blue-700">{participationRate}%</p>
+                  <p className="text-sm text-gray-600 font-medium">Tỷ lệ đăng ký</p>
+                  <p className="text-3xl font-bold text-blue-700">{registrationRate}%</p>
                 </div>
               </div>
               <div className="text-sm text-gray-600">
@@ -374,7 +431,7 @@ export default function ActivityStatisticsModal({ activity, isOpen, onClose }: A
               <div className="mt-3 w-full bg-blue-200 rounded-full h-2.5">
                 <div 
                   className="bg-blue-600 h-2.5 rounded-full transition-all"
-                  style={{ width: `${participationRate}%` }}
+                  style={{ width: `${registrationRate}%` }}
                 />
               </div>
             </div>
@@ -400,58 +457,38 @@ export default function ActivityStatisticsModal({ activity, isOpen, onClose }: A
             </div>
           </div>
 
-          {/* Attendance Statistics */}
-          <div className="bg-linear-to-br from-gray-50 to-gray-100 rounded-lg p-5 border border-gray-200">
-            <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <Users className="w-5 h-5 text-gray-700" />
-              Thống kê tham dự
-            </h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-              {/* Total Participants */}
-              <div className="text-center p-4 bg-white rounded-lg shadow-sm">
-                <div className="flex items-center justify-center mb-2">
-                  <Users className="w-8 h-8 text-blue-600" />
-                </div>
-                <p className="text-2xl font-bold text-gray-900">{activity.currentParticipants}</p>
-                <p className="text-sm text-gray-600">Tổng đăng ký</p>
-              </div>
-
-              {/* Attendance */}
-              <div className="text-center p-4 bg-white rounded-lg shadow-sm">
-                <div className="flex items-center justify-center mb-2">
-                  <Users className="w-8 h-8 text-green-600" />
-                </div>
-                <p className="text-2xl font-bold text-green-600">
-                  {activity.currentParticipants - activity.absentees}
-                </p>
-                <p className="text-sm text-gray-600">Có mặt ({attendanceRate}%)</p>
-              </div>
-
-              {/* Absentees */}
-              <div className="text-center p-4 bg-white rounded-lg shadow-sm">
-                <div className="flex items-center justify-center mb-2">
-                  <UserX className="w-8 h-8 text-red-600" />
-                </div>
-                <p className="text-2xl font-bold text-red-600">{activity.absentees}</p>
-                <p className="text-sm text-gray-600">Vắng mặt ({absenteeRate}%)</p>
+          {/* Excellent Employees List */}
+          {excellentEmployees.length > 0 && (
+            <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+              <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <Award className="w-5 h-5 text-amber-500" />
+                Danh sách nhân viên xuất sắc
+              </h3>
+              <div className="space-y-3 max-h-96 overflow-y-auto">
+                {excellentEmployees.map((employee) => (
+                  <div 
+                    key={employee.id}
+                    className="flex items-center justify-between p-3 bg-linear-to-r from-amber-50 to-yellow-50 rounded-lg border border-amber-200 hover:shadow-md transition-shadow"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-amber-500 rounded-full flex items-center justify-center text-white font-bold">
+                        {employee.id}
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-800">{employee.name}</p>
+                        <p className="text-sm text-gray-600">{employee.department}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                        {employee.achievement}
+                      </span>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-
-            {/* Attendance Progress Bar */}
-            <div>
-              <div className="flex justify-between text-sm mb-2">
-                <span className="text-gray-600">Tỷ lệ tham dự</span>
-                <span className="font-semibold text-gray-900">{attendanceRate}%</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-3">
-                <div 
-                  className="bg-green-500 h-3 rounded-full transition-all"
-                  style={{ width: `${attendanceRate}%` }}
-                />
-              </div>
-            </div>
-          </div>
+          )}
 
           {/* Activity Info */}
           <div className="border-t pt-4">
@@ -470,10 +507,6 @@ export default function ActivityStatisticsModal({ activity, isOpen, onClose }: A
               <div>
                 <p className="text-gray-600">Địa điểm</p>
                 <p className="font-semibold text-gray-900">{activity.location}</p>
-              </div>
-              <div>
-                <p className="text-gray-600">Tổ chức</p>
-                <p className="font-semibold text-gray-900">{activity.organizer}</p>
               </div>
               <div>
                 <p className="text-gray-600">Loại hoạt động</p>

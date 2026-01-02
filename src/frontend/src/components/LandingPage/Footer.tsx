@@ -5,7 +5,7 @@ export default function Footer() {
       className="w-full border-t border-gray-200 bg-white"
       style={{ fontFamily: 'Open Sans, sans-serif', fontWeight: 400 }}
     >
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between py-2 px-8 gap-8 text-base text-gray-700">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between py-2 px-8 gap-8 text-lg text-gray-700">
         {/* Logo & Slogan */}
         <div className="flex flex-col gap-2 items-center md:items-start flex-1 min-w-[220px]">
           <div className="flex flex-col items-center md:items-start">
@@ -15,16 +15,15 @@ export default function Footer() {
                 <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12l2 2 4-4" />
               </svg>
-              <span className="font-bold text-blue-700 text-lg">HRM System</span>
+              <span className="font-bold text-blue-700 text-xl">HRM System</span>
             </div>
-            <span className="text-sm text-gray-500 italic">Empowering your workforce</span>
-            <span className="text-xs text-gray-400">© {new Date().getFullYear()} Group 07</span>
+            <span className="text-base text-gray-500 italic">Empowering your workforce</span>
+            <span className="text-sm text-gray-400">© {new Date().getFullYear()} Group 07</span>
           </div>
         </div>
 
         {/* Contact & Company Info */}
-        <div className="flex flex-col items-center md:items-center text-sm text-gray-700 min-w-[320px] w-full flex-1 justify-center break-words text-center md:text-left">
-          <div className="font-bold text-blue-700 mb-1 tracking-wide">Liên hệ</div>
+        <div className="flex flex-col items-center md:items-center text-base text-gray-700 min-w-[320px] w-full flex-1 justify-center wrap-break-words text-center md:text-left">
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
               {/* Heroicon Envelope */}
@@ -51,7 +50,7 @@ export default function Footer() {
         </div>
 
         {/* Socials & More */}
-        <div className="flex flex-col items-center md:items-end text-sm text-gray-700 min-w-[200px] flex-1 justify-center">
+        <div className="flex flex-col items-center md:items-end text-base text-gray-700 min-w-[200px] flex-1 justify-center">
           <div className="font-bold text-blue-700 mb-1 tracking-wide">Kết nối với chúng tôi</div>
           <div className="flex gap-2">
             <a href="#" className="hover:text-blue-600" title="Facebook">
@@ -74,7 +73,7 @@ export default function Footer() {
               </svg>
             </a>
           </div>
-          <span className="text-xs text-gray-400 mt-1">All rights reserved.</span>
+          <span className="text-sm text-gray-400 mt-1">All rights reserved.</span>
         </div>
       </div>
     </footer>

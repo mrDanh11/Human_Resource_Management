@@ -103,7 +103,7 @@ export default function ActivityListCard({
       <div className="p-6">
         {/* Header */}
         <div className="flex items-start justify-between mb-3 gap-1">
-          <h3 className="text-xl font-bold text-gray-900 flex-1">
+          <h3 className="text-xl font-bold text-gray-900 flex-1 line-clamp-2" style={{ minHeight: '3.5rem', lineHeight: '1.75rem' }}>
             {activity.name}
           </h3>
           <span className={`px-3 py-1 rounded-full text-xs font-semibold ${activityTypeColors[activity.type]}`}>
@@ -194,80 +194,24 @@ export default function ActivityListCard({
             <span className="font-medium">Chi tiết</span>
           </button>
           
-          {isRegistered ? (
-            !isRegistrationOpen() ? (
-              <button
-                disabled
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gray-400 text-white rounded-lg cursor-not-allowed"
-              >
-                <UserPlus className="w-4 h-4" />
-                <span className="font-medium">Đã đăng ký</span>
-              </button>
-            ) : (
-              <button
-                onClick={() => onUnregister && onUnregister(activity.id)}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-600 hover:bg-red-600 text-white rounded-lg transition-all duration-200"
-                style={{
-                  transition: 'all 0.3s ease'
-                }}
-                onMouseEnter={(e) => {
-                  setIsHovered(true);
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = '0 5px 20px rgba(22, 163, 74, 0.4)';
-                }}
-                onMouseLeave={(e) => {
-                  setIsHovered(false);
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = 'none';
-                }}
-              >
-                {!isHovered ? (
-                  <span className="flex items-center gap-2">
-                    <UserPlus className="w-4 h-4" />
-                    <span className="font-medium">Đã đăng ký</span>
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-2">
-                    <UserMinus className="w-4 h-4" />
-                    <span className="font-medium">Hủy đăng ký</span>
-                  </span>
-                )}
-              </button>
-            )
-          ) : (
-            <button
-              onClick={() => onRegister(activity.id)}
-              disabled={!canRegister}
-              className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ${
-                canRegister
-                  ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              }`}
-              style={{
-                transition: 'all 0.3s ease'
-              }}
-              onMouseEnter={(e) => {
-                if (canRegister) {
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = '0 5px 20px rgba(37, 99, 235, 0.4)';
-                }
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = 'none';
-              }}
-            >
-              <UserPlus className="w-4 h-4" />
-              <span className="font-medium">Đăng ký</span>
-            </button>
-          )}
-
-          {['HR', 'ADMIN'].includes(userRole?.toUpperCase() || '') && (
+          {/* Hiển thị nút quản lý cho HR/ADMIN */}
+          {['HR', 'ADMIN'].includes(userRole?.toUpperCase() || '') ? (
             <>
               {onEdit && (
                 <button
                   onClick={() => onEdit(activity)}
                   className="flex items-center justify-center px-4 py-2 bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-lg transition-all duration-200"
+                  style={{
+                    transition: 'all 0.3s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.boxShadow = '0 5px 20px rgba(37, 99, 235, 0.4)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
                   title="Chỉnh sửa hoạt động"
                 >
                   <Pencil className="w-4 h-4" />
@@ -277,20 +221,95 @@ export default function ActivityListCard({
                 <button
                   onClick={() => onDelete(activity.id)}
                   className="flex items-center justify-center px-4 py-2 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg transition-all duration-200"
+                  style={{
+                    transition: 'all 0.3s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.boxShadow = '0 5px 20px rgba(239, 68, 68, 0.4)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
                   title="Xóa hoạt động"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
               )}
             </>
+          ) : (
+            /* Hiển thị nút đăng ký cho EMPLOYEE */
+            <>
+              {isRegistered ? (
+                !isRegistrationOpen() ? (
+                  <button
+                    disabled
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gray-400 text-white rounded-lg cursor-not-allowed"
+                  >
+                    <UserPlus className="w-4 h-4" />
+                    <span className="font-medium">Đã đăng ký</span>
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => onUnregister && onUnregister(activity.id)}
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-600 hover:bg-red-600 text-white rounded-lg transition-all duration-200"
+                    style={{
+                      transition: 'all 0.3s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      setIsHovered(true);
+                      e.currentTarget.style.transform = 'translateY(-2px)';
+                      e.currentTarget.style.boxShadow = '0 5px 20px rgba(22, 163, 74, 0.4)';
+                    }}
+                    onMouseLeave={(e) => {
+                      setIsHovered(false);
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      e.currentTarget.style.boxShadow = 'none';
+                    }}
+                  >
+                    {!isHovered ? (
+                      <span className="flex items-center gap-2">
+                        <UserPlus className="w-4 h-4" />
+                        <span className="font-medium">Đã đăng ký</span>
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-2">
+                        <UserMinus className="w-4 h-4" />
+                        <span className="font-medium">Hủy đăng ký</span>
+                      </span>
+                    )}
+                  </button>
+                )
+              ) : (
+                <button
+                  onClick={() => onRegister(activity.id)}
+                  disabled={!canRegister}
+                  className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ${
+                    canRegister
+                      ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  }`}
+                  style={{
+                    transition: 'all 0.3s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (canRegister) {
+                      e.currentTarget.style.transform = 'translateY(-2px)';
+                      e.currentTarget.style.boxShadow = '0 5px 20px rgba(37, 99, 235, 0.4)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
+                >
+                  <UserPlus className="w-4 h-4" />
+                  <span className="font-medium">Đăng ký</span>
+                </button>
+              )}
+            </>
           )}
-        </div>
-
-        {/* Organizer */}
-        <div className="mt-4 pt-4 border-t border-gray-200">
-          <p className="text-xs text-gray-500">
-            Tổ chức bởi: <span className="font-semibold text-gray-700">{activity.organizer}</span>
-          </p>
         </div>
       </div>
     </div>

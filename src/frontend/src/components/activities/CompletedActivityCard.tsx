@@ -56,11 +56,11 @@ export default function CompletedActivityCard({ activity, onViewDetails, onViewS
 
       <div className="p-6">
         {/* Header */}
-        <div className="flex items-start justify-between mb-3">
-          <h3 className="text-xl font-bold text-gray-900 flex-1">
+        <div className="flex items-start justify-between mb-3 min-h-[3.5rem]">
+          <h3 className="text-xl font-bold text-gray-900 flex-1 line-clamp-2">
             {activity.name}
           </h3>
-          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${activityTypeColors[activity.type]}`}>
+          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${activityTypeColors[activity.type]} ml-2`}>
             {activityTypeLabels[activity.type]}
           </span>
         </div>
@@ -94,6 +94,13 @@ export default function CompletedActivityCard({ activity, onViewDetails, onViewS
               {activity.currentParticipants}/{activity.maxParticipants} người
             </span>
           </div>
+
+          {/* Excellent Employees */}
+          <div className="flex items-center text-sm text-gray-700">
+            <Users className="w-4 h-4 mr-2 text-yellow-600" />
+            <span className="font-medium mr-2">Nhân viên xuất sắc:</span>
+            <span className="font-semibold text-yellow-600">{activity.excellentEmployees} người</span>
+          </div>
         </div>
 
         {/* Progress Bar */}
@@ -112,17 +119,6 @@ export default function CompletedActivityCard({ activity, onViewDetails, onViewS
           </div>
         </div>
 
-        {/* Quick Stats */}
-        <div className="grid grid-cols-2 gap-2 mb-4 p-3 bg-gray-50 rounded-lg">
-          <div className="text-center">
-            <p className="text-xs text-gray-600">Xuất sắc</p>
-            <p className="text-lg font-bold text-yellow-600">{activity.excellentEmployees}</p>
-          </div>
-          <div className="text-center">
-            <p className="text-xs text-gray-600">Vắng mặt</p>
-            <p className="text-lg font-bold text-red-600">{activity.absentees}</p>
-          </div>
-        </div>
 
         {/* Actions */}
         <div className="flex gap-3">
@@ -163,13 +159,6 @@ export default function CompletedActivityCard({ activity, onViewDetails, onViewS
             <BarChart3 className="w-4 h-4" />
             <span className="font-medium">Thống kê</span>
           </button>
-        </div>
-
-        {/* Organizer */}
-        <div className="mt-4 pt-4 border-t border-gray-200">
-          <p className="text-xs text-gray-500">
-            Tổ chức bởi: <span className="font-semibold text-gray-700">{activity.organizer}</span>
-          </p>
         </div>
       </div>
     </div>
