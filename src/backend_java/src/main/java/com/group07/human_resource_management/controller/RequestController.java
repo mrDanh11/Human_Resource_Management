@@ -1,10 +1,13 @@
 package com.group07.human_resource_management.controller;
 
 import com.group07.human_resource_management.config.CustomUserDetails;
+import com.group07.human_resource_management.dto.request.RequestSearchCriteria;
 import com.group07.human_resource_management.dto.response.ApiResponse;
 import com.group07.human_resource_management.dto.response.RequestDetailReponse;
+import com.group07.human_resource_management.dto.response.RequestListResponse;
 import com.group07.human_resource_management.service.IRequestService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -28,4 +31,19 @@ public class RequestController {
                 .data(response)
                 .build();
     }
+
+    @GetMapping
+    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMIN')")
+    public ApiResponse<Page<RequestListResponse>> getListRequest(@AuthenticationPrincipal CustomUserDetails manager,
+                                                                @ModelAttribute RequestSearchCriteria criteria) {  // modelattribute lay patams tren url gan vao DTO
+
+        Page<RequestListResponse> response = requestService.getListRequest(manager.getEmployeeId(), criteria);
+        return ApiResponse.<Page<RequestListResponse>>builder()
+                .code(HttpStatus.OK.value())
+                .data(response)
+                .success(true)
+                .message("Request List Successfully")
+                .build();
+    }
+
 }
