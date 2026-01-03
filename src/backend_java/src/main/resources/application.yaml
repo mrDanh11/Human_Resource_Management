@@ -2,7 +2,7 @@
 #spring.application.name=human-resource-management
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/hr_management
+    url: jdbc:postgresql://localhost:5433/hr_management
     username: postgres
     password: 123456
     driver-class-name: org.postgresql.Driver

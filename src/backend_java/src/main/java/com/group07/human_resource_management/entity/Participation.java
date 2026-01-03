@@ -35,6 +35,7 @@ public class Participation {
 
     private String status;
 
+    @Column(name = "result", columnDefinition = "jsonb")
     private String result;
 
     @Column(name = "created_at")
