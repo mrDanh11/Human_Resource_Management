@@ -72,13 +72,43 @@ export interface PagedResult<T> {
   hasNextPage: boolean;
 }
 
-export interface UpdatePointDto {
-  value: number;
-  type: string;
-  description?: string;
-  actorId?: number;
+export interface MonthlyPointRuleDto {
+  id: number;
+  roleId: number;
+  roleName: string;
+  pointValue: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
+export interface UpsertMonthlyPointRuleDto {
+  roleId: number;
+  pointValue: number;
+}
+
+// [NEW] Interface cho History Allocation
+export interface MonthlyPointAllocationHistoryDto {
+  id: number;
+  month: number;
+  year: number;
+  totalPointsDistributed: number;
+  employeeCount: number;
+  status: string; // 'Success', 'Failed'
+  createdAt: string;
+}
+
+export interface MonthlyPointAllocationResultDto {
+  success: boolean;
+  message: string;
+  totalEmployees: number;
+  totalPoints: number;
+}
+
+export interface UpsertPointConversionRuleDto {
+  pointValue: number;
+  moneyValue: number;
+  isActive: boolean;
+}
 // ============================================
 // SERVICE FUNCTIONS
 // ============================================
@@ -260,21 +290,108 @@ export const pointService = {
 
     return response.data;
   },
-
-  updatePoint: async (
-    employeeId: number,
-    updateData: UpdatePointDto
-  ): Promise<UpdatePointDto> => {
-    const response = await apiDotNet.put<ApiResponse<UpdatePointDto>>(
-      `/Point/employee/${employeeId}`,
-      updateData
+  getMonthlyPointRules: async (): Promise<MonthlyPointRuleDto[]> => {
+    const response = await apiDotNet.get<ApiResponse<MonthlyPointRuleDto[]>>(
+      '/MonthlyPoint/rules'
     );
+    return response.data.data;
+  },
 
-    console.log("updatePoint:", updateData);
+  /**
+   * Tạo hoặc cập nhật quy tắc cộng điểm
+   * POST /api/MonthlyPoint/rules
+   */
+  upsertMonthlyPointRule: async (dto: UpsertMonthlyPointRuleDto): Promise<MonthlyPointRuleDto> => {
+    const response = await apiDotNet.post<ApiResponse<MonthlyPointRuleDto>>(
+      '/MonthlyPoint/rules',
+      dto
+    );
+    if (!response.data.success) {
+      throw new Error(response.data.message);
+    }
+    return response.data.data;
+  },
 
+  /**
+   * Xóa quy tắc cộng điểm
+   * DELETE /api/MonthlyPoint/rules/{id}
+   */
+  deleteMonthlyPointRule: async (id: number): Promise<boolean> => {
+    const response = await apiDotNet.delete<ApiResponse<boolean>>(
+      `/MonthlyPoint/rules/${id}`
+    );
+    return response.data.success;
+  },
+
+  /**
+   * Chạy phân phối điểm thủ công
+   * POST /api/MonthlyPoint/allocate
+   */
+  allocateMonthlyPoints: async (): Promise<MonthlyPointAllocationResultDto> => {
+    const response = await apiDotNet.post<ApiResponse<MonthlyPointAllocationResultDto>>(
+      '/MonthlyPoint/allocate',
+      {}
+    );
+    if (!response.data.success) {
+      throw new Error(response.data.message);
+    }
+    return response.data.data;
+  },
+
+  /**
+   * Lấy lịch sử phân phối điểm
+   * GET /api/MonthlyPoint/history
+   */
+  updateConversionRule: async (id: number, dto: UpsertPointConversionRuleDto): Promise<PointConversionRuleDto> => {
+    const response = await apiDotNet.put<ApiResponse<PointConversionRuleDto>>(
+      `/Point/conversion-rules/${id}`,
+      dto
+    );
+    
     if (response.data.success) {
       return response.data.data;
     }
-    throw new Error(response.data.message || 'Lỗi khi cập nhật điểm');
-  }
-};  
+    throw new Error(response.data.message || 'Lỗi khi cập nhật quy tắc');
+  },
+
+  getAllocationHistory: async (limit: number = 12): Promise<MonthlyPointAllocationHistoryDto[]> => {
+    const response = await apiDotNet.get<ApiResponse<MonthlyPointAllocationHistoryDto[]>>(
+      '/MonthlyPoint/history',
+      { params: { limit } }
+    );
+    return response.data.data;
+  },
+
+  getPointToMoneyRequest: async (
+    pageNumber: number, 
+    pageSize: number, 
+    employeeId?: number, 
+    status?: string
+  ): Promise<PagedResult<PointToMoneyHistoryDto>> => {
+    const params: any = { pageNumber, pageSize };
+    if (employeeId) params.employeeId = employeeId;
+    if (status) params.status = status;
+
+    const response = await apiDotNet.get<PagedResult<PointToMoneyHistoryDto>>(
+      '/Point/conversion-history',
+      { params }
+    );
+    return response.data; // Backend trả về trực tiếp PagedResult, không bọc ApiResponse ở lớp ngoài cùng cho GET list
+  },
+
+  /**
+   * Duyệt hoặc Từ chối yêu cầu đổi điểm
+   * PUT /api/v1/Point/conversion-history/{requestId}/process
+   */
+  processConversionRequest: async (requestId: number, status: 'approved' | 'rejected'): Promise<boolean> => {
+    const response = await apiDotNet.put<ApiResponse<any>>(
+      `/Point/conversion-history/${requestId}/process`,
+      { status }
+    );
+    
+    if (response.data.success) {
+      return true;
+    }
+    throw new Error(response.data.message || "Lỗi khi xử lý yêu cầu");
+  },
+};

@@ -97,7 +97,6 @@ public class PointController : ControllerBase
     {
         try
         {
-            _logger.LogInformation("Updated points for employee: {dto})", dto);
             if (!ModelState.IsValid)
             {
                 var errors = ModelState.Values
@@ -110,8 +109,7 @@ public class PointController : ControllerBase
             }
 
             var result = await _pointService.UpdateEmployeePointAsync(employeeId, dto);
-            _logger.LogInformation("Updated points for employee {EmployeeId} by {Value} points",
-                employeeId, dto.Value);
+
             if (!result.Success)
             {
                 if (result.Message.Contains("Không tìm thấy"))
@@ -204,9 +202,9 @@ public class PointController : ControllerBase
     /// Lấy quy tắc quy đổi điểm đang hoạt động
     /// </summary>
     [HttpGet("conversion-rules/active")]
-    [ProducesResponseType(typeof(ApiResponse<PointConversionRuleDto>), 200)]
+    [ProducesResponseType(typeof(ApiResponse<List<PointConversionRuleDto>>), 200)]
     [ProducesResponseType(404)]
-    public async Task<ActionResult<ApiResponse<PointConversionRuleDto>>> GetActiveConversionRule()
+    public async Task<ActionResult<ApiResponse<List<PointConversionRuleDto>>>> GetActiveConversionRule()
     {
         try
         {

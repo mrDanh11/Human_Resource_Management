@@ -11,7 +11,7 @@ public partial class PointToMoneyHistory
 
     public int PointRequested { get; set; }
 
-    public double MoneyReceived { get; set; }
+    public decimal MoneyReceived { get; set; }
 
     public string? Status { get; set; }
 

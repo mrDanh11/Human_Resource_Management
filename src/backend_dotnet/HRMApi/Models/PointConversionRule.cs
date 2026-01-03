@@ -9,7 +9,7 @@ public partial class PointConversionRule
 
     public int PointValue { get; set; }
 
-    public double MoneyValue { get; set; }
+    public decimal MoneyValue { get; set; }
 
     public int? UpdatedBy { get; set; }
 

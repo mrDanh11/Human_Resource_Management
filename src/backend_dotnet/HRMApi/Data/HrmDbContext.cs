@@ -120,6 +120,7 @@ public class HrmDbContext : DbContext
             entity.Property(e => e.Email).HasColumnName("email");
             entity.Property(e => e.RoleId).HasColumnName("role_id");
             entity.Property(e => e.DepartmentId).HasColumnName("department_id");
+            entity.Property(e => e.ManagerId).HasColumnName("manager_id");
             entity.Property(e => e.CreatedAt).HasColumnName("created_at");
             entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
         });
@@ -218,15 +219,24 @@ public class HrmDbContext : DbContext
             entity.Property(e => e.Description).HasColumnName("description");
             entity.Property(e => e.StartDate).HasColumnName("start_date");
             entity.Property(e => e.EndDate).HasColumnName("end_date");
-            entity.Property(e => e.registrationStartDate).HasColumnName("registration_start_date");
-            entity.Property(e => e.registrationEndDate).HasColumnName("registration_end_date");
-            //entity.Property(e => e.RegisterDeadline).HasColumnName("register_deadline");
+            
+            entity.Property(e => e.RegistrationStartDate).HasColumnName("registration_start_date");
+            entity.Property(e => e.RegistrationEndDate).HasColumnName("registration_end_date");
+            
             entity.Property(e => e.MaxParticipants).HasColumnName("max_participants");
+            
+            entity.Property(e => e.Location).HasColumnName("location");
+            entity.Property(e => e.ImageUrl).HasColumnName("image_url");
+            entity.Property(e => e.Organizer).HasColumnName("organizer");
+            entity.Property(e => e.Points).HasColumnName("points");
+            
             entity.Property(e => e.Status).HasColumnName("status");
-            entity.Property(e => e.ImgActivity).HasColumnName("image_url");
+            entity.Property(e => e.ActivityType).HasColumnName("activity_type");
             entity.Property(e => e.CreatedBy).HasColumnName("created_by");
             entity.Property(e => e.CreatedAt).HasColumnName("created_at");
             entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
+            
+            entity.Property(e => e.IsDeleted).HasColumnName("is_deleted");
         });
 
         // Participation
@@ -238,8 +248,12 @@ public class HrmDbContext : DbContext
             entity.Property(e => e.RegisterDate).HasColumnName("register_date");
             entity.Property(e => e.CancelDate).HasColumnName("cancel_date");
             entity.Property(e => e.Status).HasColumnName("status");
-            entity.Property(e => e.Result).HasColumnName("result");
             entity.Property(e => e.CreatedAt).HasColumnName("created_at");
+            
+            // Configure JSONB column
+            entity.Property(e => e.Result)
+                .HasColumnName("result")
+                .HasColumnType("jsonb");
         });
 
         // Attendance
@@ -442,6 +456,13 @@ public class HrmDbContext : DbContext
             .HasOne(mpr => mpr.Role)
             .WithMany()
             .HasForeignKey(mpr => mpr.RoleId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Configure Employee - Manager relationship
+        modelBuilder.Entity<Employee>()
+            .HasOne(e => e.Manager)
+            .WithMany()
+            .HasForeignKey(e => e.ManagerId)
             .OnDelete(DeleteBehavior.Restrict);
 
         // ============================================
