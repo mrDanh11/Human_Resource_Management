@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import Footer from "../../components/LandingPage/Footer";
+import { useNavigate } from "react-router-dom";
 import { login } from "../../services/authService";
 import type { LoginRequest } from "../../types/auth";
 import Header from "../../components/LandingPage/Header";
 import { Mail, Lock, Eye, EyeOff, ArrowRight, AlertCircle } from 'lucide-react';
 
 const Login: React.FC = () => {
+  const navigate = useNavigate(); // ← Sử dụng React Router navigate
   const [form, setForm] = useState<LoginRequest>({ username: "", password: "" });
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -19,27 +20,40 @@ const Login: React.FC = () => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    
     try {
       const res = await login(form);
+      
+      // Lưu vào localStorage
       localStorage.setItem("accessToken", res.accessToken);
       localStorage.setItem("refreshToken", res.refreshToken);
       localStorage.setItem("role", res.role);
       localStorage.setItem("userId", res.userId.toString());
 
-      if(res.role === "employee"){
-        window.location.href = "/";
-      }
-      else if(res.role === "admin"){
-        window.location.href = "/admin/dashboard";
-      }
-      else if(res.role === "hr"){
-        window.location.href = "/";
-      }
-      else if(res.role === "manager"){
-        window.location.href = "/";
+      // Log để debug
+      console.log("Login successful:", {
+        role: res.role,
+        userId: res.userId,
+        tokenSaved: !!localStorage.getItem("accessToken")
+      });
+
+      // Normalize role to uppercase để đảm bảo consistent
+      const userRole = res.role.toUpperCase();
+
+      // Redirect dựa vào role - dùng navigate thay vì window.location
+      if (userRole === "ADMIN") {
+        navigate("/admin/dashboard", { replace: true });
+      } else if (userRole === "HR") {
+        navigate("/", { replace: true }); // hoặc route khác cho HR
+      } else if (userRole === "MANAGER") {
+        navigate("/", { replace: true }); // hoặc route khác cho Manager
+      } else {
+        // Default cho employee
+        navigate("/", { replace: true });
       }
       
-    } catch {
+    } catch (err) {
+      console.error("Login error:", err);
       setError("Sai tài khoản hoặc mật khẩu!");
     } finally {
       setLoading(false);

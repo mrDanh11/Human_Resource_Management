@@ -7,17 +7,16 @@ import { configureStore } from '@reduxjs/toolkit';
 import employeeReducer from './employeeSlice';
 import pointReducer from './pointSlice';
 import conversionRuleReducer from './conversionRuleSlice';
-import participationReducer from './participationSlice'
+import participationReducer from './participationSlice';
+import completedActivityReducer from './completedActivitySlice';
 
 export const store = configureStore({
   reducer: {
     employee: employeeReducer,
     point: pointReducer,
-
     conversionRule: conversionRuleReducer,
-
     participation: participationReducer,
-
+    completedActivity: completedActivityReducer,
   },
 });
 
