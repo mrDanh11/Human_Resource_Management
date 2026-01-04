@@ -21,6 +21,8 @@ import HistoryActivitiesPage from './pages/activities/HistoryActivitiesPage';
 import ActivityPrivateResultPage from './pages/activities/ActivityPrivateResultPage';
 import EmployeeLayout from './layouts/EmployeeLayout';
 import ProtectedRoute from './components/ProtectedRoute';
+import AttendancePage from './pages/attendance/AttendancePage';
+import AttendanceManagementPage from './pages/attendance/AttendanceManagementPage';
 
 const App = () => {
   return (
@@ -45,6 +47,8 @@ const App = () => {
               <Route path="points" element={<RewardDashboard />} />
               <Route path="hr-reward" element={<RewardPointHR />} />
             </Route>
+            <Route path="/requests" element={<AttendancePage />} />
+            <Route path="/timesheet/manage" element={<AttendanceManagementPage />} />
             <Route path="/rewards" element={<PointsAdmin />} />
             <Route path="/activities" element={<ActivityListPage />} />
             <Route path="/activities/history" element={<HistoryActivitiesPage />} />
@@ -52,8 +56,8 @@ const App = () => {
           </Route>
         </Route>
 
-        {/* HR & Admin Routes */}
-        <Route element={<ProtectedRoute allowedRoles={['HR', 'ADMIN']} />}>
+        {/* HR Routes */}
+        <Route element={<ProtectedRoute allowedRoles={['HR']} />}>
           <Route path="/rewards/hr-reward" element={<RewardPointHR />} />
           <Route path="activities" element={<AdminActivityListPage />} />
           <Route path="employee">
@@ -74,11 +78,6 @@ const App = () => {
               <Route path="create" element={<CreateActivityPage />} />
               <Route path="cancel" element={<CancelActivityPage />} />
             </Route>
-            <Route path="employee">
-              <Route path="list" element={<EmployeeList />} />
-              <Route path="create" element={<CreateEmployee />} />
-            </Route>
-
           </Route>
         </Route>
 
