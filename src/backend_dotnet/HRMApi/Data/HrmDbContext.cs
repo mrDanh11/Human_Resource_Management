@@ -248,6 +248,7 @@ public class HrmDbContext : DbContext
             entity.Property(e => e.RegisterDate).HasColumnName("register_date");
             entity.Property(e => e.CancelDate).HasColumnName("cancel_date");
             entity.Property(e => e.Status).HasColumnName("status");
+            entity.Property(e => e.Performance).HasColumnName("performance");
             entity.Property(e => e.CreatedAt).HasColumnName("created_at");
             
             // Configure JSONB column

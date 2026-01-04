@@ -1,16 +1,18 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Search, Calendar, Plus } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Search, Calendar } from 'lucide-react';
 import CompletedActivityCard from '../../components/activities/CompletedActivityCard';
 import CompletedActivityDetailModal from '../../components/activities/CompletedActivityDetailModal';
 import ActivityStatisticsModal from '../../components/activities/ActivityStatisticsModal';
-import { mockCompletedActivities } from '../../data/completedActivityData';
-import type { CompletedActivityData } from '../../data/completedActivityData';
+import type { CompletedActivityData } from '../../types/activity';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { fetchCompletedActivities } from '../../store/completedActivitySlice';
 
 export default function AdminActivityListPage() {
-  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { activities, loading, error } = useAppSelector((state) => state.completedActivity);
+  
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedType, setSelectedType] = useState<CompletedActivityData['type'] | 'all'>('all');
+  const [selectedType, setSelectedType] = useState<CompletedActivityData['activityType'] | 'all'>('all');
   const [selectedActivity, setSelectedActivity] = useState<CompletedActivityData | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isStatisticsModalOpen, setIsStatisticsModalOpen] = useState(false);
@@ -19,8 +21,25 @@ export default function AdminActivityListPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
 
+  // Fetch completed activities on component mount
+  useEffect(() => {
+    dispatch(fetchCompletedActivities());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (isDetailModalOpen || isStatisticsModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isDetailModalOpen, isStatisticsModalOpen]);
+
   const handleViewDetails = (activityId: string) => {
-    const activity = mockCompletedActivities.find(a => a.id === activityId);
+    const activity = activities.find(a => a.id === Number(activityId));
     if (activity) {
       setSelectedActivity(activity);
       setIsDetailModalOpen(true);
@@ -28,7 +47,7 @@ export default function AdminActivityListPage() {
   };
 
   const handleViewStatistics = (activityId: string) => {
-    const activity = mockCompletedActivities.find(a => a.id === activityId);
+    const activity = activities.find(a => a.id === Number(activityId));
     if (activity) {
       setSelectedActivity(activity);
       setIsStatisticsModalOpen(true);
@@ -36,13 +55,13 @@ export default function AdminActivityListPage() {
   };
 
   // Filter activities
-  const filteredActivities = mockCompletedActivities.filter(activity => {
+  const filteredActivities = activities.filter(activity => {
     // Search filter
     const matchesSearch = activity.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          activity.description.toLowerCase().includes(searchQuery.toLowerCase());
     
     // Type filter
-    const matchesType = selectedType === 'all' || activity.type === selectedType;
+    const matchesType = selectedType === 'all' || activity.activityType === selectedType;
     
     return matchesSearch && matchesType;
   });
@@ -100,7 +119,7 @@ export default function AdminActivityListPage() {
                   <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <select
                     value={selectedType}
-                    onChange={(e) => setSelectedType(e.target.value as CompletedActivityData['type'] | 'all')}
+                    onChange={(e) => setSelectedType(e.target.value as CompletedActivityData['activityType'] | 'all')}
                     className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 appearance-none"
                   >
                     <option value="all">Tất cả loại</option>
@@ -119,7 +138,22 @@ export default function AdminActivityListPage() {
 
       {/* Activity Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
+        {/* Loading State */}
+        {loading && (
+          <div className="flex justify-center items-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          </div>
+        )}
+
+        {/* Error State */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+            <p className="text-red-800">{error}</p>
+          </div>
+        )}
+
         {/* Completed Activities */}
+        {!loading && (
         <div>
           <h2 className="text-xl font-semibold text-gray-900 mb-4">
             Hoạt động đã hoàn thành
@@ -219,6 +253,7 @@ export default function AdminActivityListPage() {
             </div>
           )}
         </div>
+        )}
       </div>
 
       {/* Activity Detail Modal */}

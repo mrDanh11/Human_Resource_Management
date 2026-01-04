@@ -9,14 +9,6 @@ const AdminSidebar: React.FC = () => {
   
   const menuItems = [
     { label: "Dashboard", to: "/admin/dashboard" },
-    { 
-      label: "Quản lý nhân viên", 
-      key: "employees",
-      submenu: [
-        { label: "Danh sách nhân viên", to: "/admin/employee/list" },
-        { label: "Thêm nhân viên", to: "/admin/employee/create" },
-      ]
-    },
     { label: "Yêu cầu nghỉ phép", to: "/admin/requests" },
     { label: "Quản lý điểm thưởng", to: "/admin/point" },
     { 

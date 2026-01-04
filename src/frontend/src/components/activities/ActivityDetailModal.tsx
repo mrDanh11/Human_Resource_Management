@@ -38,19 +38,6 @@ export default function ActivityDetailModal({
   userRole
 }: ActivityDetailModalProps) {
   const [isHovered, setIsHovered] = useState(false);
-  
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-
-    // Cleanup when component unmounts
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [isOpen]);
 
   if (!isOpen) return null;
 

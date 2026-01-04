@@ -13,7 +13,15 @@ const Sidebar: React.FC = () => {
   const menuItems = [
     { label: "Trang chủ", icon: Home, to: "/landing" },
     { label: "Thông tin cá nhân", icon: User, to: `/employee/profile/${userId}` },
-    { label: "Yêu cầu", icon: FileText, to: "/requests" },
+    { 
+      label: "Yêu cầu", 
+      icon: FileText, 
+      key: "requests",
+      submenu: [
+        { label: "Danh sách yêu cầu", to: "/requests" },
+        { label: "Quản lý timesheet", to: "/timesheet/manage" },
+      ]
+    },
     {
       label: "Hoạt động",
       icon: Activity,

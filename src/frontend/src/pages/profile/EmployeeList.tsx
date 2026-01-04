@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Users, Search, Filter, Mail, Building2, Briefcase, Loader2, AlertCircle, Eye, Pencil, Trash2 } from 'lucide-react';
+import { Users, Search, Filter, Mail, Building2, Briefcase, Loader2, AlertCircle, Eye, Pencil } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { fetchEmployees, updateEmployeeInfo, deleteEmployee } from '../../store/employeeSlice';
 import EmployeeDetailModal from '../../components/profile/EmployeeDetailModal';
@@ -85,12 +85,6 @@ const EmployeeList = () => {
         setIsDetailModalOpen(false);
         setIsUpdateModalOpen(false);
         setSelectedEmployeeId(null);
-    };
-
-    // Xử lý mở modal xác nhận xóa
-    const handleDeleteClick = (employeeId: number, employeeName: string) => {
-        setEmployeeToDelete({ id: employeeId, name: employeeName });
-        setIsDeleteModalOpen(true);
     };
 
     // Xử lý xác nhận xóa
