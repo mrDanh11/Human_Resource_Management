@@ -1,5 +1,6 @@
 using HRMApi.DTOs;
 using HRMApi.Services;
+using HRMApi.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,6 +19,18 @@ public class PointController : ControllerBase
     {
         _pointService = pointService;
         _logger = logger;
+    }
+
+    // ============================================
+    // HELPER METHOD - Get Current User Info
+    // ============================================
+    
+    /// <summary>
+    /// Lấy EmployeeId của user hiện tại từ JWT
+    /// </summary>
+    private int? GetCurrentEmployeeId()
+    {
+        return JwtHelper.GetEmployeeIdFromClaims(HttpContext);
     }
 
     // ============================================
@@ -106,6 +119,20 @@ public class PointController : ControllerBase
 
                 return BadRequest(ApiResponse<EmployeePointDto>.ErrorResponse(
                     "Dữ liệu không hợp lệ", errors));
+            }
+
+            // ⭐ LẤY ACTOR ID TỪ JWT
+            var actorId = GetCurrentEmployeeId();
+            if (actorId.HasValue)
+            {
+                dto.ActorId = actorId.Value;
+                _logger.LogInformation(
+                    "Point update by Employee {ActorId} for Employee {EmployeeId}", 
+                    actorId.Value, employeeId);
+            }
+            else
+            {
+                _logger.LogWarning("Could not get actor ID from JWT for point update");
             }
 
             var result = await _pointService.UpdateEmployeePointAsync(employeeId, dto);
@@ -272,6 +299,13 @@ public class PointController : ControllerBase
                     "Dữ liệu không hợp lệ", errors));
             }
 
+            // ⭐ LẤY UPDATEDBY TỪ JWT
+            var currentEmployeeId = GetCurrentEmployeeId();
+            if (currentEmployeeId.HasValue)
+            {
+                dto.UpdatedBy = currentEmployeeId.Value;
+            }
+
             var result = await _pointService.CreateConversionRuleAsync(dto);
 
             if (!result.Success)
@@ -314,6 +348,13 @@ public class PointController : ControllerBase
 
                 return BadRequest(ApiResponse<PointConversionRuleDto>.ErrorResponse(
                     "Dữ liệu không hợp lệ", errors));
+            }
+
+            // ⭐ LẤY UPDATEDBY TỪ JWT
+            var currentEmployeeId = GetCurrentEmployeeId();
+            if (currentEmployeeId.HasValue)
+            {
+                dto.UpdatedBy = currentEmployeeId.Value;
             }
 
             var result = await _pointService.UpdateConversionRuleAsync(id, dto);
@@ -440,8 +481,19 @@ public class PointController : ControllerBase
                     "Dữ liệu không hợp lệ", errors));
             }
 
-            // TODO: Get processorId from authenticated user
-            int? processorId = null;
+            // ⭐ LẤY PROCESSOR ID TỪ JWT
+            var processorId = GetCurrentEmployeeId();
+            
+            if (!processorId.HasValue)
+            {
+                _logger.LogWarning("Could not get processor ID from JWT");
+            }
+            else
+            {
+                _logger.LogInformation(
+                    "Processing conversion request {RequestId} by Employee {ProcessorId}", 
+                    requestId, processorId.Value);
+            }
 
             var result = await _pointService.ProcessPointToMoneyRequestAsync(
                 requestId, dto, processorId);

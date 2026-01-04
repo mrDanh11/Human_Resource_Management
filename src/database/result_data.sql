@@ -90,3 +90,4 @@ ALTER TABLE point_to_money_history
 ALTER COLUMN money_received
 TYPE NUMERIC
 USING money_received::NUMERIC;
+
