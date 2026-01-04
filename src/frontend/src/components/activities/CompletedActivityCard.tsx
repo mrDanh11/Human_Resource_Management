@@ -1,5 +1,5 @@
-import { Calendar, MapPin, Users, Eye, BarChart3 } from 'lucide-react';
-import type { CompletedActivityData } from '../../data/completedActivityData';
+import { Calendar, MapPin, Users, Eye, BarChart3, Award } from 'lucide-react';
+import type { CompletedActivityData } from '../../types/activity';
 
 interface CompletedActivityCardProps {
   activity: CompletedActivityData;
@@ -7,7 +7,7 @@ interface CompletedActivityCardProps {
   onViewStatistics: (activityId: string) => void;
 }
 
-const activityTypeLabels: Record<CompletedActivityData['type'], string> = {
+const activityTypeLabels: Record<NonNullable<CompletedActivityData['activityType']>, string> = {
   sports: 'Thể thao',
   charity: 'Từ thiện',
   training: 'Đào tạo',
@@ -15,7 +15,7 @@ const activityTypeLabels: Record<CompletedActivityData['type'], string> = {
   volunteer: 'Tình nguyện'
 };
 
-const activityTypeColors: Record<CompletedActivityData['type'], string> = {
+const activityTypeColors: Record<NonNullable<CompletedActivityData['activityType']>, string> = {
   sports: 'bg-blue-100 text-blue-800',
   charity: 'bg-pink-100 text-pink-800',
   training: 'bg-purple-100 text-purple-800',
@@ -40,29 +40,35 @@ export default function CompletedActivityCard({ activity, onViewDetails, onViewS
   return (
     <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
       {/* Image */}
-      {activity.imageUrl && (
-        <div className="h-48 overflow-hidden relative">
+      <div className="h-48 overflow-hidden relative bg-linear-to-br from-blue-50 to-blue-100">
+        {activity.imageUrl ? (
           <img 
             src={activity.imageUrl} 
             alt={activity.name}
             className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
           />
-          {/* Completed Badge */}
-          <div className="absolute top-3 right-3 bg-green-600 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg">
-            Đã hoàn thành
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <Calendar className="w-16 h-16 text-blue-300" />
           </div>
+        )}
+        {/* Completed Badge */}
+        <div className="absolute top-3 right-3 bg-green-600 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg">
+          Đã hoàn thành
         </div>
-      )}
+      </div>
 
       <div className="p-6">
         {/* Header */}
-        <div className="flex items-start justify-between mb-3 min-h-[3.5rem]">
+        <div className="flex items-start justify-between mb-3 min-h-14">
           <h3 className="text-xl font-bold text-gray-900 flex-1 line-clamp-2">
             {activity.name}
           </h3>
-          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${activityTypeColors[activity.type]} ml-2`}>
-            {activityTypeLabels[activity.type]}
-          </span>
+          {activity.activityType && (
+            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${activityTypeColors[activity.activityType]} ml-2`}>
+              {activityTypeLabels[activity.activityType]}
+            </span>
+          )}
         </div>
 
         {/* Description */}
@@ -80,11 +86,13 @@ export default function CompletedActivityCard({ activity, onViewDetails, onViewS
           </div>
 
           {/* Location */}
-          <div className="flex items-center text-sm text-gray-700">
-            <MapPin className="w-4 h-4 mr-2 text-red-600" />
-            <span className="font-medium mr-2">Địa điểm:</span>
-            <span>{activity.location}</span>
-          </div>
+          {activity.location && (
+            <div className="flex items-center text-sm text-gray-700">
+              <MapPin className="w-4 h-4 mr-2 text-red-600" />
+              <span className="font-medium mr-2">Địa điểm:</span>
+              <span>{activity.location}</span>
+            </div>
+          )}
 
           {/* Participants */}
           <div className="flex items-center text-sm text-gray-700">
@@ -101,6 +109,15 @@ export default function CompletedActivityCard({ activity, onViewDetails, onViewS
             <span className="font-medium mr-2">Nhân viên xuất sắc:</span>
             <span className="font-semibold text-yellow-600">{activity.excellentEmployees} người</span>
           </div>
+
+          {/* Points (if available) */}
+          {activity.points !== undefined && activity.points !== null && (
+            <div className="flex items-center text-sm text-gray-700">
+              <Award className="w-4 h-4 mr-2 text-amber-600" />
+              <span className="font-medium mr-2">Điểm thưởng:</span>
+              <span className="font-semibold text-amber-600">{activity.points} điểm</span>
+            </div>
+          )}
         </div>
 
         {/* Progress Bar */}
@@ -119,11 +136,10 @@ export default function CompletedActivityCard({ activity, onViewDetails, onViewS
           </div>
         </div>
 
-
         {/* Actions */}
-        <div className="flex gap-3">
+        <div className="flex gap-3 mb-3">
           <button
-            onClick={() => onViewDetails(activity.id)}
+            onClick={() => onViewDetails(activity.id.toString())}
             className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg transition-all duration-200"
             style={{
               transition: 'all 0.3s ease'
@@ -142,7 +158,7 @@ export default function CompletedActivityCard({ activity, onViewDetails, onViewS
           </button>
           
           <button
-            onClick={() => onViewStatistics(activity.id)}
+            onClick={() => onViewStatistics(activity.id.toString())}
             className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-200"
             style={{
               transition: 'all 0.3s ease'
@@ -160,6 +176,15 @@ export default function CompletedActivityCard({ activity, onViewDetails, onViewS
             <span className="font-medium">Thống kê</span>
           </button>
         </div>
+
+        {/* Organizer - Bottom Line */}
+        {activity.organizer && (
+          <div className="mt-3 pt-3 border-t border-gray-100">
+            <p className="text-xs text-gray-500">
+              <span className="font-bold">Tổ chức:</span> {activity.organizer}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

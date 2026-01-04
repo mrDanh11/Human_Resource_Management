@@ -31,6 +31,18 @@ export default function ActivityListPage() {
   const itemsPerPage = 9;
 
   useEffect(() => {
+      if (isModalOpen || isConfirmModalOpen || isEditModalOpen) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = 'unset';
+      }
+  
+      return () => {
+        document.body.style.overflow = 'unset';
+      };
+    }, [isModalOpen, isConfirmModalOpen, isEditModalOpen]);
+  
+  useEffect(() => {
     const token = localStorage.getItem('accessToken');
     if (token) {
       try {
