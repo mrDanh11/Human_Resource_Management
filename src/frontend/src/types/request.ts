@@ -58,4 +58,47 @@ export interface WFHRequest extends BaseRequest {
   expectedOutput: string;
 }
 
+// New type request interface
+
+//Response interface
+export interface ApiResponse<T> {
+  code: number;
+  success: boolean;
+  message: string;
+  data: T;
+}
+
+export interface PageResponse<T> {
+  content: T[];
+  totalPages: number;
+  totalElements: number;
+  size: number;
+  number: number;
+}
+
+// Chi tiết yêu cầu
+export interface DetailRequest {
+  id: string;
+  employeeName: string;
+  employeeId: string;
+  type: 'leave' | 'wfh' | 'checkin' | 'checkout';
+  description?: string;
+  status: 'pending' | 'approved' | 'rejected';
+  attachment?: string;
+  startTime?: string;
+  endTime?: string;
+  managerNote?: string;
+  managerActionStatus?: 'approved' | 'rejected' | null;
+  actionDate?: string;
+}
+
+//Danh sách yêu cầu
+export interface ListRequests {
+    id: string;
+    employeeName: string;
+    type: 'leave' | 'wfh' | 'checkin' | 'checkout';
+    status: 'pending' | 'approved' | 'rejected';
+    createDate: string;
+} 
+
 export type EmployeeRequest = LeaveRequest | TimesheetUpdateRequest | CheckInOutRequest | WFHRequest;

@@ -23,6 +23,8 @@ import EmployeeLayout from './layouts/EmployeeLayout';
 import ProtectedRoute from './components/ProtectedRoute';
 import AttendancePage from './pages/attendance/AttendancePage';
 import AttendanceManagementPage from './pages/attendance/AttendanceManagementPage';
+import LeaveRequestPage from './pages/requests/RequestList';
+import ManagerLayout from './layouts/ManagerLayout';
 
 const App = () => {
   return (
@@ -33,6 +35,7 @@ const App = () => {
         <Route path="/landing" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/forbidden" element={<Forbidden />} />
+        <Route path="requests" element={<LeaveRequestPage />} />
 
         {/* Protected Routes - Require Login */}
         <Route element={<ProtectedRoute />}>
@@ -56,6 +59,16 @@ const App = () => {
           </Route>
         </Route>
 
+        <Route element={<ProtectedRoute allowedRoles={['MANAGER']} />}>
+          <Route path="/employee/profile/:id" element={<ProfilePage />} />
+          <Route path="/manager" element={<ManagerLayout />}>
+            <Route path="requests" element={<LeaveRequestPage />} />
+            <Route path="exchange" element={<PointExchange />} />
+            <Route path="history" element={<RewardHistory />} />
+            <Route path="points" element={<RewardDashboard />} />
+          </Route>
+        </Route>
+
         {/* HR Routes */}
         <Route element={<ProtectedRoute allowedRoles={['HR']} />}>
           <Route path="/rewards/hr-reward" element={<RewardPointHR />} />
@@ -63,7 +76,7 @@ const App = () => {
           <Route path="employee">
               <Route path="list" element={<EmployeeList />} />
               <Route path="create" element={<CreateEmployee />} />
-            </Route>
+          </Route>
         </Route>
 
         {/* Admin Routes */}

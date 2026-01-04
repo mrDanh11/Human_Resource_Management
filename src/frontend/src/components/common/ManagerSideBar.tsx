@@ -1,54 +1,30 @@
 import React, { useState } from "react";
-import { Home, User, FileText, Activity, Award, ChevronDown } from "lucide-react";
+import { Home, User, FileText, Award, ChevronDown } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const userId = localStorage.getItem('userId');
 const userRole = localStorage.getItem('role');
 
-const Sidebar: React.FC = () => {
+const ManagerSidebar: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
-  console.log("User Role in Sidebar:", userRole);
-
   const menuItems = [
     { label: "Trang chủ", icon: Home, to: "/landing" },
     { label: "Thông tin cá nhân", icon: User, to: `/employee/profile/${userId}` },
-    { 
-      label: "Yêu cầu", 
-      icon: FileText, 
-      key: "requests",
-      submenu: [
-        { label: "Danh sách yêu cầu", to: "/requests" },
-        { label: "Quản lý timesheet", to: "/timesheet/manage" },
-      ]
-    },
-    {
-      label: "Hoạt động",
-      icon: Activity,
-      key: "activities",
-      submenu: [
-        { label: "Đang mở", to: "/activities" },
-        ...(userRole === 'hr' ? [
-          { label: "Tạo hoạt động", to: "/activities/create" },
-          { label: "Hủy hoạt động", to: "/activities/cancel" },
-        ] : []),
-        { label: "Đã đăng ký", to: "/activities/history" },
-        { label: "Kết quả", to: "/activities/result" }
-      ]
-    },
+    { label: "Yêu cầu", icon: FileText, to: "/manager/requests" },
     { 
       label: "Điểm thưởng", 
       icon: Award, 
       key: "rewards",
       submenu: [
-        { label: "Tổng quan", to: "/rewards/points" },
+        { label: "Tổng quan", to: "manager/rewards/points" },
         ...(userRole === 'hr' ? [
           { label: "Thưởng điểm HR", to: "/rewards/hr-reward" },
         ] : []),
-        { label: "Lịch sử giao dịch", to: "/rewards/history" },
-        { label: "Đổi thưởng", to: "/rewards/exchange" },
+        { label: "Lịch sử giao dịch", to: "manager/rewards/history" },
+        { label: "Đổi thưởng", to: "manager/rewards/exchange" },
       ]
     },
   ];
@@ -124,4 +100,4 @@ const Sidebar: React.FC = () => {
   );
 }
 
-export default Sidebar;
+export default ManagerSidebar;

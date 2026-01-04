@@ -69,7 +69,8 @@ export interface ParticipationDto {
     registerDate: Date,
     cancelDate: Date,
     status: string,
-    result: string,
+    result: Record<string, any>,
+    imgPath: string,
 }
 
 export interface ApiResponse<T> {
