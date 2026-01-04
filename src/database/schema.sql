@@ -1,8 +1,8 @@
 -- ============================================
--- HR MANAGEMENT SYSTEM - OPTIMIZED DATABASE
+-- HR MANAGEMENT SYSTEM - FULL DATABASE RESET
 -- ============================================
 
--- Drop existing tables
+-- 1. DROP ALL TABLES (Clean Slate)
 DROP TABLE IF EXISTS monthly_point_allocation_history CASCADE;
 DROP TABLE IF EXISTS monthly_point_rules CASCADE;
 DROP TABLE IF EXISTS password_reset_tokens CASCADE;
@@ -21,9 +21,12 @@ DROP TABLE IF EXISTS employee CASCADE;
 DROP TABLE IF EXISTS department CASCADE;
 DROP TABLE IF EXISTS role CASCADE;
 
--- ============================================
--- ROLE TABLE
--- ============================================
+-- 2. CREATE EXTENSIONS
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+-- 3. CREATE TABLES (Schema)
+
+-- ROLE
 CREATE TABLE role (
     id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL UNIQUE,
@@ -31,9 +34,7 @@ CREATE TABLE role (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- ============================================
--- DEPARTMENT TABLE
--- ============================================
+-- DEPARTMENT
 CREATE TABLE department (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -42,9 +43,7 @@ CREATE TABLE department (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- ============================================
--- EMPLOYEE TABLE
--- ============================================
+-- EMPLOYEE
 CREATE TABLE employee (
     id SERIAL PRIMARY KEY,
     fullname VARCHAR(100) NOT NULL,
@@ -60,19 +59,19 @@ CREATE TABLE employee (
     email VARCHAR(100) UNIQUE NOT NULL,
     role_id INTEGER NOT NULL,
     department_id INTEGER,
+    manager_id INTEGER,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (role_id) REFERENCES role(id),
-    FOREIGN KEY (department_id) REFERENCES department(id)
+    FOREIGN KEY (department_id) REFERENCES department(id),
+    FOREIGN KEY (manager_id) REFERENCES employee(id)
 );
 
 ALTER TABLE department 
 ADD CONSTRAINT fk_department_manager 
 FOREIGN KEY (manager_id) REFERENCES employee(id);
 
--- ============================================
--- USER ACCOUNTS TABLE (Login với Email/Username)
--- ============================================
+-- USER ACCOUNTS
 CREATE TABLE user_accounts (
     id SERIAL PRIMARY KEY,
     employee_id INTEGER NOT NULL UNIQUE,
@@ -88,9 +87,7 @@ CREATE TABLE user_accounts (
     FOREIGN KEY (employee_id) REFERENCES employee(id) ON DELETE CASCADE
 );
 
--- ============================================
--- REFRESH TOKENS TABLE
--- ============================================
+-- REFRESH TOKENS
 CREATE TABLE refresh_tokens (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL,
@@ -104,9 +101,7 @@ CREATE TABLE refresh_tokens (
     FOREIGN KEY (user_id) REFERENCES user_accounts(id) ON DELETE CASCADE
 );
 
--- ============================================
--- PASSWORD RESET TOKENS TABLE
--- ============================================
+-- PASSWORD RESET TOKENS
 CREATE TABLE password_reset_tokens (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL,
@@ -118,9 +113,7 @@ CREATE TABLE password_reset_tokens (
     FOREIGN KEY (user_id) REFERENCES user_accounts(id) ON DELETE CASCADE
 );
 
--- ============================================
--- POINT TABLE
--- ============================================
+-- POINT
 CREATE TABLE point (
     id SERIAL PRIMARY KEY,
     employee_id INTEGER NOT NULL UNIQUE,
@@ -129,9 +122,7 @@ CREATE TABLE point (
     FOREIGN KEY (employee_id) REFERENCES employee(id) ON DELETE CASCADE
 );
 
--- ============================================
 -- POINT TRANSACTION HISTORY
--- ============================================
 CREATE TABLE point_transaction_history (
     id SERIAL PRIMARY KEY,
     employee_id INTEGER NOT NULL,
@@ -144,9 +135,7 @@ CREATE TABLE point_transaction_history (
     FOREIGN KEY (actor_id) REFERENCES employee(id)
 );
 
--- ============================================
 -- POINT CONVERSION RULES
--- ============================================
 CREATE TABLE point_conversion_rules (
     id SERIAL PRIMARY KEY,
     point_value INTEGER NOT NULL,
@@ -157,9 +146,7 @@ CREATE TABLE point_conversion_rules (
     FOREIGN KEY (updated_by) REFERENCES employee(id)
 );
 
--- ============================================
 -- POINT TO MONEY HISTORY
--- ============================================
 CREATE TABLE point_to_money_history (
     id SERIAL PRIMARY KEY,
     employee_id INTEGER NOT NULL,
@@ -171,40 +158,30 @@ CREATE TABLE point_to_money_history (
     FOREIGN KEY (employee_id) REFERENCES employee(id)
 );
 
--- ============================================
--- ACTIVITY TABLE
--- ============================================
+-- ACTIVITY
 CREATE TABLE activity (
     id SERIAL PRIMARY KEY,
     name VARCHAR(200) NOT NULL,
     description TEXT,
-    
     start_date TIMESTAMP NOT NULL,
     end_date TIMESTAMP NOT NULL,
-    
     registration_start_date TIMESTAMP NOT NULL, 
     registration_end_date TIMESTAMP NOT NULL,   
-    
     max_participants INTEGER,
-    
     location VARCHAR(255),
     activity_type VARCHAR(50) CHECK (activity_type IN ('sports', 'charity', 'training', 'team-building', 'volunteer')),
     image_url TEXT,
     organizer VARCHAR(100), 
     points INTEGER DEFAULT 0, 
-    
     status VARCHAR(20) DEFAULT 'upcoming' CHECK (status IN ('upcoming', 'ongoing', 'completed', 'cancelled')),
-    
     created_by INTEGER,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
+    is_deleted BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (created_by) REFERENCES employee(id)
 );
 
--- ============================================
--- PARTICIPATION TABLE
--- ============================================
+-- PARTICIPATION
 CREATE TABLE participation (
     id SERIAL PRIMARY KEY,
     employee_id INTEGER NOT NULL,
@@ -212,16 +189,19 @@ CREATE TABLE participation (
     register_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     cancel_date TIMESTAMP,
     status VARCHAR(20) DEFAULT 'registered' CHECK (status IN ('registered', 'cancelled', 'attended', 'absent')),
-    result TEXT,
+    performance VARCHAR(20) CHECK (performance IN ('bad', 'good', 'excellent')),
+    result JSONB,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (employee_id) REFERENCES employee(id),
     FOREIGN KEY (activity_id) REFERENCES activity(id),
-    UNIQUE(employee_id, activity_id)
+    UNIQUE(employee_id, activity_id),
+    CHECK (
+        result IS NULL OR 
+        jsonb_typeof(result) = 'object'
+    )
 );
 
--- ============================================
--- ATTENDANCE TABLE
--- ============================================
+-- ATTENDANCE
 CREATE TABLE attendance (
     id SERIAL PRIMARY KEY,
     employee_id INTEGER NOT NULL,
@@ -239,9 +219,7 @@ CREATE TABLE attendance (
     UNIQUE(employee_id, date)
 );
 
--- ============================================
--- REQUEST TABLE
--- ============================================
+-- REQUEST
 CREATE TABLE request (
     id SERIAL PRIMARY KEY,
     employee_id INTEGER NOT NULL,
@@ -256,9 +234,7 @@ CREATE TABLE request (
     FOREIGN KEY (employee_id) REFERENCES employee(id)
 );
 
--- ============================================
--- APPROVAL HISTORY TABLE
--- ============================================
+-- APPROVAL HISTORY
 CREATE TABLE approval_history (
     id SERIAL PRIMARY KEY,
     request_id INTEGER NOT NULL,
@@ -270,11 +246,7 @@ CREATE TABLE approval_history (
     FOREIGN KEY (approver_id) REFERENCES employee(id)
 );
 
--- ============================================
--- MONTHLY POINT ALLOCATION RULES
--- ============================================
-
--- Bảng quy tắc cộng điểm tự động hàng tháng
+-- MONTHLY POINT RULES
 CREATE TABLE monthly_point_rules (
     id SERIAL PRIMARY KEY,
     role_id INTEGER NOT NULL,
@@ -286,7 +258,7 @@ CREATE TABLE monthly_point_rules (
     UNIQUE(role_id)
 );
 
--- Bảng lịch sử chạy job cộng điểm tự động
+-- MONTHLY POINT ALLOCATION HISTORY
 CREATE TABLE monthly_point_allocation_history (
     id SERIAL PRIMARY KEY,
     execution_date TIMESTAMP NOT NULL,
@@ -300,40 +272,8 @@ CREATE TABLE monthly_point_allocation_history (
     UNIQUE(year, month)
 );
 
--- Trigger
-CREATE TRIGGER update_monthly_point_rules_updated_at BEFORE UPDATE ON monthly_point_rules
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+-- 4. CREATE TRIGGERS & FUNCTIONS
 
-
-
--- ============================================
--- INDEXES
--- ============================================
-CREATE INDEX idx_employee_role ON employee(role_id);
-CREATE INDEX idx_employee_department ON employee(department_id);
-CREATE INDEX idx_employee_status ON employee(status);
-CREATE INDEX idx_employee_email ON employee(email);
-CREATE INDEX idx_user_accounts_username ON user_accounts(username);
-CREATE INDEX idx_user_accounts_employee ON user_accounts(employee_id);
-CREATE INDEX idx_refresh_tokens_user ON refresh_tokens(user_id);
-CREATE INDEX idx_refresh_tokens_token ON refresh_tokens(token);
-CREATE INDEX idx_refresh_tokens_expires ON refresh_tokens(expires_at);
-CREATE INDEX idx_password_reset_token ON password_reset_tokens(token);
-CREATE INDEX idx_password_reset_user ON password_reset_tokens(user_id);
-CREATE INDEX idx_point_employee ON point(employee_id);
-CREATE INDEX idx_point_transaction_employee ON point_transaction_history(employee_id);
-CREATE INDEX idx_point_transaction_date ON point_transaction_history(created_at);
-CREATE INDEX idx_participation_employee ON participation(employee_id);
-CREATE INDEX idx_participation_activity ON participation(activity_id);
-CREATE INDEX idx_attendance_employee ON attendance(employee_id);
-CREATE INDEX idx_attendance_date ON attendance(date);
-CREATE INDEX idx_request_employee ON request(employee_id);
-CREATE INDEX idx_request_status ON request(status);
-CREATE INDEX idx_approval_request ON approval_history(request_id);
-
--- ============================================
--- TRIGGERS
--- ============================================
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -360,12 +300,31 @@ CREATE TRIGGER update_attendance_updated_at BEFORE UPDATE ON attendance
 CREATE TRIGGER update_request_updated_at BEFORE UPDATE ON request
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+CREATE TRIGGER update_monthly_point_rules_updated_at BEFORE UPDATE ON monthly_point_rules
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+-- 5. CREATE INDEXES
 
-
-ALTER TABLE point_to_money_history
-ALTER COLUMN created_at TYPE timestamptz USING created_at AT TIME ZONE 'UTC';
-
-ALTER TABLE point_to_money_history
-ALTER COLUMN processed_at TYPE timestamptz USING processed_at AT TIME ZONE 'UTC';
-
+CREATE INDEX idx_employee_role ON employee(role_id);
+CREATE INDEX idx_employee_department ON employee(department_id);
+CREATE INDEX idx_employee_manager ON employee(manager_id);
+CREATE INDEX idx_employee_status ON employee(status);
+CREATE INDEX idx_employee_email ON employee(email);
+CREATE INDEX idx_user_accounts_username ON user_accounts(username);
+CREATE INDEX idx_user_accounts_employee ON user_accounts(employee_id);
+CREATE INDEX idx_refresh_tokens_user ON refresh_tokens(user_id);
+CREATE INDEX idx_refresh_tokens_token ON refresh_tokens(token);
+CREATE INDEX idx_refresh_tokens_expires ON refresh_tokens(expires_at);
+CREATE INDEX idx_password_reset_token ON password_reset_tokens(token);
+CREATE INDEX idx_password_reset_user ON password_reset_tokens(user_id);
+CREATE INDEX idx_point_employee ON point(employee_id);
+CREATE INDEX idx_point_transaction_employee ON point_transaction_history(employee_id);
+CREATE INDEX idx_point_transaction_date ON point_transaction_history(created_at);
+CREATE INDEX idx_participation_employee ON participation(employee_id);
+CREATE INDEX idx_participation_activity ON participation(activity_id);
+CREATE INDEX idx_participation_result_gin ON participation USING GIN (result);
+CREATE INDEX idx_attendance_employee ON attendance(employee_id);
+CREATE INDEX idx_attendance_date ON attendance(date);
+CREATE INDEX idx_request_employee ON request(employee_id);
+CREATE INDEX idx_request_status ON request(status);
+CREATE INDEX idx_approval_request ON approval_history(request_id);

@@ -3,8 +3,9 @@
  * Các API calls: quản lý cuộc thi chạy bộ, ghi nhận kết quả, thống kê
  */
 
-import { apiSpring } from './api';
+import { apiSpring, apiDotNet } from './api';
 import type { Activity, ActivityListResponse, CreateActivityRequest, MyParticipationResponse } from '../types/activity';
+import type { CompletedActivityData } from '../types/activity';
 
 /**
  * Get all activities (for HR management and Employee view)
@@ -50,7 +51,13 @@ export const deleteActivity = async (id: number): Promise<void> => {
   await apiSpring.delete(`/activities/${id}`);
 };
 
-import { apiDotNet } from './api';
+/**
+ * Get completed activities with excellent employee details
+ */
+export const getCompletedActivities = async (): Promise<CompletedActivityData[]> => {
+  const response = await apiDotNet.get<CompletedActivityData[]>('/Activity/completed');
+  return response.data;
+};
 
 export interface ParticipationDto {
     id: number,
@@ -163,9 +170,7 @@ export const getActivityStatistics = async (): Promise<{
   });
   
   const statusDistribution = Array.from(statusMap.entries()).map(([status, count]) => ({
-    status: status === 'upcoming' ? 'Đang mở đăng ký' : 
-            status === 'completed' ? 'Đã hoàn thành' : 
-            status,
+    status,
     count,
   }));
   

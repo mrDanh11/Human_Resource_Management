@@ -311,6 +311,15 @@ export default function ActivityListCard({
             </>
           )}
         </div>
+
+        {/* Organizer - small text below buttons */}
+        {activity.organizer && (
+          <div className="mt-3 pt-3 border-t border-gray-100">
+            <p className="text-xs text-gray-500">
+              <span className="font-bold">Tổ chức:</span> {activity.organizer}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

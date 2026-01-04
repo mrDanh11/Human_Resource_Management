@@ -1,8 +1,8 @@
-import { X, Award, TrendingUp, Download, FileText, Table } from 'lucide-react';
+import { X, Award, TrendingUp, Download, FileText, Table, Calendar, MapPin, Tag } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
-import type { CompletedActivityData } from '../../data/completedActivityData';
+import type { CompletedActivityData } from '../../types/activity';
 
 // Set up pdfMake fonts
 pdfMake.vfs = pdfFonts.vfs;
@@ -21,21 +21,8 @@ export default function ActivityStatisticsModal({ activity, isOpen, onClose }: A
     id: i + 1,
     name: `Nhân viên ${i + 1}`,
     department: ['Công nghệ', 'Nhân sự', 'Kinh doanh', 'Marketing', 'Kế toán'][i % 5],
-    achievement: ['Hoàn thành xuất sắc', 'Đóng góp tích cực', 'Tinh thần cao'][i % 3]
+    email: `employee${i + 1}@company.com`
   }));
-
-  // Prevent body scroll when modal is open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -45,7 +32,7 @@ export default function ActivityStatisticsModal({ activity, isOpen, onClose }: A
   // Download as CSV
   const downloadCSV = () => {
     const excellentEmployeeList = excellentEmployees.map(emp => 
-      `${emp.name} (${emp.department} - ${emp.achievement})`
+      `${emp.name} (${emp.department} - ${emp.email})`
     ).join('; ');
 
     const csvData = [
@@ -62,10 +49,10 @@ export default function ActivityStatisticsModal({ activity, isOpen, onClose }: A
       ['Thông tin hoạt động'],
       ['Thời gian', new Date(activity.startDate).toLocaleDateString('vi-VN')],
       ['Địa điểm', activity.location],
-      ['Loại hoạt động', activity.type === 'sports' ? 'Thể thao' :
-                         activity.type === 'charity' ? 'Từ thiện' :
-                         activity.type === 'training' ? 'Đào tạo' :
-                         activity.type === 'team-building' ? 'Team Building' : 'Tình nguyện']
+      ['Loại hoạt động', activity.activityType === 'sports' ? 'Thể thao' :
+                         activity.activityType === 'charity' ? 'Từ thiện' :
+                         activity.activityType === 'training' ? 'Đào tạo' :
+                         activity.activityType === 'team-building' ? 'Team Building' : 'Tình nguyện']
     ];
 
     const csvContent = csvData.map(row => row.join(',')).join('\n');
@@ -83,10 +70,10 @@ export default function ActivityStatisticsModal({ activity, isOpen, onClose }: A
 
   // Download as PDF
   const downloadPDF = () => {
-    const typeLabel = activity.type === 'sports' ? 'Thể thao' :
-                      activity.type === 'charity' ? 'Từ thiện' :
-                      activity.type === 'training' ? 'Đào tạo' :
-                      activity.type === 'team-building' ? 'Team Building' : 'Tình nguyện';
+    const typeLabel = activity.activityType === 'sports' ? 'Thể thao' :
+                      activity.activityType === 'charity' ? 'Từ thiện' :
+                      activity.activityType === 'training' ? 'Đào tạo' :
+                      activity.activityType === 'team-building' ? 'Team Building' : 'Tình nguyện';
 
     const excellentRate = ((activity.excellentEmployees / activity.currentParticipants) * 100).toFixed(1);
 
@@ -105,13 +92,13 @@ export default function ActivityStatisticsModal({ activity, isOpen, onClose }: A
               { text: 'STT', style: 'tableLabel', fillColor: '#f9fafb', alignment: 'center' },
               { text: 'Họ tên', style: 'tableLabel', fillColor: '#f9fafb' },
               { text: 'Phòng ban', style: 'tableLabel', fillColor: '#f9fafb' },
-              { text: 'Đánh giá', style: 'tableLabel', fillColor: '#f9fafb' }
+              { text: 'Email', style: 'tableLabel', fillColor: '#f9fafb' }
             ],
             ...excellentEmployees.map((emp, index) => [
               { text: (index + 1).toString(), style: 'tableValue', alignment: 'center' },
               { text: emp.name, style: 'tableValue' },
               { text: emp.department, style: 'tableValue' },
-              { text: emp.achievement, style: 'tableValue' }
+              { text: emp.email, style: 'tableValue' }
             ])
           ]
         },
@@ -481,7 +468,7 @@ export default function ActivityStatisticsModal({ activity, isOpen, onClose }: A
                     </div>
                     <div className="text-right">
                       <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
-                        {employee.achievement}
+                        {employee.email}
                       </span>
                     </div>
                   </div>
@@ -494,29 +481,38 @@ export default function ActivityStatisticsModal({ activity, isOpen, onClose }: A
           <div className="border-t pt-4">
             <h3 className="text-lg font-bold text-gray-900 mb-3">Thông tin hoạt động</h3>
             <div className="grid grid-cols-2 gap-3 text-sm">
-              <div>
-                <p className="text-gray-600">Thời gian</p>
-                <p className="font-semibold text-gray-900">
-                  {new Date(activity.startDate).toLocaleDateString('vi-VN', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric'
-                  })}
-                </p>
+              <div className="flex items-start gap-2">
+                <Calendar className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-gray-600">Thời gian</p>
+                  <p className="font-semibold text-gray-900">
+                    {new Date(activity.startDate).toLocaleDateString('vi-VN', {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric'
+                    })}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-gray-600">Địa điểm</p>
-                <p className="font-semibold text-gray-900">{activity.location}</p>
+              <div className="flex items-start gap-2">
+                <MapPin className="w-4 h-4 text-red-600 mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-gray-600">Địa điểm</p>
+                  <p className="font-semibold text-gray-900">{activity.location || 'Chưa cập nhật'}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-gray-600">Loại hoạt động</p>
-                <p className="font-semibold text-gray-900 capitalize">
-                  {activity.type === 'sports' ? 'Thể thao' :
-                   activity.type === 'charity' ? 'Từ thiện' :
-                   activity.type === 'training' ? 'Đào tạo' :
-                   activity.type === 'team-building' ? 'Team Building' :
-                   'Tình nguyện'}
-                </p>
+              <div className="flex items-start gap-2">
+                <Tag className="w-4 h-4 text-purple-600 mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-gray-600">Loại hoạt động</p>
+                  <p className="font-semibold text-gray-900 capitalize">
+                    {activity.activityType === 'sports' ? 'Thể thao' :
+                     activity.activityType === 'charity' ? 'Từ thiện' :
+                     activity.activityType === 'training' ? 'Đào tạo' :
+                     activity.activityType === 'team-building' ? 'Team Building' :
+                     'Tình nguyện'}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -554,7 +550,7 @@ export default function ActivityStatisticsModal({ activity, isOpen, onClose }: A
 
               {/* Download Menu */}
               {showDownloadMenu && (
-                <div className="absolute bottom-full left-0 mb-2 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden z-20 min-w-[220px]">
+                <div className="absolute bottom-full left-0 mb-2 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden z-20 min-w-55">
                   <button
                     onClick={downloadCSV}
                     className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 transition-colors w-full text-left border-b border-gray-100"

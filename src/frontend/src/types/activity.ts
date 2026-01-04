@@ -120,3 +120,28 @@ export interface MyParticipationResponse {
   registeredAt: string;
   status: string;
 }
+
+
+export interface ExcellentEmployee {
+  id: number;
+  name: string;
+  department: string;
+  email: string;
+}
+
+export interface CompletedActivityData {
+  id: number;
+  name: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+  maxParticipants: number;
+  currentParticipants: number;
+  excellentEmployees: number;
+  excellentEmployeeList?: ExcellentEmployee[];
+  location?: string;
+  activityType?: string;
+  imageUrl?: string;
+  organizer?: string;
+  points?: number;
+}

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, Calendar, MapPin, Users, Image as ImageIcon, Type, AlignLeft, Award, User } from 'lucide-react';
+import { X, MapPin, Users, Image as ImageIcon, Type, AlignLeft, Award, User } from 'lucide-react';
 import type { CreateActivityRequest } from '../../types/activity';
 import type { ActivityData } from '../../data/activityData';
 
