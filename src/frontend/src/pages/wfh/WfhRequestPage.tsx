@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Home } from "lucide-react";
-import WfhForm from "../../components/wfh/WfhForm";
-import WfhPreviewTimesheet from "../../components/wfh/WfhPreviewTimesheet";
-import WfhQuotaCard from "../../components/wfh/WfhQuotaCard";
+import WfhForm from "../../components/requests/wfh/WfhForm";
+import WfhPreviewTimesheet from "../../components/requests/wfh/WfhPreviewTimesheet";
+import WfhQuotaCard from "../../components/requests/wfh/WfhQuotaCard";
 
 export default function WfhRequestPage() {
   const navigate = useNavigate();

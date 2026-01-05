@@ -4,8 +4,8 @@
 
 import { useState, useEffect } from "react";
 
-import { getWfhQuota } from "../../services/wfhService";
-import type { WfhQuota } from "../../types/wfh.types";
+import { getWfhQuota } from "../../../services/wfhService";
+import type { WfhQuota } from "../../../types/wfh.types";
 
 export default function WfhQuotaCard() {
   const [quota, setQuota] = useState<WfhQuota | null>(null);

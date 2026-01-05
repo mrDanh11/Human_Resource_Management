@@ -6,8 +6,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Upload, AlertTriangle, X } from "lucide-react";
-import { createWfhRequest, validateWfhDates } from "../../services/wfhService";
-import type { CreateWfhRequestDto, WfhValidation } from "../../types/wfh.types";
+import { createWfhRequest, validateWfhDates } from "../../../services/wfhService";
+import type { CreateWfhRequestDto, WfhValidation } from "../../../types/wfh.types";
 
 interface WfhFormProps {
   onSuccess?: () => void;

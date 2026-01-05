@@ -20,6 +20,7 @@ import ActivityResultPage from './pages/activities/ActivityResultPage';
 import HistoryActivitiesPage from './pages/activities/HistoryActivitiesPage';
 import ActivityPrivateResultPage from './pages/activities/ActivityPrivateResultPage';
 import EmployeeLayout from './layouts/EmployeeLayout';
+import HRLayout from './layouts/HRLayout';
 import ProtectedRoute from './components/ProtectedRoute';
 import AttendancePage from './pages/attendance/AttendancePage';
 import AttendanceManagementPage from './pages/attendance/AttendanceManagementPage';
@@ -64,12 +65,14 @@ const App = () => {
 
         {/* HR Routes */}
         <Route element={<ProtectedRoute allowedRoles={['HR']} />}>
-          <Route path="/rewards/hr-reward" element={<RewardPointHR />} />
-          <Route path="activities" element={<AdminActivityListPage />} />
-          <Route path="employee">
+          <Route element={<HRLayout />}>
+            <Route path="/rewards/hr-reward" element={<RewardPointHR />} />
+            <Route path="/activities" element={<AdminActivityListPage />} />
+            <Route path="/employee">
               <Route path="list" element={<EmployeeList />} />
               <Route path="create" element={<CreateEmployee />} />
             </Route>
+          </Route>
         </Route>
 
         {/* Admin Routes */}
