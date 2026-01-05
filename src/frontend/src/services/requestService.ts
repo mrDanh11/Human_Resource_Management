@@ -32,9 +32,9 @@ export const requestService = {
 
   //Lấy chi tiết yêu cầu
   getDetailRequest: async (id: number): Promise<DetailRequest> => { 
-    const response = await apiSpring.get<DetailRequest>(`/manager/request/${id}`);
+    const response = await apiSpring.get<ApiResponse<DetailRequest>>(`/manager/request/${id}`);
     if (response.data) {
-      return response.data;
+      return response.data.data;
     } else {
       throw new Error('Failed to fetch request detail');
     }

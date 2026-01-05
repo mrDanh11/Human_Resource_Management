@@ -78,7 +78,7 @@ export interface PageResponse<T> {
 
 // Chi tiết yêu cầu
 export interface DetailRequest {
-  id: string;
+  id: number;
   employeeName: string;
   employeeId: string;
   type: 'leave' | 'wfh' | 'checkin' | 'checkout';
@@ -94,11 +94,11 @@ export interface DetailRequest {
 
 //Danh sách yêu cầu
 export interface ListRequests {
-    id: string;
+    id: number;
     employeeName: string;
     type: 'leave' | 'wfh' | 'checkin' | 'checkout';
     status: 'pending' | 'approved' | 'rejected';
-    createDate: string;
+    createdDate: string;
 } 
 
 export type EmployeeRequest = LeaveRequest | TimesheetUpdateRequest | CheckInOutRequest | WFHRequest;

@@ -35,7 +35,6 @@ const App = () => {
         <Route path="/landing" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/forbidden" element={<Forbidden />} />
-        <Route path="requests" element={<LeaveRequestPage />} />
 
         {/* Protected Routes - Require Login */}
         <Route element={<ProtectedRoute />}>
@@ -63,9 +62,11 @@ const App = () => {
           <Route path="/employee/profile/:id" element={<ProfilePage />} />
           <Route path="/manager" element={<ManagerLayout />}>
             <Route path="requests" element={<LeaveRequestPage />} />
-            <Route path="exchange" element={<PointExchange />} />
-            <Route path="history" element={<RewardHistory />} />
-            <Route path="points" element={<RewardDashboard />} />
+            <Route path="rewards">
+              <Route path="exchange" element={<PointExchange />} />
+              <Route path="history" element={<RewardHistory />} />
+              <Route path="points" element={<RewardDashboard />} />
+            </Route>
           </Route>
         </Route>
 

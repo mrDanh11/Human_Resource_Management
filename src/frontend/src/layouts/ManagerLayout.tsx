@@ -1,7 +1,7 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
 import Header from "../components/LandingPage/Header";
-import ManagerSidebar from "../components/common/Sidebar";
+import ManagerSidebar from "../components/common/ManagerSideBar";
 
 const ManagerLayout: React.FC = () => {
     return (

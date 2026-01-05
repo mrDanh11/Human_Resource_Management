@@ -10,14 +10,14 @@
 // Create new request button
 // Stats summary (pending, approved, rejected)
 
-import React, { useEffect, useMemo, useState } from 'react';
-import { Search, ChevronDown, Eye } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { Search, FileClock, Eye } from 'lucide-react';
 import LeaveRequestDetail from '../../components/requests/RequestOnLeaveDetail';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { fetchRequestsList } from '../../store/requestSlice';
 
 const LeaveRequestPage = () => {
-    const [selectedRequest, setSelectedRequest] = useState<string | null>(null);
+    const [selectedRequest, setSelectedRequest] = useState<number | null>(null);
     const [selectedStatus, setSelectedStatus] = useState('All');
     const [selectedType, setSelectedType] = useState('All');
     const [sortOrder, setSortOrder] = useState('Newest');
@@ -32,8 +32,6 @@ const LeaveRequestPage = () => {
         // Dispatch action to fetch requests list
         dispatch(fetchRequestsList({ page: currentPage, size: 10 }));
     }, [dispatch, currentPage]);
-
-    console.log('Requests List:', requestsList);
         
     const filteredRequests = useMemo(() => {
         if (!requestsList) return [];
@@ -43,9 +41,13 @@ const LeaveRequestPage = () => {
             if (!searchMatch) return false;
             const statusMatch = selectedStatus === 'All' || request.status === selectedStatus;
             const typeMatch = selectedType === 'All' || request.type === selectedType;
-            return statusMatch && typeMatch;
+            return statusMatch && typeMatch && searchMatch;
+        }).sort((a, b) => {
+            const dateA = new Date(a.createdDate).getTime();
+            const dateB = new Date(b.createdDate).getTime();
+            return sortOrder === 'Newest' ? dateB - dateA : dateA - dateB;
         });
-    }, [requestsList, selectedStatus, selectedType, searchTerm]);
+    }, [requestsList, selectedStatus, selectedType, searchTerm, sortOrder]);
 
     const itemsPerPage = 5;
     const totalFilteredPages = Math.ceil(filteredRequests.length / itemsPerPage);
@@ -61,7 +63,7 @@ const LeaveRequestPage = () => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + currentRequests.length;
 
-    const handleViewDetail = (requestId: string) => {
+    const handleViewDetail = (requestId: number) => {
         setSelectedRequest(requestId);
         setIsDetailModalOpen(true);
     };
@@ -103,7 +105,8 @@ const LeaveRequestPage = () => {
 
     const formatDate = (dateString: string) => {
         try {
-            const date = new Date(dateString);
+            const normalized = dateString.split(".")[0];
+            const date = new Date(normalized);
             return date.toLocaleDateString('vi-VN', { 
                 day: '2-digit', 
                 month: '2-digit', 
@@ -113,6 +116,10 @@ const LeaveRequestPage = () => {
             return dateString;
         }
     };
+
+    console.log('All requests:', requestsList);
+    console.log('before format date:', filteredRequests[0]?.createdDate || '');
+    console.log('formatted date:', formatDate(filteredRequests[0]?.createdDate || ''));
 
     const handlePageChange = (page: number) => {
         if (page >= 1 && page <= totalFilteredPages) {
@@ -154,12 +161,29 @@ const LeaveRequestPage = () => {
         <div className="min-h-screen bg-gray-100 p-6">
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
-                <div className="bg-blue-600 text-white px-6 py-4 rounded-t-lg shadow-md">
-                    <h1 className="text-2xl font-bold">⭐ Xem Yêu cầu Nghỉ phép</h1>
+                <div className="bg-blue-600 text-white p-6 rounded-lg shadow-md">
+                    <h1 className="text-2xl font-bold flex items-center gap-2">
+                        <FileClock className="w-6 h-6" /> 
+                        Xem Yêu cầu Nghỉ phép
+                    </h1>
                 </div>
 
-                {/* Filters */}
+                {/* Search and Filters */}
                 <div className="bg-white px-6 py-4 border-b">
+                    <div className="mb-4">
+                        <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <Search className="h-5 w-5 text-gray-400" />
+                            </div>
+                            <input
+                                type="text"
+                                placeholder="Tìm kiếm theo tên nhân viên..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                            />
+                        </div>
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
                             <label className="block text-sm text-gray-600 mb-2">Trạng thái</label>
@@ -253,7 +277,6 @@ const LeaveRequestPage = () => {
                                                             </div>
                                                             <div className="ml-3">
                                                                 <div className="font-medium text-gray-900">{request.employeeName}</div>
-                                                                <div className="text-sm text-gray-500">ID: {request.id}</div>
                                                             </div>
                                                         </div>
                                                     </td>
@@ -263,7 +286,7 @@ const LeaveRequestPage = () => {
                                                         </span>
                                                     </td>
                                                     <td className="px-6 py-4 text-sm text-gray-900">
-                                                        {formatDate(request.createDate)}
+                                                        {formatDate(request.createdDate)}
                                                     </td>
                                                     <td className="px-6 py-4">
                                                         <span className={`inline-block px-3 py-1 rounded text-sm font-medium ${statusInfo.color}`}>
@@ -274,17 +297,17 @@ const LeaveRequestPage = () => {
                                                         <div className="flex space-x-2">
                                                             <button
                                                                 onClick={() => handleViewDetail(request.id)}
-                                                                className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 text-sm"
+                                                                className="inline-flex items-center px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
                                                             >
                                                                 <Eye className="w-4 h-4 mr-1" />
                                                                 Xem chi tiết
                                                             </button>
                                                             {request.status === 'pending' && (
                                                                 <>
-                                                                    <button className="inline-flex items-center px-3 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200 text-sm">
+                                                                    <button className="inline-flex items-center px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 text-sm">
                                                                         Duyệt
                                                                     </button>
-                                                                    <button className="inline-flex items-center px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 text-sm">
+                                                                    <button className="inline-flex items-center px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm">
                                                                         Từ chối
                                                                     </button>
                                                                 </>
@@ -326,13 +349,14 @@ const LeaveRequestPage = () => {
                 </div>
             </div>
 
-            {/* Modal Chi tiết
+            {/* Modal Chi tiết */}
             {isDetailModalOpen && selectedRequest && (
                 <LeaveRequestDetail
                     requestId={selectedRequest}
+                    isOpen={isDetailModalOpen}
                     onClose={handleCloseDetailModal}
                 />
-            )} */}
+            )}
         </div>
     );
 };

@@ -52,6 +52,12 @@ const requestSlice = createSlice({
       state.loading = false;
       state.error = null;
     },
+
+    resetDetail: (state) => {
+      state.requestDetail = null;
+      state.loading = false;
+      state.error = null;
+    },
 },
   extraReducers: (builder) => {
     builder
@@ -84,5 +90,5 @@ const requestSlice = createSlice({
     },
 });
 
-export const { resetRequestState } = requestSlice.actions;
+export const { resetRequestState, resetDetail } = requestSlice.actions;
 export default requestSlice.reducer;

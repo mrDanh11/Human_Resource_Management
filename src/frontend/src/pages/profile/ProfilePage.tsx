@@ -4,6 +4,7 @@ import { useSecureFieldToggle } from "../../hooks/useSecureFieldToggle";
 import { useUpdateEmployeeInfo } from "../../hooks/useUpdateEmployeeInfo";
 import type { UpdateEmployeeFormData } from "../../hooks/useUpdateEmployeeInfo";
 import ProfileLayout from "../../layouts/ProfileLayout";
+import ManagerProfileLayout from "../../layouts/ManagerProfileLayout";
 import ProfileContent from "../../components/profile/ProfileContent";
 import ProfileSkeleton from "../../components/profile/ProfileSkeleton";
 import UpdateEmployeePersonalInformation from "../../components/profile/UpdateProfileEmployee";
@@ -13,6 +14,10 @@ export default function ProfilePage() {
   const { id } = useParams();
   const { data, loading, err, refetch } = useEmployeeProfile(id);
   const { toggle, isVisible } = useSecureFieldToggle();
+
+  const roleUser = localStorage.getItem("role");
+  const Layout = roleUser === "manager" ? ManagerProfileLayout : ProfileLayout;
+
 
   const { handleUpdateSubmit, isSubmitting } = useUpdateEmployeeInfo();
 
@@ -24,33 +29,31 @@ export default function ProfilePage() {
   setShowUpdateForm(false);
 };
 
-  // console.log("Employee Data:", data);
-
   // Loading state
   if (loading) {
-    return (
-      <ProfileLayout>
+  return (
+      <Layout>
         <div className="flex-1 flex items-center justify-center">
           <ProfileSkeleton />
         </div>
-      </ProfileLayout>
+      </Layout>
     );
   }
 
   // Error state
   if (err || !data) {
     return (
-      <ProfileLayout>
+      <Layout>
         <div className="flex-1 flex items-center justify-center">
           {err || "Không tìm thấy dữ liệu"}
         </div>
-      </ProfileLayout>
+      </Layout>
     );
   }
 
   // Success state
   return (
-    <ProfileLayout>
+    <Layout>
       <ProfileContent
         data={data}
         showCccd={isVisible("cccd")}
@@ -71,6 +74,6 @@ export default function ProfilePage() {
           isSubmitting={isSubmitting}
         />
       )}
-    </ProfileLayout>
+    </Layout>
   );
 }

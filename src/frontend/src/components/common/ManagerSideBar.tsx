@@ -3,7 +3,6 @@ import { Home, User, FileText, Award, ChevronDown } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const userId = localStorage.getItem('userId');
-const userRole = localStorage.getItem('role');
 
 const ManagerSidebar: React.FC = () => {
   const location = useLocation();
@@ -19,12 +18,9 @@ const ManagerSidebar: React.FC = () => {
       icon: Award, 
       key: "rewards",
       submenu: [
-        { label: "Tổng quan", to: "manager/rewards/points" },
-        ...(userRole === 'hr' ? [
-          { label: "Thưởng điểm HR", to: "/rewards/hr-reward" },
-        ] : []),
-        { label: "Lịch sử giao dịch", to: "manager/rewards/history" },
-        { label: "Đổi thưởng", to: "manager/rewards/exchange" },
+        { label: "Tổng quan", to: "/manager/rewards/points" },
+        { label: "Lịch sử giao dịch", to: "/manager/rewards/history" },
+        { label: "Đổi thưởng", to: "/manager/rewards/exchange" },
       ]
     },
   ];

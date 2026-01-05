@@ -10,8 +10,6 @@ const Sidebar: React.FC = () => {
   const navigate = useNavigate();
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
-  console.log("User Role in Sidebar:", userRole);
-
   const menuItems = [
     { label: "Trang chủ", icon: Home, to: "/landing" },
     { label: "Thông tin cá nhân", icon: User, to: `/employee/profile/${userId}` },
