@@ -10,4 +10,6 @@ public interface IRequestService {
     RequestDetailReponse getRequestDetail(Long managerId, Long requestId);
     Page<RequestListResponse> getListRequest(Long managerId, RequestSearchCriteria criteria);
     void createLeaveRequest(Long employeeId, CreateLeaveRequest req);
+    void cancelRequest(Long employeeId, Long requestId);
+    Page<RequestListResponse> getMyRequests(Long employeeId, RequestSearchCriteria criteria);
 }

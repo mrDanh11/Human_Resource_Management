@@ -36,4 +36,9 @@ public class RequestSpecification {
         };
     }
 
+    public static Specification<Request> hasEmployee(Long employeeId){
+        return (root, query, cb) -> {
+            return cb.equal(root.get("employee").get("id"), employeeId);
+        };
+    }
 }

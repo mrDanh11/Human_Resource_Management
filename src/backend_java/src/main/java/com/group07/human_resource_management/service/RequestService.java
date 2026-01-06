@@ -169,4 +169,41 @@ public class RequestService implements IRequestService {
 
     }
 
+    @Transactional
+    public void cancelRequest(Long employeeId, Long requestId) {
+        Request request = requestRepository.findById(requestId)
+                .orElseThrow(() -> new ResourceNotFoundException("Request not found"));
+        
+        if (!request.getEmployee().getId().equals(employeeId)) {
+            throw new RuntimeException("You do not have permission to cancel this request");
+        }
+        
+        if (!"pending".equalsIgnoreCase(request.getStatus())) {
+            throw new RuntimeException("Only pending requests can be cancelled");
+        }
+        
+        request.setStatus("cancelled");
+        requestRepository.save(request);
+    }
+
+    public Page<RequestListResponse> getMyRequests(Long employeeId, RequestSearchCriteria criteria) {
+        Pageable pageable = PageRequest.of(criteria.getPage() - 1, criteria.getSize(), Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        Specification<Request> spec = Specification.allOf(
+                RequestSpecification.hasEmployee(employeeId),
+                RequestSpecification.hasStatus(criteria.getStatus()),
+                RequestSpecification.hasType(criteria.getType()),
+                RequestSpecification.hasKeyword(criteria.getKeyword())
+        );
+
+        Page<Request> requestPage = requestRepository.findAll(spec, pageable);
+
+        return requestPage.map(req -> RequestListResponse.builder()
+                .id(req.getId())
+                .employeeName(req.getEmployee().getFullname())
+                .type(req.getType())
+                .status(req.getStatus())
+                .createdDate(req.getCreatedAt())
+                .build());
+    }
 }

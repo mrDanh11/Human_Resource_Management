@@ -62,4 +62,33 @@ public class RequestController {
                 .build();
     }
 
+    @PutMapping("/{id}/cancel")
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    public ApiResponse<String> cancelRequest(
+            @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        requestService.cancelRequest(userDetails.getEmployeeId(), id);
+        return ApiResponse.<String>builder()
+                .code(HttpStatus.OK.value())
+                .success(true)
+                .message("Request cancelled successfully")
+                .data("Cancelled")
+                .build();
+    }
+
+    @GetMapping("/my-requests")
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    public ApiResponse<Page<RequestListResponse>> getMyRequests(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @ModelAttribute RequestSearchCriteria criteria
+    ) {
+        Page<RequestListResponse> response = requestService.getMyRequests(userDetails.getEmployeeId(), criteria);
+        return ApiResponse.<Page<RequestListResponse>>builder()
+                .code(HttpStatus.OK.value())
+                .success(true)
+                .message("My request list retrieved successfully")
+                .data(response)
+                .build();
+    }
 }
