@@ -1,6 +1,7 @@
 package com.group07.human_resource_management.controller;
 
 import com.group07.human_resource_management.config.CustomUserDetails;
+import com.group07.human_resource_management.dto.request.CreateLeaveRequest;
 import com.group07.human_resource_management.dto.request.RequestSearchCriteria;
 import com.group07.human_resource_management.dto.response.ApiResponse;
 import com.group07.human_resource_management.dto.response.RequestDetailReponse;
@@ -14,10 +15,25 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/manager/request")
+@RequestMapping("/api/v1/requests")
 @RequiredArgsConstructor
 public class RequestController {
     private final IRequestService requestService;
+
+    @PostMapping(consumes = org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('EMPLOYEE') or hasRole('MANAGER') or hasRole('ADMIN')")
+    public ApiResponse<String> createLeaveRequest(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @ModelAttribute CreateLeaveRequest createLeaveRequest
+    ) {
+        requestService.createLeaveRequest(userDetails.getEmployeeId(), createLeaveRequest);
+        return ApiResponse.<String>builder()
+                .code(HttpStatus.CREATED.value())
+                .success(true)
+                .message("Leave request created successfully")
+                .data("Request submitted")
+                .build();
+    }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('MANAGER') or hasRole('ADMIN')")
