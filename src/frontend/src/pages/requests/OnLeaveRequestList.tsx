@@ -18,12 +18,13 @@ import { fetchRequestsList } from '../../store/requestSlice';
 
 const LeaveRequestPage = () => {
     const [selectedRequest, setSelectedRequest] = useState<number | null>(null);
-    const [selectedStatus, setSelectedStatus] = useState('All');
-    const [selectedType, setSelectedType] = useState('All');
+    const [selectedStatus, setSelectedStatus] = useState('pending');
     const [sortOrder, setSortOrder] = useState('Newest');
     const [currentPage, setCurrentPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState('');
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+
+    const selectType = 'leave';
 
     const dispatch = useAppDispatch();
     const { requestsList, loading, error } = useAppSelector((state) => state.requests);
@@ -40,14 +41,14 @@ const LeaveRequestPage = () => {
             const searchMatch = !searchTerm || request.employeeName.toLowerCase().includes(searchTerm.toLowerCase());
             if (!searchMatch) return false;
             const statusMatch = selectedStatus === 'All' || request.status === selectedStatus;
-            const typeMatch = selectedType === 'All' || request.type === selectedType;
+            const typeMatch = request.type === selectType;
             return statusMatch && typeMatch && searchMatch;
         }).sort((a, b) => {
             const dateA = new Date(a.createdDate).getTime();
             const dateB = new Date(b.createdDate).getTime();
             return sortOrder === 'Newest' ? dateB - dateA : dateA - dateB;
         });
-    }, [requestsList, selectedStatus, selectedType, searchTerm, sortOrder]);
+    }, [requestsList, selectedStatus, searchTerm, sortOrder, selectType]);
 
     const itemsPerPage = 5;
     const totalFilteredPages = Math.ceil(filteredRequests.length / itemsPerPage);
@@ -58,7 +59,7 @@ const LeaveRequestPage = () => {
     // Reset về trang 1 khi filter thay đổi
     useEffect(() => {
         setCurrentPage(1);
-    }, [searchTerm, selectedStatus, selectedType]);
+    }, [searchTerm, selectedStatus, selectType, sortOrder]);
 
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + currentRequests.length;
@@ -76,9 +77,9 @@ const LeaveRequestPage = () => {
     const getTypeDisplay = (type: string) => {
         const typeMap: Record<string, { label: string; badge: string }> = {
             leave: { label: 'Nghỉ phép', badge: 'blue' },
-            wfh: { label: 'Làm từ xa', badge: 'purple' },
-            checkin: { label: 'Check-in', badge: 'green' },
-            checkout: { label: 'Check-out', badge: 'orange' }
+            // wfh: { label: 'Làm từ xa', badge: 'purple' },
+            // checkin: { label: 'Check-in', badge: 'green' },
+            // checkout: { label: 'Check-out', badge: 'orange' }
         };
         return typeMap[type] || { label: type, badge: 'gray' };
     };
@@ -116,10 +117,6 @@ const LeaveRequestPage = () => {
             return dateString;
         }
     };
-
-    console.log('All requests:', requestsList);
-    console.log('before format date:', filteredRequests[0]?.createdDate || '');
-    console.log('formatted date:', formatDate(filteredRequests[0]?.createdDate || ''));
 
     const handlePageChange = (page: number) => {
         if (page >= 1 && page <= totalFilteredPages) {
@@ -164,27 +161,28 @@ const LeaveRequestPage = () => {
                 <div className="bg-blue-600 text-white p-6 rounded-lg shadow-md">
                     <h1 className="text-2xl font-bold flex items-center gap-2">
                         <FileClock className="w-6 h-6" /> 
-                        Xem Yêu cầu Nghỉ phép
+                        Yêu cầu nghỉ phép
                     </h1>
                 </div>
 
                 {/* Search and Filters */}
                 <div className="bg-white px-6 py-4 border-b">
-                    <div className="mb-4">
-                        <div className="relative">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <Search className="h-5 w-5 text-gray-400" />
-                            </div>
-                            <input
-                                type="text"
-                                placeholder="Tìm kiếm theo tên nhân viên..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:outline-none"
-                            />
-                        </div>
-                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label className="block text-sm text-gray-600 mb-2">Tìm kiếm</label>
+                            <div className="relative">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <Search className="h-5 w-5 text-gray-400" />
+                                </div>
+                                <input
+                                    type="text"
+                                    placeholder="Tìm kiếm theo tên nhân viên..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                                />
+                            </div>
+                        </div>
                         <div>
                             <label className="block text-sm text-gray-600 mb-2">Trạng thái</label>
                             <select 
@@ -192,24 +190,10 @@ const LeaveRequestPage = () => {
                                 onChange={(e) => setSelectedStatus(e.target.value)}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             >
+                                <option value="pending">Chờ duyệt</option>
                                 <option value="All">Tất cả trạng thái</option>
                                 <option value="approved">Đã phê duyệt</option>
-                                <option value="pending">Chờ duyệt</option>
                                 <option value="rejected">Đã từ chối</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label className="block text-sm text-gray-600 mb-2">Loại yêu cầu</label>
-                            <select 
-                                value={selectedType}
-                                onChange={(e) => setSelectedType(e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            >
-                                <option value="All">Tất cả loại</option>
-                                <option value="leave">Nghỉ phép</option>
-                                <option value="wfh">Làm từ xa</option>
-                                <option value="checkin">Check-in</option>
-                                <option value="checkout">Check-out</option>
                             </select>
                         </div>
                         <div>

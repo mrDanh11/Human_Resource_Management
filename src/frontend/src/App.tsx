@@ -23,7 +23,7 @@ import EmployeeLayout from './layouts/EmployeeLayout';
 import ProtectedRoute from './components/ProtectedRoute';
 import AttendancePage from './pages/attendance/AttendancePage';
 import AttendanceManagementPage from './pages/attendance/AttendanceManagementPage';
-import LeaveRequestPage from './pages/requests/RequestList';
+import LeaveRequestPage from './pages/requests/OnLeaveRequestList';
 import ManagerLayout from './layouts/ManagerLayout';
 
 const App = () => {
@@ -61,7 +61,7 @@ const App = () => {
         <Route element={<ProtectedRoute allowedRoles={['MANAGER']} />}>
           <Route path="/employee/profile/:id" element={<ProfilePage />} />
           <Route path="/manager" element={<ManagerLayout />}>
-            <Route path="requests" element={<LeaveRequestPage />} />
+            <Route path="on-leave-requests" element={<LeaveRequestPage />} />
             <Route path="rewards">
               <Route path="exchange" element={<PointExchange />} />
               <Route path="history" element={<RewardHistory />} />

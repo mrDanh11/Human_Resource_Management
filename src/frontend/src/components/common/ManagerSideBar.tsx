@@ -12,7 +12,13 @@ const ManagerSidebar: React.FC = () => {
   const menuItems = [
     { label: "Trang chủ", icon: Home, to: "/landing" },
     { label: "Thông tin cá nhân", icon: User, to: `/employee/profile/${userId}` },
-    { label: "Yêu cầu", icon: FileText, to: "/manager/requests" },
+    { label: "Yêu cầu", icon: FileText, 
+      key: "requests",
+      submenu: [
+        { label: "Xin nghỉ phép", to: "/manager/on-leave-requests" },
+        { label: "Làm việc tại nhà", to: "/manager/wfh-requests" },
+      ]
+    },
     { 
       label: "Điểm thưởng", 
       icon: Award, 
