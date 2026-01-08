@@ -25,6 +25,7 @@ import AttendancePage from './pages/attendance/AttendancePage';
 import AttendanceManagementPage from './pages/attendance/AttendanceManagementPage';
 import LeaveRequestPage from './pages/requests/OnLeaveRequestList';
 import ManagerLayout from './layouts/ManagerLayout';
+import CreateOnLeaveRequest from './pages/requests/CreateOnLeaveRequest';
 
 const App = () => {
   return (
@@ -49,7 +50,11 @@ const App = () => {
               <Route path="points" element={<RewardDashboard />} />
               <Route path="hr-reward" element={<RewardPointHR />} />
             </Route>
-            <Route path="/requests" element={<AttendancePage />} />
+            <Route path="requests">
+              <Route path="" element={<LeaveRequestPage />} />
+              <Route path="create/on-leave" element={<CreateOnLeaveRequest />} />
+            </Route>
+            <Route path="/attendance" element={<AttendancePage />} />
             <Route path="/timesheet/manage" element={<AttendanceManagementPage />} />
             <Route path="/rewards" element={<PointsAdmin />} />
             <Route path="/activities" element={<ActivityListPage />} />

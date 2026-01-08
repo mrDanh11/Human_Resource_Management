@@ -20,6 +20,7 @@ const Sidebar: React.FC = () => {
       submenu: [
         { label: "Danh sách yêu cầu", to: "/requests" },
         { label: "Quản lý timesheet", to: "/timesheet/manage" },
+        { label: "Tạo yêu cầu nghỉ phép", to: "/requests/create/on-leave" },
       ]
     },
     {
