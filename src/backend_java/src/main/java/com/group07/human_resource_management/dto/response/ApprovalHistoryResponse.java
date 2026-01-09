@@ -7,7 +7,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ApproveHistoryResponse {
+public class ApprovalHistoryResponse {
     private Long requestId;
     private Long approverId;
     private String status;

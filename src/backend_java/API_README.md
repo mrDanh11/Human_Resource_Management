@@ -81,6 +81,17 @@ curl -X POST http://localhost:8080/api/v1/employees \
 curl -X GET http://localhost:8080/api/v1/employees
 ```
 
+### Api approve / reject request(status = pending)( role MANAGER) 
+```bash
+curl -X POST http://localhost:8080/api/v1/manager/approval \
+  -H "Content-Type: application/json" \
+  -d '{
+    "requestId": 2,
+    "status": "approved",
+    "note": "Take care"
+  }'
+```
+
 ## Dependencies sử dụng
 - Spring Boot Web
 - Spring Boot Data JPA

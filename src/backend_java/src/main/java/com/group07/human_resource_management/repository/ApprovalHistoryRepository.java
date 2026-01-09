@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface ApproveHistoryRepository extends JpaRepository<ApprovalHistory,Long> {
+public interface ApprovalHistoryRepository extends JpaRepository<ApprovalHistory,Long> {
     Optional<ApprovalHistory> findByRequestId(Long requestId);
 }
