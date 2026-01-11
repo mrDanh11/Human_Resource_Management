@@ -137,6 +137,24 @@ export const pointService = {
   },
 
   /**
+   * Cập nhật điểm của nhân viên
+   * PUT /api/Point/employee/{employeeId}
+   */
+  updatePoint: async (
+    employeeId: number,
+    updateData: UpdatePointDto
+  ): Promise<UpdatePointDto> => {
+    const response = await apiDotNet.put<ApiResponse<UpdatePointDto>>(
+      `/Point/employee/${employeeId}`,
+      updateData
+    );
+      if (response.data.success) {
+      return response.data.data;
+    }
+    throw new Error(response.data.message || 'Lỗi khi cập nhật điểm');
+  },
+
+  /**
    * Lấy lịch sử giao dịch điểm của nhân viên
    * GET /api/Point/transactions/employee/{employeeId}
    */

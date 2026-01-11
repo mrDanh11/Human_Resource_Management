@@ -14,6 +14,7 @@ public class ParticipationDto
     public DateTime? RegisterDate { get; set; }
     public DateTime? CancelDate { get; set; }
     public string Status { get; set; } = null!;
+    public string image_url { get; set; } = null!;
     
     // NEW: Performance field
     public string? Performance { get; set; }

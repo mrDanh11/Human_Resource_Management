@@ -13,7 +13,7 @@ export default function Header() {
   const location = useLocation();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const isLandingPage = location.pathname === "/landing" || location.pathname === "/";
-  
+
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth" });

@@ -16,3 +16,11 @@ export interface PaginationParams {
   roleName?: string;
   status?: string;
 }
+
+export interface PaginationRequestParams {
+  page: number;
+  size: number;
+  searchTerm?: string;
+  status?: string;
+  type?: string;
+}

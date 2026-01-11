@@ -30,6 +30,9 @@ import RequestSelectionPage from "./pages/requests/RequestSelectionPage";
 import RequestFormPage from "./pages/requests/RequestFormPage";
 import MyRequestsPage from "./pages/requests/MyRequestsPage";
 import WfhRequestPage from "./pages/wfh/WfhRequestPage";
+import LeaveRequestPage from './pages/requests/OnLeaveRequestList';
+import ManagerLayout from './layouts/ManagerLayout';
+import CreateOnLeaveRequest from './pages/requests/CreateOnLeaveRequest';
 
 const App = () => {
   return (
@@ -87,8 +90,30 @@ const App = () => {
                 element={<ActivityPrivateResultPage />}
               />
             </Route>
+            <Route path="requests">
+              <Route path="" element={<LeaveRequestPage />} />
+              <Route path="create/on-leave" element={<CreateOnLeaveRequest />} />
+            </Route>
+            <Route path="/attendance" element={<AttendancePage />} />
+            <Route path="/timesheet/manage" element={<AttendanceManagementPage />} />
+            <Route path="/rewards" element={<PointsAdmin />} />
+            <Route path="/activities" element={<ActivityListPage />} />
+            <Route path="/activities/history" element={<HistoryActivitiesPage />} />
+            <Route path="/activities/result" element={<ActivityPrivateResultPage />} />
           </Route>
 
+
+        <Route element={<ProtectedRoute allowedRoles={['MANAGER']} />}>
+          <Route path="/employee/profile/:id" element={<ProfilePage />} />
+          <Route path="/manager" element={<ManagerLayout />}>
+            <Route path="on-leave-requests" element={<LeaveRequestPage />} />
+            <Route path="rewards">
+              <Route path="exchange" element={<PointExchange />} />
+              <Route path="history" element={<RewardHistory />} />
+              <Route path="points" element={<RewardDashboard />} />
+            </Route>
+          </Route>
+        </Route>
           {/* HR Routes */}
           <Route element={<ProtectedRoute allowedRoles={["HR"]} />}>
             <Route element={<HRLayout />}>
