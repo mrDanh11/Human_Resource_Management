@@ -10,7 +10,7 @@ import com.group07.human_resource_management.entity.Request;
 import com.group07.human_resource_management.exception.ResourceNotFoundException;
 import com.group07.human_resource_management.mapper.RequestMapper;
 import com.group07.human_resource_management.repository.ApprovalHistoryRepository;
-import com.group07.human_resource_management.repository.ApproveHistoryRepository;
+// import com.group07.human_resource_management.repository.ApproveHistoryRepository;
 import com.group07.human_resource_management.repository.EmployeeRepository;
 import com.group07.human_resource_management.repository.RequestRepository;
 import com.group07.human_resource_management.repository.specification.RequestSpecification;

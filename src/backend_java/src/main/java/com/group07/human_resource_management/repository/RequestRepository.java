@@ -13,14 +13,11 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.List;
 
+
+@Repository
 public interface RequestRepository extends JpaRepository<Request,Long>, JpaSpecificationExecutor<Request> {
     @Query("SELECT r FROM Request r WHERE r.id = :requestId AND r.employee.manager.id = :managerId")
     Optional<Request> findRequestForManager(@Param("requestId") Long requestId, @Param("managerId") Long managerId);
-
-
-@Repository
-public interface RequestRepository extends JpaRepository<Request, Long> {
-
     // Find all requests by employee
     List<Request> findByEmployeeIdOrderByCreatedAtDesc(Long employeeId);
 
