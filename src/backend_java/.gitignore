@@ -32,4 +32,4 @@ build/
 ### VS Code ###
 .vscode/
 .env
-src/backend_java/src/main/resources/*.yaml
+src/main/resources/*.yaml
