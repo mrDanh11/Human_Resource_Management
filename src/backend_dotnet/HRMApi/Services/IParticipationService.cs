@@ -11,7 +11,7 @@ public interface IParticipationService
     Task<PagedResult<ParticipationDto>> GetAllParticipationsAsync(
         int pageNumber, int pageSize, string? searchTerm = null);
     
-    // NEW - JSONB Support
+    // JSONB Support
     Task<ApiResponse<ParticipationDto>> UpdateParticipationResultAsync(
         int activityId, int employeeId, UpdateParticipationResultDto dto);
     Task<ApiResponse<List<ParticipationDto>>> GetResultsByActivityTypeAsync(string activityType);
@@ -27,8 +27,21 @@ public interface IParticipationService
     Task<ApiResponse<List<ParticipationDto>>> GetByResultKeyAsync(string key);
     Task<ApiResponse<List<ParticipationDto>>> GetByResultValueAsync(string key, object value);
 
+    // Attendance
     Task<ApiResponse<ParticipationDto>> UpdateAttendanceStatusAsync(
         int activityId, 
         int employeeId, 
         UpdateAttendanceStatusDto dto);
+
+    // NEW: Performance methods
+    Task<ApiResponse<ParticipationDto>> UpdatePerformanceAsync(
+        int activityId,
+        int employeeId,
+        UpdatePerformanceDto dto);
+    
+    Task<ApiResponse<List<ParticipationDto>>> GetByPerformanceAsync(string performance);
+    
+    Task<ApiResponse<Dictionary<string, int>>> GetPerformanceStatsAsync();
+    
+    Task<ApiResponse<Dictionary<string, int>>> GetPerformanceStatsByActivityTypeAsync(string activityType);
 }
