@@ -22,6 +22,8 @@ const AdminSidebar: React.FC = () => {
         { label: "Thống kê hoạt động", to: "/admin/activities/statistics" },
         { label: "Thêm hoạt động", to: "/admin/activities/create" },
         { label: "Hủy hoạt động", to: "/admin/activities/cancel" },
+        { label: "Ghi nhận kết quả", to: "/admin/activities/record-result" },
+        { label: "Quản lý điểm danh", to: "/admin/activities/attendance" },
       ]
     },
     { label: "Bảng công", to: "/admin/timesheet" },

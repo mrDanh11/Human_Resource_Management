@@ -15,6 +15,9 @@ public class ParticipationDto
     public DateTime? CancelDate { get; set; }
     public string Status { get; set; } = null!;
     
+    // NEW: Performance field
+    public string? Performance { get; set; }
+    
     // Return as Dictionary for easy JSON serialization
     public Dictionary<string, object?>? Result { get; set; }
 }
@@ -26,7 +29,19 @@ public class UpdateParticipationResultDto
     public Dictionary<string, object?> ResultData { get; set; } = new();
 }
 
+// NEW: DTO for updating performance
+public class UpdatePerformanceDto
+{
+    [Required(ErrorMessage = "Đánh giá hiệu suất là bắt buộc")]
+    [RegularExpression(@"^(bad|good|excellent)$", 
+        ErrorMessage = "Đánh giá phải là: bad (kém), good (tốt), hoặc excellent (xuất sắc)")]
+    public string Performance { get; set; } = null!;
+    
+    public string? Note { get; set; }
+}
+
 // Specific result DTOs for different activity types
+
 public class RunningResultDto
 {
     [Required]
@@ -102,6 +117,31 @@ public class TeamBuildingResultDto
     public string? Note { get; set; }
 }
 
+// NEW: Charity activity result DTO
+public class CharityResultDto
+{
+    [Required]
+    [Range(0, double.MaxValue)]
+    public decimal DonationAmount { get; set; }
+    
+    public string? DonationType { get; set; } // money, goods, blood, etc.
+    
+    public string? RecipientOrganization { get; set; }
+    
+    public string? Campaign { get; set; }
+    
+    [Range(0.5, 24)]
+    public double? HoursVolunteered { get; set; }
+    
+    public List<string>? ActivitiesParticipated { get; set; }
+    
+    public string? Impact { get; set; }
+    
+    public bool? ReceiptIssued { get; set; }
+    
+    public string? Note { get; set; }
+}
+
 public class UpdateAttendanceStatusDto
 {
     [Required(ErrorMessage = "Trạng thái điểm danh là bắt buộc")]
@@ -136,6 +176,4 @@ public class BatchAttendanceResultDto
     public int SuccessCount { get; set; }
     public int FailCount { get; set; }
     public List<string> Errors { get; set; } = new();
-    public string Result { get; set; } = null!;
-    public string imgPath { get; set; } = null!;
 }
