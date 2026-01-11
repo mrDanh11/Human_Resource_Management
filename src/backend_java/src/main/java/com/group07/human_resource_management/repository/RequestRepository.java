@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
@@ -19,16 +20,16 @@ public interface RequestRepository extends JpaRepository<Request,Long>, JpaSpeci
 
 @Repository
 public interface RequestRepository extends JpaRepository<Request, Long> {
-    
+
     // Find all requests by employee
     List<Request> findByEmployeeIdOrderByCreatedAtDesc(Long employeeId);
-    
+
     // Find requests by employee and type
     List<Request> findByEmployeeIdAndTypeOrderByCreatedAtDesc(Long employeeId, String type);
-    
+
     // Find requests by employee and status
     List<Request> findByEmployeeIdAndStatusOrderByCreatedAtDesc(Long employeeId, String status);
-    
+
     // Check if employee has overlapping requests in date range
     @Query("SELECT r FROM Request r WHERE r.employee.id = :employeeId " +
            "AND r.type IN ('leave', 'business_trip', 'wfh') " +
@@ -39,7 +40,7 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
         @Param("startTime") LocalDateTime startTime,
         @Param("endTime") LocalDateTime endTime
     );
-    
+
     // Count WFH requests for employee in a month
     @Query("SELECT COUNT(r) FROM Request r WHERE r.employee.id = :employeeId " +
            "AND r.type = 'wfh' " +
@@ -51,7 +52,7 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
         @Param("year") int year,
         @Param("month") int month
     );
-    
+
     // Find approved WFH requests for employee in a month
     @Query("SELECT r FROM Request r WHERE r.employee.id = :employeeId " +
            "AND r.type = 'wfh' " +
@@ -63,4 +64,11 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
         @Param("year") int year,
         @Param("month") int month
     );
+
+    @Query("SELECT COUNT(r) > 0 FROM Request r WHERE r.employee.id = :employeeId " +
+           "AND r.status IN ('pending', 'approved') " +
+           "AND (:startTime < r.endTime AND :endTime > r.startTime)")
+    boolean existsOverlappingRequest(@Param("employeeId") Long employeeId,
+                                     @Param("startTime") LocalDateTime startTime,
+                                     @Param("endTime") LocalDateTime endTime);
 }

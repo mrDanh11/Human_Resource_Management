@@ -11,6 +11,8 @@ public class RequestSearchCriteria {
     private String status;
     private String type;
     private String keyword;
+    @Builder.Default
     private int page = 1;
+    @Builder.Default
     private int size = 10;
 }
