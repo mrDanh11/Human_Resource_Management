@@ -56,6 +56,9 @@ public class Employee {
     @JoinColumn(name = "manager_id")
     private Employee manager;
 
+    @Column(name = "annual_leave_balance")
+    private Double annualLeaveBalance; // Default 12.0
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 

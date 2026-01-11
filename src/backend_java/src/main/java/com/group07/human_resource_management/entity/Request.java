@@ -33,6 +33,13 @@ public class Request {
 
     private String status;
 
+    private Double duration;
+
+    @Column(name = "leave_mode")
+    private String leaveMode; // DAY, HALF_DAY, SHORT_HOUR
+
+    private String session; // MORNING, AFTERNOON
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
