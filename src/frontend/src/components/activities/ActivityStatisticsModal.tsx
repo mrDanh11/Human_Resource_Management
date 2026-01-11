@@ -379,9 +379,9 @@ export default function ActivityStatisticsModal({ activity, isOpen, onClose }: A
         ></div>
 
       {/* Modal Content */}
-      <div className="relative z-10 bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="relative z-10 bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="sticky top-0 bg-linear-to-r from-blue-600 to-blue-700 text-white p-6 rounded-t-xl">
+        <div className="bg-linear-to-r from-blue-600 to-blue-700 text-white p-6 rounded-t-xl shrink-0">
           <div className="flex items-start justify-between">
             <div>
               <h2 className="text-2xl font-bold mb-2">Thống kê hoạt động</h2>
@@ -397,7 +397,7 @@ export default function ActivityStatisticsModal({ activity, isOpen, onClose }: A
         </div>
 
         {/* Statistics Content */}
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-6 overflow-y-auto flex-1">
           {/* Overview Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Participation Rate Card */}

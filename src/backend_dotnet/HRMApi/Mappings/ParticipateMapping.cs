@@ -17,6 +17,7 @@ public class ParticipationMappingProfile : Profile
             .ForMember(dest => dest.EmployeeName, opt => opt.MapFrom(src => src.Employee.Fullname))
             .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Activity.Description))
             .ForMember(dest => dest.image_url, opt => opt.MapFrom(src => src.Activity.ImageUrl))
+            .ForMember(dest => dest.Performance, opt => opt.MapFrom(src => src.Performance))
             .ForMember(dest => dest.Result, opt => opt.MapFrom(src => 
                 src.Result != null ? JsonToDictionary(src.Result) : null));
     }

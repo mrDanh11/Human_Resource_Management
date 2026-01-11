@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Search, Calendar } from 'lucide-react';
 import CompletedActivityCard from '../../components/activities/CompletedActivityCard';
-import CompletedActivityDetailModal from '../../components/activities/CompletedActivityDetailModal';
 import ActivityStatisticsModal from '../../components/activities/ActivityStatisticsModal';
 import type { CompletedActivityData } from '../../types/activity';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
@@ -14,7 +13,6 @@ export default function AdminActivityListPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedType, setSelectedType] = useState<CompletedActivityData['activityType'] | 'all'>('all');
   const [selectedActivity, setSelectedActivity] = useState<CompletedActivityData | null>(null);
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isStatisticsModalOpen, setIsStatisticsModalOpen] = useState(false);
   
   // Pagination
@@ -27,7 +25,7 @@ export default function AdminActivityListPage() {
   }, [dispatch]);
 
   useEffect(() => {
-    if (isDetailModalOpen || isStatisticsModalOpen) {
+    if (isStatisticsModalOpen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';
@@ -36,15 +34,7 @@ export default function AdminActivityListPage() {
     return () => {
       document.body.style.overflow = 'unset';
     };
-  }, [isDetailModalOpen, isStatisticsModalOpen]);
-
-  const handleViewDetails = (activityId: string) => {
-    const activity = activities.find(a => a.id === Number(activityId));
-    if (activity) {
-      setSelectedActivity(activity);
-      setIsDetailModalOpen(true);
-    }
-  };
+  }, [isStatisticsModalOpen]);
 
   const handleViewStatistics = (activityId: string) => {
     const activity = activities.find(a => a.id === Number(activityId));
@@ -166,7 +156,6 @@ export default function AdminActivityListPage() {
                 <CompletedActivityCard
                   key={activity.id}
                   activity={activity}
-                  onViewDetails={handleViewDetails}
                   onViewStatistics={handleViewStatistics}
                 />
               ))}
@@ -255,19 +244,6 @@ export default function AdminActivityListPage() {
         </div>
         )}
       </div>
-
-      {/* Activity Detail Modal */}
-      {selectedActivity && (
-        <CompletedActivityDetailModal
-          activity={selectedActivity}
-          isOpen={isDetailModalOpen}
-          onClose={() => {
-            setIsDetailModalOpen(false);
-            setSelectedActivity(null);
-          }}
-          onViewStatistics={handleViewStatistics}
-        />
-      )}
 
       {/* Activity Statistics Modal */}
       {selectedActivity && (

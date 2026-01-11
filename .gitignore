@@ -1,1 +1,3 @@
 *.sln
+# Docker secrets
+src/docker-compose.yml

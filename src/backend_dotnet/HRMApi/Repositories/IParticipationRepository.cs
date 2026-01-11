@@ -35,4 +35,13 @@ public interface IParticipationRepository
     Task<IEnumerable<Participation>> GetCertifiedEmployeesAsync();
     Task<IEnumerable<Participation>> SearchInResultsAsync(string searchTerm);
     Task<Participation?> GetByActivityIdEmployeeIdForAttendanceAsync(int activityId, int employeeId);
+
+    // NEW: Performance-related methods
+    Task<IEnumerable<Participation>> GetByPerformanceAsync(string performance);
+    Task<Dictionary<string, int>> GetPerformanceStatsAsync();
+    Task<Dictionary<string, int>> GetPerformanceStatsByActivityTypeAsync(string activityType);
+    Task<IEnumerable<Participation>> GetExcellentPerformersAsync();
+    Task<IEnumerable<Participation>> GetByPerformanceAndActivityTypeAsync(
+        string performance, 
+        string activityType);
 }

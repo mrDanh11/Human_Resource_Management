@@ -6,6 +6,7 @@ import { fetchAllConversionRules } from '../../store/conversionRuleSlice';
 import { pointService } from '../../services/pointService';
 import type { MonthlyPointRuleDto, PointTransactionDto, PointToMoneyHistoryDto } from '../../services/pointService';
 import CreateExchangePointRule from '../../components/rewards/CreateExchangePointRule';
+import ConversionHistoryTab from '../../components/rewards/ConversionHistoryTab';
 
 interface RoleUI extends MonthlyPointRuleDto {
     color: string;
@@ -14,7 +15,7 @@ interface RoleUI extends MonthlyPointRuleDto {
 }
 
 export default function PointsAdmin() {
-    const [activeTab, setActiveTab] = useState<'roles' | 'employees' | 'history' | 'conversion' | 'requests'>('roles');
+    const [activeTab, setActiveTab] = useState<'roles' | 'employees' | 'history' | 'conversion' | 'requests' | 'conversion-history'>('roles');
     
     // --- STATES ROLES ---
     const [roles, setRoles] = useState<RoleUI[]>([]);
@@ -177,7 +178,7 @@ export default function PointsAdmin() {
     const handleDistributePoints = async () => {
         try {
             const result = await pointService.allocateMonthlyPoints();
-            showNotification(`Đã phân phối ${result.totalPoints} điểm`, 'success');
+            showNotification(`Đã phân phối thành công`, 'success');
             setHistoryPage(1);
             if (activeTab === 'history') fetchHistory();
         } catch (error: any) {
@@ -215,13 +216,11 @@ export default function PointsAdmin() {
         return map[color] || map.purple;
     };
 
-    // [CẬP NHẬT] Helper xử lý màu và nhãn
     const getTransactionStyle = (type: string) => {
         switch(type) {
             case 'earn':
                 return { color: 'text-green-600', bg: 'bg-green-100', sign: '+', label: 'Cộng điểm' };
             case 'redeem':
-                // [CẬP NHẬT] Đổi nhãn thành Đổi thưởng/Bị phạt
                 return { color: 'text-orange-600', bg: 'bg-orange-100', sign: '-', label: 'Đổi thưởng/Bị phạt' };
             case 'adjustment':
                 return { color: 'text-blue-600', bg: 'bg-blue-100', sign: '~', label: 'Điều chỉnh' };
@@ -248,7 +247,7 @@ export default function PointsAdmin() {
     return (
         <div className="min-h-screen bg-gray-50 p-6">
             <div className="max-w-7xl mx-auto">
-                {/* Header & Stats (Giữ nguyên) */}
+                {/* Header & Stats */}
                 <div className="bg-blue-600 rounded-lg p-6 mb-6 text-white shadow-lg">
                     <div className="flex justify-between items-center">
                         <div>
@@ -290,7 +289,8 @@ export default function PointsAdmin() {
                         { id: 'employees', label: 'DS Nhân viên', icon: TrendingUp },
                         { id: 'conversion', label: 'Bảng quy đổi', icon: ArrowLeftRight },
                         { id: 'requests', label: `Duyệt yêu cầu`, icon: CheckCircle, badge: pendingRequests.length > 0 ? pendingRequests.length : 0 },
-                        { id: 'history', label: 'Lịch sử phân phối', icon: Calendar }
+                        { id: 'conversion-history', label: 'Lịch sử đổi điểm', icon: ArrowLeftRight },
+                        { id: 'history', label: 'Lịch sử giao dịch', icon: Calendar }
                     ].map((tab) => (
                         <button key={tab.id} onClick={() => setActiveTab(tab.id as any)} className={`flex-1 py-4 px-4 font-medium flex justify-center items-center gap-2 whitespace-nowrap relative ${activeTab === tab.id ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:bg-gray-50'}`}>
                             <tab.icon className="w-5 h-5" /> 
@@ -505,7 +505,10 @@ export default function PointsAdmin() {
                     </div>
                 )}
 
-                {/* TAB 5: HISTORY (Với Filter & Logic dấu +/-) */}
+                {/* TAB 5: CONVERSION HISTORY - Component riêng */}
+                {activeTab === 'conversion-history' && <ConversionHistoryTab />}
+
+                {/* TAB 6: HISTORY */}
                 {activeTab === 'history' && (
                     <div className="bg-white rounded-b-xl shadow-sm p-6 border border-gray-100">
                         <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-4">
@@ -566,7 +569,7 @@ export default function PointsAdmin() {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                {/* [CẬP NHẬT] Logic hiển thị dấu thông minh */}
+                                                {/* Logic hiển thị dấu thông minh */}
                                                 <div className={`font-bold ${style.color} text-lg whitespace-nowrap`}>
                                                     {['earn', 'redeem'].includes(item.type) 
                                                         ? `${style.sign}${Math.abs(item.value)}` 
