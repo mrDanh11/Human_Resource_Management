@@ -20,9 +20,14 @@ import ActivityResultPage from './pages/activities/ActivityResultPage';
 import HistoryActivitiesPage from './pages/activities/HistoryActivitiesPage';
 import ActivityPrivateResultPage from './pages/activities/ActivityPrivateResultPage';
 import EmployeeLayout from './layouts/EmployeeLayout';
+import HRLayout from './layouts/HRLayout';
 import ProtectedRoute from './components/ProtectedRoute';
 import AttendancePage from './pages/attendance/AttendancePage';
 import AttendanceManagementPage from './pages/attendance/AttendanceManagementPage';
+import RequestSelectionPage from './pages/requests/RequestSelectionPage';
+import RequestFormPage from './pages/requests/RequestFormPage';
+import MyRequestsPage from './pages/requests/MyRequestsPage';
+import WfhRequestPage from './pages/wfh/WfhRequestPage';
 
 const App = () => {
   return (
@@ -40,14 +45,16 @@ const App = () => {
           <Route path="/employee/profile/:id" element={<ProfilePage />} />          
           
           {/* Employee Layout Routes */}
-          <Route path="" element={<EmployeeLayout />}>
-            <Route path="rewards">
-              <Route path="exchange" element={<PointExchange />} />
-              <Route path="history" element={<RewardHistory />} />
-              <Route path="points" element={<RewardDashboard />} />
-              <Route path="hr-reward" element={<RewardPointHR />} />
-            </Route>
+          <Route element={<EmployeeLayout />}>
+            <Route path="/rewards/exchange" element={<PointExchange />} />
+            <Route path="/rewards/history" element={<RewardHistory />} />
+            <Route path="/rewards/points" element={<RewardDashboard />} />
+            <Route path="/rewards/hr-reward" element={<RewardPointHR />} />
             <Route path="/requests" element={<AttendancePage />} />
+            <Route path="/requests/create" element={<RequestSelectionPage />} />
+            <Route path="/requests/create/:type" element={<RequestFormPage />} />
+            <Route path="/requests/create/wfh" element={<WfhRequestPage />} />
+            <Route path="/requests/my-requests" element={<MyRequestsPage />} />
             <Route path="/timesheet/manage" element={<AttendanceManagementPage />} />
             <Route path="/rewards" element={<PointsAdmin />} />
             <Route path="/activities" element={<ActivityListPage />} />
@@ -58,12 +65,14 @@ const App = () => {
 
         {/* HR Routes */}
         <Route element={<ProtectedRoute allowedRoles={['HR']} />}>
-          <Route path="/rewards/hr-reward" element={<RewardPointHR />} />
-          <Route path="activities" element={<AdminActivityListPage />} />
-          <Route path="employee">
+          <Route element={<HRLayout />}>
+            <Route path="/rewards/hr-reward" element={<RewardPointHR />} />
+            <Route path="/activities" element={<AdminActivityListPage />} />
+            <Route path="/employee">
               <Route path="list" element={<EmployeeList />} />
               <Route path="create" element={<CreateEmployee />} />
             </Route>
+          </Route>
         </Route>
 
         {/* Admin Routes */}

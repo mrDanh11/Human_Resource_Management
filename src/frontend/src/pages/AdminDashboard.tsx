@@ -66,18 +66,18 @@ const AdminDashboard: React.FC = () => {
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      label={({ roleName, percent }) => `${roleName}: ${(percent ? (percent * 100).toFixed(0) : 0)}%`}
+                      label={({ percent = 0, payload }) => `${payload.roleName}: ${(percent * 100).toFixed(0)}%`}
                       outerRadius={120}
                       fill="#8884d8"
                       dataKey="count"
                       nameKey="roleName"
                     >
-                      {statistics.roleDistribution.map((entry, index) => (
+                      {statistics.roleDistribution.map((_, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
                     <Tooltip 
-                      formatter={(value: number) => [`${value} nhân viên`, 'Số lượng']}
+                      formatter={(value: number | undefined) => value !== undefined ? [`${value} nhân viên`, 'Số lượng'] : ['', 'Số lượng']}
                     />
                     <Legend 
                       verticalAlign="bottom" 
@@ -108,7 +108,7 @@ const AdminDashboard: React.FC = () => {
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      label={({ status, percent }) => `${status}: ${(percent ? (percent * 100).toFixed(0) : 0)}%`}
+                      label={({ percent = 0, payload }) => `${payload.status}: ${(percent * 100).toFixed(0)}%`}
                       outerRadius={120}
                       fill="#8884d8"
                       dataKey="count"
@@ -119,7 +119,7 @@ const AdminDashboard: React.FC = () => {
                       ))}
                     </Pie>
                     <Tooltip 
-                      formatter={(value: number) => [`${value} hoạt động`, 'Số lượng']}
+                      formatter={(value: number | undefined) => value !== undefined ? [`${value} hoạt động`, 'Số lượng'] : ['', 'Số lượng']}
                     />
                     <Legend 
                       verticalAlign="bottom" 
