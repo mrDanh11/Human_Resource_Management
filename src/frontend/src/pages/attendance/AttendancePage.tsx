@@ -4,6 +4,7 @@ import {
   allMonthlyAttendance,
   workShifts
 } from '../../data/attendanceData';
+import AttendanceFormModal from '../../components/attendance/AttendanceFormModal';
 
 import type {
     AttendanceStatus
@@ -15,6 +16,18 @@ const AttendancePage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  // Form state
+  const [formData, setFormData] = useState({
+    employeeId: 1,
+    date: '',
+    checkinTime: '',
+    checkoutTime: '',
+    status: 'present',
+    overtimeHours: 0,
+    note: ''
+  });
 
   // Lấy dữ liệu chấm công theo tháng được chọn
   const currentAttendance = useMemo(() => {
@@ -68,6 +81,54 @@ const AttendancePage: React.FC = () => {
       return 'bg-green-50';
     }
     return index % 2 === 0 ? 'bg-white' : 'bg-gray-50';
+  };
+
+  // Xử lý submit form
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Chuẩn bị dữ liệu gửi lên API
+    const payload = {
+      employeeId: formData.employeeId,
+      date: formData.date,
+      checkinTime: formData.checkinTime ? `${formData.date}T${formData.checkinTime}:00` : null,
+      checkoutTime: formData.checkoutTime ? `${formData.date}T${formData.checkoutTime}:00` : null,
+      status: formData.status,
+      overtimeHours: formData.overtimeHours,
+      note: formData.note
+    };
+
+    try {
+      // TODO: Gọi API POST /api/v1/attendance
+      console.log('Submitting:', payload);
+      
+      // Giả lập API call
+      alert('Gửi yêu cầu cập nhật chấm công thành công!');
+      setIsModalOpen(false);
+      
+      // Reset form
+      setFormData({
+        employeeId: 1,
+        date: '',
+        checkinTime: '',
+        checkoutTime: '',
+        status: 'present',
+        overtimeHours: 0,
+        note: ''
+      });
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Có lỗi xảy ra khi gửi yêu cầu!');
+    }
+  };
+
+  // Xử lý thay đổi form
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: name === 'overtimeHours' || name === 'employeeId' ? Number(value) : value
+    }));
   };
 
   return (
@@ -139,6 +200,7 @@ const AttendancePage: React.FC = () => {
             {/* Nút gửi yêu cầu */}
             <div className="flex items-end">
               <button 
+                onClick={() => setIsModalOpen(true)}
                 className="w-full bg-gray-800 hover:bg-gray-900 text-white px-6 py-2 rounded-lg transition-all font-medium"
                 style={{
                   transition: 'all 0.3s ease'
@@ -333,6 +395,15 @@ const AttendancePage: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Modal Form Cập nhật chấm công */}
+        <AttendanceFormModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          formData={formData}
+          onInputChange={handleInputChange}
+          onSubmit={handleSubmit}
+        />
       </div>
     </div>
   );
