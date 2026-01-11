@@ -13,7 +13,7 @@ import Forbidden from './pages/auth/Forbidden'
 import AdminLayout from './layouts/AdminLayout'
 import AdminDashboard from './pages/AdminDashboard'
 import ActivityListPage from './pages/activities/ActivityListPage';
-import AdminActivityListPage from './pages/activities/AdminActivityListPage';
+import AdminActivityListPage from './pages/activities/AnalysisActivityListPage';
 import CreateActivityPage from './pages/activities/CreateActivityPage';
 import CancelActivityPage from './pages/activities/CancelActivityPage';
 import ActivityResultPage from './pages/activities/ActivityResultPage';

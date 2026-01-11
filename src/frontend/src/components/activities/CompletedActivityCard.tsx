@@ -1,9 +1,8 @@
-import { Calendar, MapPin, Users, Eye, BarChart3, Award } from 'lucide-react';
+import { Calendar, MapPin, Users, BarChart3, Award } from 'lucide-react';
 import type { CompletedActivityData } from '../../types/activity';
 
 interface CompletedActivityCardProps {
   activity: CompletedActivityData;
-  onViewDetails: (activityId: string) => void;
   onViewStatistics: (activityId: string) => void;
 }
 
@@ -23,7 +22,7 @@ const activityTypeColors: Record<NonNullable<CompletedActivityData['activityType
   volunteer: 'bg-orange-100 text-orange-800'
 };
 
-export default function CompletedActivityCard({ activity, onViewDetails, onViewStatistics }: CompletedActivityCardProps) {
+export default function CompletedActivityCard({ activity, onViewStatistics }: CompletedActivityCardProps) {
   const formatDateTime = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('vi-VN', {
@@ -137,29 +136,10 @@ export default function CompletedActivityCard({ activity, onViewDetails, onViewS
         </div>
 
         {/* Actions */}
-        <div className="flex gap-3 mb-3">
-          <button
-            onClick={() => onViewDetails(activity.id.toString())}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg transition-all duration-200"
-            style={{
-              transition: 'all 0.3s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = '0 5px 20px rgba(156, 163, 175, 0.4)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = 'none';
-            }}
-          >
-            <Eye className="w-4 h-4" />
-            <span className="font-medium">Chi tiết</span>
-          </button>
-          
+        <div className="mb-3">
           <button
             onClick={() => onViewStatistics(activity.id.toString())}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-200"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-200"
             style={{
               transition: 'all 0.3s ease'
             }}
