@@ -22,7 +22,6 @@ export default function PointSlider({ min, max, value, onChange }: PointSliderPr
     x = Math.max(0, Math.min(x, rect.width));
     const percent = x / rect.width;
     
-    // Tìm tick gần nhất theo vị trí
     const idx = Math.round(percent * (ticks.length - 1));
     const snapped = ticks[idx];
     onChange(snapped);
@@ -61,7 +60,6 @@ export default function PointSlider({ min, max, value, onChange }: PointSliderPr
 
   return (
     <>
-      {/* TRACK */}
       <div
         id="tick-track"
         className="relative w-full mt-6 mb-4 h-4 flex items-center select-none"
@@ -69,10 +67,8 @@ export default function PointSlider({ min, max, value, onChange }: PointSliderPr
         onTouchStart={handleTrackClick}
         style={{ cursor: "pointer" }}
       >
-        {/* TRACK GRAY */}
         <div className="absolute left-0 right-0 h-2 bg-gray-300 rounded-full"></div>
         
-        {/* TRACK BLUE (PROGRESS) */}
         <div
           className="absolute h-2 bg-blue-600 rounded-full"
           style={{
@@ -81,7 +77,6 @@ export default function PointSlider({ min, max, value, onChange }: PointSliderPr
           }}
         ></div>
         
-        {/* THUMB */}
         <div
           className="absolute w-6 h-6 bg-blue-600 rounded-full shadow cursor-pointer"
           style={{
@@ -94,7 +89,6 @@ export default function PointSlider({ min, max, value, onChange }: PointSliderPr
         ></div>
       </div>
 
-      {/* LABEL TRỤC HOÀNH + CLICK TICKS */}
       <div className="w-full flex justify-between px-1">
         {ticks.map((p) => (
           <div
@@ -102,7 +96,6 @@ export default function PointSlider({ min, max, value, onChange }: PointSliderPr
             className="flex flex-col items-center cursor-pointer select-none"
             onClick={() => onChange(p)}
           >
-            {/* TICK NHỎ */}
             <div
               className="w-1 h-3 rounded-full mb-1"
               style={{
@@ -110,7 +103,6 @@ export default function PointSlider({ min, max, value, onChange }: PointSliderPr
               }}
             ></div>
             
-            {/* LABEL */}
             <span
               className={`text-sm ${
                 p === value ? "text-blue-600 font-semibold" : "text-gray-700"

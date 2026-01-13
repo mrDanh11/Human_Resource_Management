@@ -132,7 +132,7 @@ export default function RewardPointHR() {
         <div className="min-h-screen w-full mx-auto bg-linear-to-br from-blue-50 via-purple-50 to-pink-50 p-6">
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
-                <div className="relative rounded-2xl p-8 mb-8 bg-linear-to-r from-blue-600 via-purple-600 to-pink-600 overflow-hidden shadow-2xl">
+                <div className="relative rounded-2xl p-8 mb-8 bg-blue-600 overflow-hidden shadow-2xl">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full -mr-32 -mt-32"></div>
                     <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-10 rounded-full -ml-24 -mb-24"></div>
                     
@@ -335,7 +335,7 @@ export default function RewardPointHR() {
                 {/* Submit Button */}
                 <button
                     disabled={selectedEmployees.length === 0 || pointsPerPerson <= 0 || totalPointReward > (pointOfHR?.pointTotal || 0)}
-                    className="w-full bg-linear-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 disabled:from-gray-300 disabled:via-gray-300 disabled:to-gray-300 disabled:cursor-not-allowed text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl hover:scale-105 disabled:hover:scale-100 disabled:shadow-none"
+                    className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl hover:scale-105 disabled:hover:scale-100 disabled:shadow-none"
                     onClick={() => {handleRewardPoints(selectedEmployees)}}
                     >
                     <span className="text-2xl">📤</span>
