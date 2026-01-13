@@ -48,18 +48,29 @@ export default function RewardHistory() {
 
   return (
     <>
-      <div className="flex" style={{ background: '#fafdff' }}>       
-        <div className="flex-1 flex flex-col" style={{ background: '#fafdff' }}>
+      <div className="flex bg-linear-to-br from-blue-50 via-purple-50 to-pink-50">       
+        <div className="flex-1 flex flex-col">
           <div className="min-h-screen p-8">
             {/* Page Header */}
-            <header className="mb-8">
-              <h1 className="text-4xl font-bold text-slate-900 flex items-center gap-3">
-                <Award className="text-blue-600" size={36} />
-                Lịch sử điểm thưởng
-              </h1>
-              <p className="text-slate-600 text-lg mt-2">
-                Theo dõi toàn bộ lịch sử nhận và đổi điểm thưởng của bạn
-              </p>
+            <header className="mb-8 relative">
+              <div className="relative rounded-2xl p-8 bg-linear-to-r from-blue-600 via-purple-600 to-pink-600 overflow-hidden shadow-2xl">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full -mr-32 -mt-32"></div>
+                <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-10 rounded-full -ml-24 -mb-24"></div>
+                
+                <div className="relative z-10">
+                  <div className="flex items-center gap-4 mb-3">
+                    <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                      <Award className="text-white" size={32} />
+                    </div>
+                    <h1 className="text-4xl font-bold text-white tracking-tight">
+                      Lịch sử điểm thưởng
+                    </h1>
+                  </div>
+                  <p className="text-white/90 text-lg font-light">
+                    Theo dõi toàn bộ lịch sử nhận và đổi điểm thưởng của bạn
+                  </p>
+                </div>
+              </div>
             </header>
 
             {/* Summary Cards */}
