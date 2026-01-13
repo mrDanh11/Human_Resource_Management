@@ -96,8 +96,9 @@ export interface ParticipationData {
   registerDate: Date,
   cancelDate: Date,
   status: string,
+  performance: string,
   result: Record<string, any>,
-  imgPath: string,
+  image_url: string,
 }
 
 export interface MyParticipationResponse {

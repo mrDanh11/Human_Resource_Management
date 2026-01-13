@@ -197,8 +197,7 @@ export default function ActivityPrivateResultPage() {
                                             Không tìm thấy hoạt động
                                         </h3>
                                         <p className="text-gray-600 max-w-md">
-                                            Không có hoạt động nào phù hợp với bộ lọc của bạn.
-                                            Hãy thử điều chỉnh tiêu chí tìm kiếm.
+                                            Không có hoạt động phù hợp. Có thể bạn chưa tham gia hoạt động nào.
                                         </p>
                                         <motion.button
                                             onClick={() => {
