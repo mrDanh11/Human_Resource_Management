@@ -9,10 +9,10 @@ using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using HRMApi.BackgroundServices;
 
-var builder = WebApplication.CreateBuilder(args);
-
 // Load .env
 Env.Load();
+
+var builder = WebApplication.CreateBuilder(args);
 
 // ========== Fix JWT Claim Mapping ==========
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
@@ -44,6 +44,8 @@ builder.Services.AddScoped<IParticipationService, ParticipationService>();
 builder.Services.AddScoped<IActivityRepository, ActivityRepository>();
 builder.Services.AddScoped<IActivityService, ActivityService>();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
+builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
+builder.Services.AddScoped<IAttendanceService, AttendanceService>();
 
 // Register Background Services
 builder.Services.AddHostedService<MonthlyPointAllocationWorker>();

@@ -108,7 +108,7 @@ export const employeeService = {
     const response = await apiDotNet.get<{ items: EmployeeListItem[] }>('/Employee', {
       params: {
         pageNumber: 1,
-        pageSize: 10000,
+        pageSize: 1000,
       },
     });
     
