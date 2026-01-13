@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { X, Calendar, Trophy } from 'lucide-react';
 import type { ParticipationData } from '../../types/activity';
+import { ResultView } from './resultView';  
 
 interface ActivityResultModalProps {
     participation: ParticipationData;
@@ -37,6 +38,17 @@ export default function ActivityResultModal({ participation, isOpen, onClose }: 
         });
     };
 
+    const formatPerformance = (performance: string) => {
+        const typematch: Record<string, {label: string, badge: string}> = {
+            excellent: {label: "Xuất sắc", badge: "text-bold text-green-800"},
+            good: {label: "Tốt", badge: "text-bold text-blue-800"},
+            average: {label: "Trung bình", badge: "text-bold text-yellow-800"},
+            bad: {label: "Kém", badge: "text-bold text-red-800"}
+        };
+        return typematch[performance] || performance;
+    };
+
+
     return (
         <div className="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
             {/* Backdrop */}
@@ -52,7 +64,7 @@ export default function ActivityResultModal({ participation, isOpen, onClose }: 
                     {participation.id && (
                         <div className="h-64 overflow-hidden relative">
                             <img
-                                src={participation.imgPath}
+                                src={participation.image_url}
                                 alt={participation.activityName}
                                 className="w-full h-full object-cover"
                             />
@@ -107,11 +119,16 @@ export default function ActivityResultModal({ participation, isOpen, onClose }: 
                                 <div className="flex items-start gap-3">
                                     <Trophy className="w-5 h-5 text-red-600 mt-0.5" />
                                     <div className="flex-1">
-                                        <p className="font-semibold text-gray-900 mb-1">Thành tích của bạn</p>
-                                        <p className="text-sm text-gray-700">
-                                            {JSON.stringify(participation.result) || "Chưa có kết quả"}
+                                        <p className="font-semibold text-gray-900 mb-1">
+                                            Thành tích của bạn
                                         </p>
-                                    </div>
+                                        <span
+                                            className={`inline-block rounded text-sm text-gray-700 px-3 py-1 ${formatPerformance(participation.performance)?.badge || ''}`}
+                                        >
+                                            Biểu hiện: {formatPerformance(participation.performance)?.label || 'Chưa có thành tích'}
+                                        </span>
+                                        <ResultView result={participation.result} />
+                                        </div>
                                 </div>
                             </div>
                         </div>
