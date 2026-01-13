@@ -36,11 +36,29 @@ public class PermissionService {
                     "monthly-point:allocate",
                     "monthly-point:history",
 
-                    //Participation
+                    // Participation
                     "participate:list",
                     "participate:view",
                     "participate:update",
-                    "participate:attendance"
+                    "participate:attendance",
+
+                    // Attendance permissions
+                    "attendance:view-own",
+                    "attendance:view",
+                    "attendance:list",
+                    "attendance:create",
+                    "attendance:update",
+                    "attendance:delete",
+                    "attendance:request-correction",
+                    "attendance:sync",
+
+                    // Request permissions ⭐ NEW
+                    "request:view-own",
+                    "request:view",
+                    "request:list",
+                    "request:approve",
+                    "request:delete",
+                    "request:statistics"
             );
 
             case "hr" -> List.of(
@@ -68,11 +86,29 @@ public class PermissionService {
                     "monthly-point:allocate",
                     "monthly-point:history",
 
-                    //Participation
+                    // Participation
                     "participate:list",
                     "participate:view",
                     "participate:update",
-                    "participate:attendance"
+                    "participate:attendance",
+
+                    // Attendance permissions
+                    "attendance:view-own",
+                    "attendance:view",
+                    "attendance:list",
+                    "attendance:create",
+                    "attendance:update",
+                    "attendance:delete",
+                    "attendance:request-correction",
+                    // "attendance:sync", // System only
+
+                    // Request permissions
+                    "request:view-own",
+                    "request:view",
+                    "request:list",
+                    "request:approve",
+                    "request:delete",
+                    "request:statistics"
             );
 
             case "manager" -> List.of(
@@ -95,14 +131,30 @@ public class PermissionService {
                     "monthly-point:view",
                     "monthly-point:history",
 
-                    //Participation
+                    // Participation
                     "participate:list",
                     "participate:view",
                     "participate:update",
-                    "participate:attendance"
+                    "participate:attendance",
+
+                    // Attendance permissions
+                    "attendance:view-own",
+                    "attendance:view",
+                    "attendance:list",
+                    "attendance:create",
+                    "attendance:update",
+                    // "attendance:delete", // HR/Admin only
+                    "attendance:request-correction",
+
+                    // Request permissions
+                    "request:view-own",
+                    "request:view",
+                    "request:list",
+                    "request:approve",
+                    "request:statistics"
             );
 
-            default -> List.of(
+            default -> List.of( // Employee role
                     // Employee permissions
                     "employee:view",
                     "employee:update",
@@ -113,9 +165,17 @@ public class PermissionService {
                     // Monthly Point permissions
                     "monthly-point:view",
 
-                    //Participation
+                    // Participation
                     "participate:list",
-                    "participate:view"
+                    "participate:view",
+
+                    // Attendance permissions
+                    "attendance:view-own",
+                    "attendance:request-correction",
+
+                    // Request permissions 
+                    "request:view-own",
+                    "request:view"
             );
         };
     }
