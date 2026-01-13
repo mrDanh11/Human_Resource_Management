@@ -1,7 +1,7 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
 import Header from "../components/common/Header";
-import Sidebar from "../components/common/Sidebar";
+import Sidebar from "../components/common/BaseSidebar";
 
 const EmployeeLayout: React.FC = () => {
     return (
@@ -11,7 +11,7 @@ const EmployeeLayout: React.FC = () => {
             <div className="flex flex-1">
                 <Sidebar />
 
-                <main className="flex-1 bg-gray-100 ml-64">
+                <main className="flex-1 bg-white ml-64">
                     <Outlet />
                 </main>
             </div>

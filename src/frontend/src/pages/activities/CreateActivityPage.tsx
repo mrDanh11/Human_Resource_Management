@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calendar, Sparkles, MapPin, Users, Award, Clock, Image } from 'lucide-react';
+import { Sparkles, MapPin, Users, Award, Clock, Image } from 'lucide-react';
 import { createActivity } from '../../services/activityService';
 import type { CreateActivityRequest } from '../../types/activity';
 
@@ -22,6 +22,7 @@ export interface CreateActivityData {
 
 export default function CreateActivityPage() {
   const navigate = useNavigate();
+  const role = localStorage.getItem('role');
   const [formData, setFormData] = useState<CreateActivityData>({
     name: '',
     description: '',
@@ -57,7 +58,7 @@ export default function CreateActivityPage() {
       
       await createActivity(request);
       alert(`Đã tạo hoạt động mới: ${formData.name}`);
-      navigate('/admin/activities');
+      navigate(`/${role}/activities`);
     } catch (error) {
       console.error("Failed to create activity", error);
       alert("Có lỗi xảy ra khi tạo hoạt động");
@@ -405,7 +406,7 @@ export default function CreateActivityPage() {
             >
               <motion.button
                 type="button"
-                onClick={() => navigate('/admin/activities')}
+                onClick={() => navigate(`/${role}/activities`)}
                 className="flex-1 px-6 py-3 bg-linear-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 text-gray-800 rounded-xl font-semibold shadow-lg transition-all"
                 whileHover={{ scale: 1.02, y: -2 }}
                 whileTap={{ scale: 0.98 }}
