@@ -121,7 +121,7 @@ const App = () => {
                 <Route path="create" element={<CreateActivityPage />} />
                 <Route path="cancel" element={<CancelActivityPage />} />
                 <Route path="history" element={<HistoryActivitiesPage />} />
-                <Route path="result" element={<RecordActivityResultPage />} />
+                <Route path="result" element={<ActivityPrivateResultPage />} />
               </Route>
               <Route path="employee">
                 <Route path="list" element={<EmployeeList />} />

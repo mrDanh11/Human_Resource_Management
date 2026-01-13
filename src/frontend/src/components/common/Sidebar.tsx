@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Home,
   User,
@@ -18,10 +18,17 @@ const Sidebar: React.FC = () => {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [collapsed, setCollapsed] = useState<boolean>(false);
 
+  useEffect(() => {
+    if (collapsed) {
+      setOpenDropdown(null);
+    }
+  }, [collapsed]);
+
   const userId = localStorage.getItem("userId");
   const userRole = localStorage.getItem("role");
 
   const menuItems = [
+    { label: "Trang chủ", icon: Home, to: "/landing" },
     { label: "Thông tin cá nhân", icon: User, to: `/employee/profile/${userId}` },
     {
       label: "Yêu cầu",
@@ -69,27 +76,16 @@ const Sidebar: React.FC = () => {
   return (
     <aside className={`${collapsed ? "w-20" : "w-64"} bg-white border-r border-gray-200 flex flex-col fixed h-full transition-width duration-200`}>
       {/* TOGGLE */}
-      <div className="px-3 py-3 border-b border-gray-200 flex items-center justify-between">
+      <div className={`px-1 py-3 border-b border-gray-200 flex items-center ${collapsed ? 'justify-center' : 'justify-end'} mb-4`}>
         <div className="flex items-center gap-2">
           <button
-            type="button"
-            onClick={() => navigate("/landing")}
-            aria-label="Trang chủ"
-            className="flex items-center gap-2 focus:outline-none"
+            onClick={() => setCollapsed(!collapsed)}
+            aria-label={collapsed ? 'Mở sidebar' : 'Thu sidebar'}
+            className="p-1 rounded-md hover:bg-gray-100"
           >
-            <div className="w-8 h-8 flex items-center justify-center rounded-md text-[#0066FF]">
-              <Home size={18} />
-            </div>
-            {!collapsed && <span className="font-semibold text-[#0066FF]">Trang chủ</span>}
+            {collapsed ? <Menu size={22} /> : <ChevronLeft size={22} />}
           </button>
         </div>
-        <button
-          onClick={() => setCollapsed(!collapsed)}
-          aria-label={collapsed ? "Mở sidebar" : "Thu sidebar"}
-          className="p-1 rounded-md hover:bg-gray-100"
-        >
-          {collapsed ? <Menu size={18} /> : <ChevronLeft size={18} />}
-        </button>
       </div>
       {/* MENU */}
       <nav className={`flex-1 py-4 ${collapsed ? 'px-2' : 'px-6'} overflow-y-auto`}>
@@ -138,7 +134,10 @@ const Sidebar: React.FC = () => {
                         {item.submenu.map((sub, j) => (
                           <button
                             key={j}
-                            onClick={() => navigate(sub.to)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(sub.to);
+                            }}
                             title={sub.label}
                                     className={`w-full text-left ${collapsed ? 'py-2.5 px-2 text-sm' : 'py-2.5 px-4 rounded-lg text-sm'} ${
                               location.pathname === sub.to
