@@ -13,7 +13,6 @@ import { apiDotNet, apiSpring } from './api';
 import type { PaginationRequestParams } from '../types/pagination';
 import type { DetailRequest } from '../types/request';
 import type { ListRequests, PageResponse, ApiResponse } from '../types/request';
-import { apiSpring } from "./api";
 
 export const requestService = {
   // Lấy danh sách yêu cầu
