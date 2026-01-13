@@ -19,14 +19,14 @@ export default function HalfCircleProgress({
   const [offset, setOffset] = useState(circumference);
 
   useEffect(() => {
-    const target = circumference - circumference * percent;
+    const normalizedPercent = percent / 100;
+    const target = circumference - circumference * normalizedPercent;
     requestAnimationFrame(() => setOffset(target));
   }, [percent, circumference]);
 
   return (
     <div className="flex justify-center relative">
       <svg width={size} height={size / 1.2}>
-        {/* BACK arc */}
         <path
           d={`M ${stroke / 2} ${size / 2}
               A ${radius} ${radius} 0 0 1 ${size - stroke / 2} ${size / 2}`}
@@ -36,7 +36,6 @@ export default function HalfCircleProgress({
           strokeLinecap="round"
         />
 
-        {/* FRONT arc */}
         <path
           d={`M ${stroke / 2} ${size / 2}
               A ${radius} ${radius} 0 0 1 ${size - stroke / 2} ${size / 2}`}
@@ -50,7 +49,6 @@ export default function HalfCircleProgress({
         />
       </svg>
 
-      {/* TEXT */}
       <div className="absolute top-[42%] text-center">
         <p className="text-blue-700 text-xl font-bold">
           {totalMoney.toLocaleString("vi-VN")} đ

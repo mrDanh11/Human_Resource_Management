@@ -30,7 +30,7 @@ export default function ConfirmExchangeModal({
       ></div>
 
       {/* Modal */}
-      <div className="relative bg-gradient-to-br from-white to-blue-50 rounded-3xl shadow-2xl p-8 max-w-lg w-full mx-4 animate-fadeIn border border-blue-100">
+      <div className="relative bg-linear-to-br from-white to-blue-50 rounded-3xl shadow-2xl p-8 max-w-lg w-full mx-4 animate-fadeIn border border-blue-100">
         {/* Close button */}
         <button
           onClick={onClose}
@@ -42,13 +42,13 @@ export default function ConfirmExchangeModal({
 
         {/* Icon with animation */}
         <div className="flex justify-center mb-6">
-          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg animate-pulse">
+          <div className="w-20 h-20 rounded-full bg-linear-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg animate-pulse">
             <AlertCircle size={40} className="text-white" />
           </div>
         </div>
 
         {/* Title */}
-        <h2 className="text-3xl font-bold text-center bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent mb-3">
+        <h2 className="text-3xl font-bold text-center bg-linear-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent mb-3">
           Xác nhận quy đổi điểm
         </h2>
         <p className="text-center text-gray-600 text-sm mb-6">
@@ -56,7 +56,7 @@ export default function ConfirmExchangeModal({
         </p>
 
         {/* Exchange Details with beautiful animation */}
-        <div className="relative bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 rounded-2xl p-6 mb-6 border-2 border-blue-200 shadow-inner overflow-hidden">
+        <div className="relative bg-linear-to-br from-blue-50 via-indigo-50 to-purple-50 rounded-2xl p-6 mb-6 border-2 border-blue-200 shadow-inner overflow-hidden">
           {/* Decorative background */}
           <div className="absolute top-0 right-0 w-32 h-32 bg-blue-200/20 rounded-full blur-3xl"></div>
           <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-200/20 rounded-full blur-3xl"></div>
@@ -65,7 +65,7 @@ export default function ConfirmExchangeModal({
             {/* Points */}
             <div className="text-center flex-1 transform hover:scale-105 transition-transform duration-300">
               <div className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">Điểm quy đổi</div>
-              <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
+              <div className="text-3xl font-bold bg-linear-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
                 {points.toLocaleString("vi-VN")}
               </div>
               <div className="text-xs text-gray-500 mt-1 flex items-center justify-center gap-1">
@@ -87,7 +87,7 @@ export default function ConfirmExchangeModal({
             {/* Money */}
             <div className="text-center flex-1 transform hover:scale-105 transition-transform duration-300">
               <div className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">Số tiền nhận</div>
-              <div className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+              <div className="text-3xl font-bold bg-linear-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
                 {money.toLocaleString("vi-VN")}
               </div>
               <div className="text-xs text-gray-500 mt-1 flex items-center justify-center gap-1">
@@ -106,9 +106,9 @@ export default function ConfirmExchangeModal({
         </div>
 
         {/* Info with icon */}
-        <div className="bg-gradient-to-r from-yellow-50 to-amber-50 border-l-4 border-yellow-400 rounded-lg p-4 mb-6 shadow-sm">
+        <div className="bg-linear-to-r from-yellow-50 to-amber-50 border-l-4 border-yellow-400 rounded-lg p-4 mb-6 shadow-sm">
           <div className="flex gap-3">
-            <AlertCircle size={20} className="text-yellow-600 flex-shrink-0 mt-0.5" />
+            <AlertCircle size={20} className="text-yellow-600 shrink-0 mt-0.5" />
             <div>
               <p className="text-sm font-semibold text-yellow-900 mb-1">Lưu ý quan trọng</p>
               <p className="text-xs text-yellow-800 leading-relaxed">
@@ -119,7 +119,7 @@ export default function ConfirmExchangeModal({
           </div>
         </div>
 
-        {/* Actions with gradient buttons */}
+        {/* Actions with linear buttons */}
         <div className="flex gap-3">
           <button
             onClick={onClose}
@@ -130,7 +130,7 @@ export default function ConfirmExchangeModal({
           </button>
           <button
             onClick={onConfirm}
-            className="flex-1 px-6 py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:scale-105"
+            className="flex-1 px-6 py-3.5 rounded-xl bg-linear-to-r from-blue-600 to-blue-700 text-white font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:scale-105"
             disabled={loading}
           >
             {loading ? (

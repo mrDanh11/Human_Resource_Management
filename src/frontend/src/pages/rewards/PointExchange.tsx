@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import PointExchangeLayout from "../../layouts/PointExchangeLayout";
 import HalfCircleProgress from "../../components/rewards/HalfCircleProgress";
 import ConversionRateInfo from "../../components/rewards/ConversionRateInfo";
@@ -12,7 +12,6 @@ import ExchangePointSuccessToast from "../../components/rewards/ExchangePointSuc
 export default function PointExchange() {
   const employeeId = parseInt(localStorage.getItem("userId") || "1");
   
-  // Custom states thay vì dùng hook cũ để kiểm soát tốt hơn việc API trả về List
   const [currentPoints, setCurrentPoints] = useState(0);
   const [conversionRules, setConversionRules] = useState<PointConversionRuleDto[]>([]);
   const [loading, setLoading] = useState(true);
@@ -25,25 +24,22 @@ export default function PointExchange() {
   const [pendingRequests, setPendingRequests] = useState<PointToMoneyHistoryDto[]>([]);
   const [toast, setToast] = useState(false);
 
-  // [FIX] Hàm tính tiền dựa trên Tiered Rewards
   const calculateMoney = (points: number) => {
     if (!conversionRules || conversionRules.length === 0) return 0;
+    if (points === 0) return 0;
     
-    // Tìm rule có mốc điểm cao nhất mà <= points
     const applicableRule = conversionRules
       .filter(r => r.pointValue <= points)
-      .sort((a, b) => b.pointValue - a.pointValue)[0]; // Sắp xếp giảm dần lấy cái đầu
+      .sort((a, b) => b.pointValue - a.pointValue)[0];
 
     if (!applicableRule) {
-      // Trường hợp chưa đủ mốc tối thiểu, lấy tỷ giá thấp nhất để ước tính (hoặc trả về 0)
       const minRule = conversionRules.sort((a, b) => a.pointValue - b.pointValue)[0];
-      return minRule ? (points / minRule.pointValue) * minRule.moneyValue : 0;
+      return minRule ? Math.floor((points / minRule.pointValue) * minRule.moneyValue) : 0;
     }
 
-    return (points / applicableRule.pointValue) * applicableRule.moneyValue;
+    return Math.floor((points / applicableRule.pointValue) * applicableRule.moneyValue);
   };
 
-  // Rule hiện tại đang áp dụng (để hiển thị Info Box)
   const currentAppliedRule = conversionRules.length > 0 
     ? (conversionRules.find(r => r.pointValue <= Math.round(currentPoints * percent / 100)) 
        || conversionRules[0]) 
@@ -65,7 +61,6 @@ export default function PointExchange() {
       setCurrentPoints(pointData.pointTotal);
       setPendingRequests(pendingData.items);
 
-      // [FIX] Xử lý dữ liệu rules trả về là Array
       if (Array.isArray(rulesData)) {
         setConversionRules(rulesData.sort((a, b) => a.pointValue - b.pointValue));
       } else if (rulesData) {
@@ -84,7 +79,6 @@ export default function PointExchange() {
       return;
     }
     
-    // Validate bội số 100
     if (points % 100 !== 0) {
       alert('Số điểm quy đổi phải là bội số của 100');
       return;
@@ -109,9 +103,8 @@ export default function PointExchange() {
       setToast(true);
       setTimeout(() => setToast(false), 3000);
       
-      // Refresh dữ liệu
       await fetchData();
-      setPercent(0); // Reset thanh kéo về 0
+      setPercent(0);
       
     } catch (error: any) {
       setShowModal(false);
@@ -123,6 +116,10 @@ export default function PointExchange() {
   };
 
   const hasPendingRequest = pendingRequests.length > 0;
+
+  const handleChangePercent = useCallback((p: number) => {
+    setPercent(p);
+  }, []);
 
   if (loading) {
     return (
@@ -137,11 +134,10 @@ export default function PointExchange() {
   return (
     <PointExchangeLayout>
       <div className="w-full p-6 md:p-10 bg-linear-to-br from-blue-50 via-purple-50 to-pink-50 min-h-screen">
-        {/* HEADER */}
-        <div className="mb-8 relative">
-          <div className="relative rounded-2xl p-8 bg-linear-to-r from-blue-600 via-purple-600 to-pink-600 overflow-hidden shadow-2xl">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full -mr-32 -mt-32"></div>
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-10 rounded-full -ml-24 -mb-24"></div>
+        <div className="mb-6 relative max-w-6xl mx-auto">
+          <div className="relative rounded-xl p-5 bg-blue-600 overflow-hidden shadow-lg">
+            <div className="absolute top-0 right-0 w-40 h-40 bg-white opacity-10 rounded-full -mr-20 -mt-20"></div>
+            <div className="absolute bottom-0 left-0 w-32 h-32 bg-white opacity-10 rounded-full -ml-16 -mb-16"></div>
             
             <div className="relative z-10 text-center">
               <div className="flex items-center justify-center gap-4 mb-3">
@@ -159,7 +155,6 @@ export default function PointExchange() {
           </div>
         </div>
 
-        {/* Pending Request Alert */}
         {hasPendingRequest && (
           <div className="bg-linear-to-r from-yellow-50 to-orange-50 border-2 border-yellow-200 rounded-2xl p-6 mb-8 max-w-6xl mx-auto shadow-lg hover:shadow-xl transition-shadow duration-300">
             <div className="flex items-start gap-4">
@@ -192,16 +187,11 @@ export default function PointExchange() {
         )}
 
         <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-6 relative">
-          
-          {/* LEFT — 1/3 */}
           <div className="lg:w-1/3 flex">
             <div className="p-6 rounded-2xl bg-white shadow-lg border-2 border-gray-100 w-full flex flex-col hover:shadow-xl transition-shadow duration-300">
-
-              {/* HALF CIRCLE */}
               <HalfCircleProgress
                 percent={percent}
                 totalPoints={currentPoints}
-                // Tính tiền động dựa trên % điểm đang chọn thay vì tổng tiền tĩnh
                 totalMoney={calculateMoney(Math.round(currentPoints * percent / 100))}
               />
 
@@ -215,7 +205,6 @@ export default function PointExchange() {
                 ></div>
               </div>
 
-              {/* INFO BOX: Hiển thị tỷ giá đang áp dụng */}
               {currentAppliedRule ? (
                 <div className="text-center p-5 bg-linear-to-r from-blue-50 to-purple-50 rounded-xl border-2 border-blue-200 shadow-sm">
                   <p className="text-sm text-gray-600 mb-2 font-semibold">Tỷ giá đang áp dụng</p>
@@ -229,20 +218,18 @@ export default function PointExchange() {
             </div>
           </div>
 
-          {/* RIGHT — 2/3 */}
           <div className="lg:w-2/3 flex">
             <div className="p-6 rounded-2xl bg-white shadow-lg border-2 border-gray-100 w-full flex flex-col hover:shadow-xl transition-shadow duration-300">
               <TickSelector
                 max={currentPoints}
-                rate ={+conversionRules[0]} // Truyền rate mặc định để tránh lỗi component con
-                onChangePercent={(p: number) => setPercent(p)}
-                onSelect={(points) => handleOpenModal(points)} // Chỉ cần truyền points, money sẽ tính lại trong hàm handleOpen
+                rate={conversionRules[0]?.moneyValue || 100}
+                onChangePercent={handleChangePercent}
+                onSelect={(points) => handleOpenModal(points)}
               />
             </div>
           </div>
         </div>
 
-        {/* CONFIRMATION MODAL */}
         <ConfirmExchangeModal
           isOpen={showModal}
           onClose={() => setShowModal(false)}

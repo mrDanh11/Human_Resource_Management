@@ -53,7 +53,7 @@ export default function RewardHistory() {
           <div className="min-h-screen p-8">
             {/* Page Header */}
             <header className="mb-8 relative">
-              <div className="relative rounded-2xl p-8 bg-linear-to-r from-blue-600 via-purple-600 to-pink-600 overflow-hidden shadow-2xl">
+              <div className="relative rounded-2xl p-8 bg-blue-600 overflow-hidden shadow-2xl">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full -mr-32 -mt-32"></div>
                 <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-10 rounded-full -ml-24 -mb-24"></div>
                 

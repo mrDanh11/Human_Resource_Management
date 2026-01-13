@@ -22,7 +22,7 @@ export default function TickSelector({
   const [error, setError] = useState("");
 
   useEffect(() => {
-    onChangePercent(value / max);
+    onChangePercent((value / max) * 100);
   }, [value, max, onChangePercent]);
 
   const money = calculateMoneyFromPoints(value, rate);
@@ -70,7 +70,7 @@ export default function TickSelector({
       <MoneyDisplay money={money} />
 
       <button
-        className="w-full mt-6 py-4 rounded-xl bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 text-white text-lg font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
+        className="w-full mt-6 py-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
         onClick={handleExchange}
       >
         <span className="text-xl">💰</span>
