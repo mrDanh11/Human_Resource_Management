@@ -1,8 +1,3 @@
-/**
- * ImageUpload - Image upload/URL input component
- * Single Responsibility: Handle campaign image
- */
-
 import { Upload } from 'lucide-react';
 
 interface ImageUploadProps {

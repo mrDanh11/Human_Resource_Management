@@ -1,8 +1,3 @@
-/**
- * FormField - Reusable form field component
- * Single Responsibility: Render form field with label, input, and error message
- */
-
 interface FormFieldProps {
   label: string;
   required?: boolean;

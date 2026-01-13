@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { X, Calendar, MapPin, Users, Building2, Clock } from 'lucide-react';
-import type { ActivityData } from '../../data/activityData';
+import type { Activity } from '../../types/activity';
 
 interface ActivityDetailModalProps {
-  activity: ActivityData;
+  activity: Activity;
   isOpen: boolean;
   onClose: () => void;
   onRegister: (activityId: string) => void;
@@ -12,7 +12,7 @@ interface ActivityDetailModalProps {
   userRole?: string;
 }
 
-const activityTypeLabels: Record<ActivityData['type'], string> = {
+const activityTypeLabels: Record<Activity['activityType'], string> = {
   sports: 'Thể thao',
   charity: 'Từ thiện',
   training: 'Đào tạo',
@@ -20,7 +20,7 @@ const activityTypeLabels: Record<ActivityData['type'], string> = {
   volunteer: 'Tình nguyện'
 };
 
-const activityTypeColors: Record<ActivityData['type'], string> = {
+const activityTypeColors: Record<Activity['activityType'], string> = {
   sports: 'bg-blue-100 text-blue-800 border-blue-200',
   charity: 'bg-pink-100 text-pink-800 border-pink-200',
   training: 'bg-purple-100 text-purple-800 border-purple-200',
@@ -53,27 +53,10 @@ export default function ActivityDetailModal({
     });
   };
 
-  const formatDateOnly = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('vi-VN', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    });
-  };
-
-  const formatTimeOnly = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString('vi-VN', {
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
   const isRegistrationOpen = () => {
     const now = new Date();
-    const regStart = new Date(activity.registrationStart);
-    const regEnd = new Date(activity.registrationEnd);
+    const regStart = new Date(activity.registrationStartDate);
+    const regEnd = new Date(activity.registrationEndDate);
     return now >= regStart && now <= regEnd;
   };
 
@@ -133,8 +116,8 @@ export default function ActivityDetailModal({
                 <h3 className="text-2xl font-bold text-gray-900 flex-1" id="modal-title">
                   {activity.name}
                 </h3>
-                <span className={`px-4 py-1.5 rounded-full text-sm font-semibold border ${activityTypeColors[activity.type]}`}>
-                  {activityTypeLabels[activity.type]}
+                <span className={`px-4 py-1.5 rounded-full text-sm font-semibold border ${activityTypeColors[activity.activityType]}`}>
+                  {activityTypeLabels[activity.activityType]}
                 </span>
               </div>
               
@@ -180,10 +163,10 @@ export default function ActivityDetailModal({
                   <div className="flex-1">
                     <p className="font-semibold text-gray-900 mb-1">Thời gian đăng ký</p>
                     <p className="text-sm text-gray-700">
-                      <span className="font-medium">Từ:</span> {formatDateTime(activity.registrationStart)}
+                      <span className="font-medium">Từ:</span> {formatDateTime(activity.registrationStartDate)}
                     </p>
                     <p className="text-sm text-gray-700">
-                      <span className="font-medium">Đến:</span> {formatDateTime(activity.registrationEnd)}
+                      <span className="font-medium">Đến:</span> {formatDateTime(activity.registrationEndDate)}
                     </p>
                   </div>
                 </div>
@@ -271,7 +254,7 @@ export default function ActivityDetailModal({
                     <button
                       onClick={() => {
                         if (onUnregister) {
-                          onUnregister(activity.id);
+                          onUnregister(activity.id.toString());
                           onClose();
                         }
                       }}
@@ -300,7 +283,7 @@ export default function ActivityDetailModal({
                 ) : (
                   <button
                     onClick={() => {
-                      onRegister(activity.id);
+                      onRegister(activity.id.toString());
                       onClose();
                     }}
                     disabled={!canRegister}

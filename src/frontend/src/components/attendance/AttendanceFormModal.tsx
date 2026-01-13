@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { X, User, Calendar, Clock, LogIn, LogOut, CheckCircle, Timer, FileText } from 'lucide-react';
+import { X, User, Calendar, LogIn, LogOut, CheckCircle, Timer, FileText } from 'lucide-react';
 
 interface AttendanceFormData {
   employeeId: number;

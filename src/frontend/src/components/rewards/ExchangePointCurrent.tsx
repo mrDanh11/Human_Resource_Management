@@ -1,4 +1,4 @@
-import { THEME_COLORS } from "../common/THEME_COLORS";
+import { THEME_COLORS } from "../../types/themeColors";
 
 export default function ExchangePointCurrent(props: { current: number; rate: number }) {
   const formatCurrency = (v: number) =>

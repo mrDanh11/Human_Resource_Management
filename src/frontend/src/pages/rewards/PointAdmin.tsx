@@ -565,7 +565,7 @@ export default function PointsAdmin() {
                                                             </span>
                                                             <span>{new Date(item.createdAt).toLocaleString('vi-VN')}</span>
                                                             <span className="hidden sm:inline w-1 h-1 bg-gray-300 rounded-full"></span>
-                                                            <span className="text-gray-400 italic truncate max-w-[200px] sm:max-w-md">{item.description}</span>
+                                                            <span className="text-gray-400 italic truncate max-w-50 sm:max-w-md">{item.description}</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -620,7 +620,7 @@ export default function PointsAdmin() {
 
             {isAddingRule && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                    <div className="bg-white p-6 rounded-lg w-[500px]">
+                    <div className="bg-white p-6 rounded-lg w-125">
                         <CreateExchangePointRule onClose={() => setIsAddingRule(false)} />
                     </div>
                 </div>

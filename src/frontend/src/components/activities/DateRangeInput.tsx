@@ -1,8 +1,3 @@
-/**
- * DateRangeInput - Date range input with validation
- * Single Responsibility: Handle start/end date inputs
- */
-
 import FormField from './FormField';
 
 interface DateRangeInputProps {

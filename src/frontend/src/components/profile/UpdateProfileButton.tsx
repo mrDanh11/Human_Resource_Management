@@ -1,5 +1,5 @@
 import { HiOutlinePencil } from "react-icons/hi";
-import { SHADOWS } from "../../constants/styles";
+import { SHADOWS } from "../../types/styles";
 
 interface UpdateProfileButtonProps {
   onClick?: () => void;

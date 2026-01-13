@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
-import Header from "../components/LandingPage/Header";
+import Header from "../components/common/Header";
 import Sidebar from "../components/common/Sidebar";
-import { BACKGROUNDS } from "../constants/styles";
+import { BACKGROUNDS } from "../types/styles";
 
 interface ProfileLayoutProps {
   children: ReactNode;

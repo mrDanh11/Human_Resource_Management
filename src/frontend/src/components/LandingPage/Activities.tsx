@@ -1,6 +1,5 @@
-// src/components/LandingPage/Activities.tsx
 import { motion } from "framer-motion";
-import { THEME_COLORS } from "../common/THEME_COLORS";
+import { THEME_COLORS } from "../../types/themeColors";
 
 // Import ảnh 
 import runningImg from "../../assets/running.jpg";

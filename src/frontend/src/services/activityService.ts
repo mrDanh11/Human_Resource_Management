@@ -148,7 +148,7 @@ export const getActivityStatistics = async (): Promise<{
   statusDistribution: { status: string; count: number }[];
 }> => {
   const response = await apiSpring.get<ActivityListResponse>('/activities', {
-    params: { page: 1, pageSize: 10000 }
+    params: { page: 1, pageSize: 100 }
   });
   
   const activities = response.data.activities || [];

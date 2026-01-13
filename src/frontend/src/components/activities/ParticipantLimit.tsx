@@ -1,8 +1,3 @@
-/**
- * ParticipantLimit - Participant limit input with unlimited option
- * Single Responsibility: Handle participant limit configuration
- */
-
 import FormField from './FormField';
 
 interface ParticipantLimitProps {

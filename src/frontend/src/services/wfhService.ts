@@ -10,7 +10,7 @@ import type {
   WfhQuota,
   WfhValidation,
   TimesheetPreview,
-} from "../types/wfh.types";
+} from "../types/wfh";
 
 /**
  * Create new WFH request

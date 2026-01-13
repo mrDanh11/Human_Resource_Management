@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { AlertTriangle, X } from 'lucide-react';
 
 interface ConfirmRegistrationModalProps {
@@ -50,7 +49,7 @@ export default function ConfirmRegistrationModal({ isOpen, activityName, onConfi
             {/* Warning Box */}
             <div className="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-lg mb-4">
               <div className="flex items-start">
-                <AlertTriangle className="w-5 h-5 text-amber-600 mt-0.5 mr-3 flex-shrink-0" />
+                <AlertTriangle className="w-5 h-5 text-amber-600 mt-0.5 mr-3 shrink-0" />
                 <div>
                   <h4 className="font-semibold text-amber-900 mb-2">Lưu ý quan trọng:</h4>
                   <ul className="text-sm text-amber-800 space-y-2 list-disc list-inside">

@@ -1,5 +1,4 @@
-// src/frontend/src/components/LandingPage/Header.tsx
-import { THEME_COLORS } from "../common/THEME_COLORS";
+import { THEME_COLORS } from "../../types/themeColors";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
 // import đúng theo cấu trúc bạn gửi
@@ -65,6 +64,8 @@ export default function Header() {
           const role = localStorage.getItem("role");
           const dashboardLink = role === "admin" 
             ? "/admin/dashboard" 
+            : role === "hr"
+            ? "/hr/dashboard"
             : `/employee/profile/${userId}`;
           
           return (

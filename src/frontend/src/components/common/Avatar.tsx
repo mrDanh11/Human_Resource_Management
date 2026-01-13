@@ -1,11 +1,5 @@
-/**
- * Avatar.tsx - Component avatar thống nhất (chỉ hiển thị)
- * Hiển thị ảnh avatar có sẵn hoặc fallback chữ cái đầu tên
- * Không hỗ trợ upload/thay đổi avatar
- */
-
 import React from 'react';
-import { THEME_COLORS } from './THEME_COLORS';
+import { THEME_COLORS } from '../../types/themeColors';
 
 interface AvatarProps {
   src?: string | null;

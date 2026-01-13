@@ -227,7 +227,7 @@ const RewardDashboard: React.FC = () => {
         )}
 
         {/* Main Content Tabs */}
-        <div className="bg-white rounded-xl shadow-xs border border-gray-200 min-h-[400px]">
+        <div className="bg-white rounded-xl shadow-xs border border-gray-200 min-h-100">
           <div className="flex border-b border-gray-200">
             <button
               onClick={() => setRewardTab('available')}
