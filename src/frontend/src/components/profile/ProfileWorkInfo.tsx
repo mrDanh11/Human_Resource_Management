@@ -1,6 +1,5 @@
 import { HiOutlineCalendar } from "react-icons/hi";
 import InfoGrid from "./InfoGrid";
-import Field from "./Field";
 import { formatDateVN } from "../../utils/dateFormatter";
 
 interface ProfileWorkInfoProps {

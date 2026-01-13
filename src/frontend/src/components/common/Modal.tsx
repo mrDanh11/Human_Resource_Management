@@ -1,9 +1,3 @@
-/**
- * Modal.tsx - Component modal dialog tái sử dụng
- * Dùng cho confirm actions, show details, forms
- * Support keyboard navigation và click outside to close
- */
-
 import { useEffect } from 'react';
 
 interface ModalProps {

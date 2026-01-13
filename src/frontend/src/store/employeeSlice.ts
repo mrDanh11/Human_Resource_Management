@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk, type Update } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { PaginationParams } from '../types/pagination';
 import { employeeService } from '../services/employeeService';
 import { departmentService, type DepartmentDto } from '../services/departmentService';
@@ -167,11 +167,11 @@ export const createEmployee = createAsyncThunk(
 export const fetchDepartments = createAsyncThunk<DepartmentDto[], void, { rejectValue: string }>(
   'employee/fetchDepartments',
   async (_, { rejectWithValue }) => {
-    // try {
+    try {
       return await departmentService.getAllDepartments();
-    // } catch (error: any) {
-    //   return rejectWithValue(error.message ?? 'Lỗi khi lấy danh sách phòng ban');
-    // }
+    } catch (error: any) {
+      return rejectWithValue(error.message ?? 'Lỗi khi lấy danh sách phòng ban');
+    }
   }
 );
 

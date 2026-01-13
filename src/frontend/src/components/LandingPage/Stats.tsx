@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { THEME_COLORS } from "../common/THEME_COLORS";
+import { THEME_COLORS } from "../../types/themeColors";
 
 export default function Stats() {
   const stats = [

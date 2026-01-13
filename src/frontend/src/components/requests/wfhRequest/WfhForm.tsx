@@ -1,13 +1,8 @@
-/**
- * WfhForm.tsx - Form gửi yêu cầu Work From Home
- * Simple, clean design matching image mockup
- */
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Upload, AlertTriangle, X } from "lucide-react";
 import { createWfhRequest, validateWfhDates } from "../../../services/wfhService";
-import type { CreateWfhRequestDto, WfhValidation } from "../../../types/wfh.types";
+import type { CreateWfhRequestDto, WfhValidation } from "../../../types/wfh";
 
 interface WfhFormProps {
   onSuccess?: () => void;

@@ -1,10 +1,10 @@
 // src/pages/landing/LandingPage.tsx
-import Header from "../../components/LandingPage/Header";
+import Header from "../../components/common/Header";
 import Hero from "../../components/LandingPage/Hero";
 import Stats from "../../components/LandingPage/Stats";
 import Activities from "../../components/LandingPage/Activities";
 import Gallery from "../../components/LandingPage/Gallery";
-import Footer from "../../components/LandingPage/Footer";
+import Footer from "../../components/common/Footer";
 
 export default function LandingPage() {
   return (

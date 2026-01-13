@@ -1,6 +1,6 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import Header from "../components/LandingPage/Header";
+import Header from "../components/common/Header";
 import HRSidebar from "../components/common/HRSidebar";
 
 const HRLayout: React.FC = () => {
@@ -11,7 +11,7 @@ const HRLayout: React.FC = () => {
       <div className="flex flex-1">
         <HRSidebar />
 
-        <main className="flex-1 bg-gray-100">
+        <main className="flex-1 bg-gray-100 ml-64">
           <Outlet />
         </main>
       </div>

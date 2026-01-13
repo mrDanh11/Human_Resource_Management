@@ -1,4 +1,4 @@
-import { UserRoundPen, User, Code, Hash, Building2, MapPin, Wallet, UserCircle, IdCard, Calendar, Mail, Phone, Activity } from 'lucide-react';
+import { UserRoundPen, User, Code, Building2, MapPin, Wallet, UserCircle, Calendar, Mail, Phone, Activity } from 'lucide-react';
 import Modal from '../common/Modal';
 import { useForm, Controller } from 'react-hook-form';
 import { useState, useEffect } from 'react';

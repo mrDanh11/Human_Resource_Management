@@ -1,6 +1,6 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import Header from "../components/LandingPage/Header";
+import Header from "../components/common/Header.tsx";
 import AdminSidebar from "../components/common/AdminSidebar.tsx";
 
 const AdminLayout: React.FC = () => {

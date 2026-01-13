@@ -37,17 +37,8 @@ export default function RewardPointHR() {
             );
         }, [employeeId]);
 
-
-    // Mock data - thay bằng danh sách nhân viên mà manager quản lý qua API
-    // const employees: Employee[] = [
-    //     { id: '1', name: 'Nguyễn Văn An', position: 'Senior Developer', avatar: 'NVA', points: 450 },
-    //     { id: '2', name: 'Trần Thị Bình', position: 'Developer', avatar: 'TTB', points: 320 },
-    //     { id: '3', name: 'Lê Văn Cường', position: 'UI Designer', avatar: 'LVC', points: 280 },
-    //     { id: '4', name: 'Phạm Thị Dung', position: 'Business Analyst', avatar: 'PTD', points: 390 },
-    // ];
-
     const dispatch = useAppDispatch();
-    const { employees, totalCount, loading: loadingEmployees, error: employeesError } = useAppSelector((state) => state.point);
+    const { employees, loading: loadingEmployees, error: employeesError } = useAppSelector((state) => state.point);
 
     useEffect(() => {
             dispatch(fetchAllEmployeePoints({ pageNumber: 1, pageSize: 100 }));

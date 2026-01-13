@@ -3,7 +3,7 @@
  * Các API calls: lấy danh sách phòng ban, tạo, cập nhật, xóa
  */
 
-import { apiDotNet, apiSpring } from './api';
+import { apiDotNet } from './api';
 
 // ============================================
 // TYPES & INTERFACES

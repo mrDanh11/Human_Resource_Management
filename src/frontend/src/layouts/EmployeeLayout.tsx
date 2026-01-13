@@ -1,6 +1,6 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import Header from "../components/LandingPage/Header";
+import Header from "../components/common/Header";
 import Sidebar from "../components/common/Sidebar";
 
 const EmployeeLayout: React.FC = () => {

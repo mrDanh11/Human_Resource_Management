@@ -108,13 +108,15 @@ export const employeeService = {
     const response = await apiDotNet.get<{ items: EmployeeListItem[] }>('/Employee', {
       params: {
         pageNumber: 1,
-        pageSize: 1000,
+        pageSize: 100,
       },
     });
     
     const employees = response.data.items;
     const totalEmployees = employees.length;
     
+    console.log('Employees for statistics:', employees);
+
     // Tính phân bổ theo role
     const roleMap = new Map<string, number>();
     employees.forEach(emp => {

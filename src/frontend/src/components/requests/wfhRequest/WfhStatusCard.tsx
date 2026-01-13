@@ -5,7 +5,7 @@
 import { useState, useEffect } from "react";
 
 import { getEmployeeWfhRequests } from "../../../services/wfhService";
-import type { WfhRequest } from "../../../types/wfh.types";
+import type { WfhRequest } from "../../../types/wfh";
 
 export default function WfhStatusCard() {
   const [latestRequest, setLatestRequest] = useState<WfhRequest | null>(null);

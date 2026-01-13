@@ -1,26 +1,9 @@
 import { HiOutlineOfficeBuilding, HiOutlineLockClosed } from "react-icons/hi";
-import { BACKGROUNDS } from "../../constants/styles";
+import { BACKGROUNDS } from "../../types/styles";
 import Card from "./ProfileCard";
 import ProfileBasicInfo from "./ProfileBasicInfo";
 import ProfileWorkInfo from "./ProfileWorkInfo";
 import ProfileSecurityInfo from "./ProfileSecurityInfo";
-
-interface EmployeeData {
-  fullName?: string;
-  employeeCode?: string;
-  email?: string;
-  phone?: string;
-  address?: string;
-  cccd?: string;
-  taxCode?: string;
-  bankAccount?: {
-    accountNumber?: string;
-  };
-  department?: string;
-  position?: string;
-  joinDate?: string | Date;
-  birthDate?: string | Date;
-}
 
 interface EmployeeData2 {
   id?: number;
