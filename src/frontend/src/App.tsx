@@ -140,7 +140,15 @@ const App = () => {
           <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
             <Route path="admin" element={<AdminLayout />}>
               <Route path="dashboard" element={<AdminDashboard />} />
-              <Route path="point" element={<PointsAdmin />} />
+              <Route path="point">
+                <Route index element={<PointsAdmin />} />
+                <Route path="roles" element={<PointsAdmin />} />
+                <Route path="employees" element={<PointsAdmin />} />
+                <Route path="conversion" element={<PointsAdmin />} />
+                <Route path="requests" element={<PointsAdmin />} />
+                <Route path="conversion-history" element={<PointsAdmin />} />
+                <Route path="history" element={<PointsAdmin />} />
+              </Route>
               <Route path="rewards" element={<PointsAdmin />} />
 
               {/* Activity Routes */}
