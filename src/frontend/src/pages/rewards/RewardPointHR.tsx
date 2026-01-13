@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { AlertCircle, Loader2, Search, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { fetchAllEmployeePoints } from '../../store/pointSlice';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { pointService } from '../../services/pointService';
@@ -20,7 +21,6 @@ export default function RewardPointHR() {
     const [searchTerm, setSearchTerm] = useState('');
     const [pointsPerPerson, setPointsPerPerson] = useState(50);
     const [note, setNote] = useState('');
-    const [activeTab, setActiveTab] = useState<'increase' | 'history'>('increase');
     const [showToast, setShowToast] = useState(false);
 
     const employeeId = parseInt(localStorage.getItem('userId') || '1');
@@ -129,10 +129,20 @@ export default function RewardPointHR() {
     const remainingPoints = (pointOfHR?.pointTotal || 0) - totalPointReward; {/* Điểm còn lại của quản lý = điểm hiện tại - điểm đã tặng*/ }
 
     return (
-        <div className="min-h-screen w-full mx-auto bg-linear-to-br from-blue-50 via-purple-50 to-pink-50 p-6">
-            <div className="max-w-7xl mx-auto">
+        <div className="min-h-screen w-full mx-auto bg-linear-to-br from-blue-50 via-purple-50 to-pink-50 p-6 relative overflow-hidden">
+            {/* Decorative background elements */}
+            <div className="absolute top-0 right-0 w-96 h-96 bg-blue-400 rounded-full blur-3xl opacity-10 pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-400 rounded-full blur-3xl opacity-10 pointer-events-none" />
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-pink-400 rounded-full blur-3xl opacity-5 pointer-events-none" />
+            
+            <div className="max-w-7xl mx-auto relative z-10">
                 {/* Header */}
-                <div className="relative rounded-2xl p-8 mb-8 bg-blue-600 overflow-hidden shadow-2xl">
+                <motion.div 
+                    className="relative rounded-2xl p-8 mb-8 bg-blue-600 overflow-hidden shadow-2xl"
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                >
                     <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full -mr-32 -mt-32"></div>
                     <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-10 rounded-full -ml-24 -mb-24"></div>
                     
@@ -156,10 +166,16 @@ export default function RewardPointHR() {
                             </div>
                         </div>
                     </div>
-                </div>
+                </motion.div>
 
                 {/* Employee Selection */}
-                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 mb-8 overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                <motion.div 
+                    className="bg-white rounded-2xl shadow-lg border border-gray-100 mb-8 overflow-hidden hover:shadow-xl transition-shadow duration-300"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                    whileHover={{ y: -2 }}
+                >
                     <div className="p-6 bg-linear-to-r from-blue-50 to-purple-50 border-b border-gray-100 flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 bg-linear-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center text-white">
@@ -201,11 +217,17 @@ export default function RewardPointHR() {
                                 </div>
                             ) : (
                             <div className="space-y-3 max-h-96 overflow-y-auto pr-2">
-                            {filteredEmployees.map((employee) => (
-                                <div
+                            <AnimatePresence>
+                            {filteredEmployees.map((employee, index) => (
+                                <motion.div
                                     key={employee.id}
                                     onClick={() => toggleEmployee(employee)}
                                     className="flex items-center justify-between p-4 hover:bg-linear-to-r hover:from-blue-50 hover:to-purple-50 rounded-xl cursor-pointer transition-all duration-300 border-2 border-transparent hover:border-blue-200 hover:shadow-md group"
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    exit={{ opacity: 0, x: 20 }}
+                                    transition={{ delay: index * 0.05 }}
+                                    whileHover={{ x: 4, scale: 1.01 }}
                                 >
                                     <div className="flex items-center gap-4">
                                         <div className="w-12 h-12 rounded-xl bg-linear-to-br from-blue-600 to-purple-600 text-white flex items-center justify-center font-bold text-sm shadow-md group-hover:scale-110 transition-transform duration-300">
@@ -220,8 +242,9 @@ export default function RewardPointHR() {
                                         <div className="text-xs text-gray-500 mb-1">Điểm hiện tại</div>
                                         <div className="font-bold text-xl bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">{employee.pointTotal}</div>
                                     </div>
-                                </div>
+                                </motion.div>
                             ))}
+                            </AnimatePresence>
                         </div>
                         )}
 
@@ -250,10 +273,16 @@ export default function RewardPointHR() {
                             </div>
                         )}
                     </div>
-                </div>
+                </motion.div>
 
                 {/* Points Configuration */}
-                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 mb-8 overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                <motion.div 
+                    className="bg-white rounded-2xl shadow-lg border border-gray-100 mb-8 overflow-hidden hover:shadow-xl transition-shadow duration-300"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    whileHover={{ y: -2 }}
+                >
                     <div className="p-6 bg-linear-to-r from-purple-50 to-pink-50 border-b border-gray-100">
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 bg-linear-to-r from-purple-600 to-pink-600 rounded-xl flex items-center justify-center text-white">
@@ -301,10 +330,16 @@ export default function RewardPointHR() {
                             <div className="text-xs text-gray-500 mt-2">0-25 ký tự tối thiểu</div>
                         </div>
                     </div>
-                </div>
+                </motion.div>
 
                 {/* Summary */}
-                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 mb-8 overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                <motion.div 
+                    className="bg-white rounded-2xl shadow-lg border border-gray-100 mb-8 overflow-hidden hover:shadow-xl transition-shadow duration-300"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    whileHover={{ y: -2 }}
+                >
                     <div className="p-6 bg-linear-to-r from-green-50 to-teal-50 border-b border-gray-100">
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 bg-linear-to-r from-green-600 to-teal-600 rounded-xl flex items-center justify-center text-white">
@@ -330,20 +365,32 @@ export default function RewardPointHR() {
                             </div>
                         </div>
                     </div>
-                </div>
+                </motion.div>
 
                 {/* Submit Button */}
-                <button
+                <motion.button
                     disabled={selectedEmployees.length === 0 || pointsPerPerson <= 0 || totalPointReward > (pointOfHR?.pointTotal || 0)}
-                    className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl hover:scale-105 disabled:hover:scale-100 disabled:shadow-none"
+                    className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl disabled:shadow-none"
                     onClick={() => {handleRewardPoints(selectedEmployees)}}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                    whileHover={{ scale: selectedEmployees.length > 0 ? 1.02 : 1 }}
+                    whileTap={{ scale: selectedEmployees.length > 0 ? 0.98 : 1 }}
                     >
                     <span className="text-2xl">📤</span>
                     <span className="text-lg">Tặng điểm ngay</span>
-                </button>
+                </motion.button>
 
+                <AnimatePresence>
                 {showToast && (
-                <div className="fixed bottom-8 right-8 bg-linear-to-r from-green-500 to-emerald-500 text-white px-8 py-5 rounded-2xl shadow-2xl flex items-center gap-4 animate-slide-up z-50 border-2 border-white">
+                <motion.div 
+                    className="fixed bottom-8 right-8 bg-linear-to-r from-green-500 to-emerald-500 text-white px-8 py-5 rounded-2xl shadow-2xl flex items-center gap-4 z-50 border-2 border-white"
+                    initial={{ opacity: 0, y: 50, scale: 0.8 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 50, scale: 0.8 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                >
                     <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg">
                         <span className="text-green-500 text-3xl font-bold">✓</span>
                     </div>
@@ -351,8 +398,9 @@ export default function RewardPointHR() {
                         <div className="font-bold text-lg">Thành công!</div>
                         <div className="text-sm text-green-50">Đã cấp điểm hằng tháng</div>
                     </div>
-                </div>
+                </motion.div>
                 )}
+                </AnimatePresence>
             </div>
         </div>
     );

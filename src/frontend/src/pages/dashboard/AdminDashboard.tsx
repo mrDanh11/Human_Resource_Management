@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion } from 'framer-motion';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { fetchEmployeeStatistics, fetchActivityStatistics } from '../../store/employeeSlice';
@@ -23,7 +24,12 @@ const AdminDashboard: React.FC = () => {
     <div className="min-h-screen bg-linear-to-br from-blue-50 via-purple-50 to-pink-50 p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="relative rounded-2xl p-8 mb-10 bg-blue-600 overflow-hidden shadow-2xl">
+        <motion.div 
+          className="relative rounded-2xl p-8 mb-10 bg-blue-600 overflow-hidden shadow-2xl"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
           <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full -mr-32 -mt-32"></div>
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-10 rounded-full -ml-24 -mb-24"></div>
           
@@ -40,12 +46,30 @@ const AdminDashboard: React.FC = () => {
               Quản lý và giám sát toàn bộ hệ thống
             </p>
           </div>
-        </div>
+        </motion.div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12"
+          initial="hidden"
+          animate="visible"
+          variants={{
+            visible: {
+              transition: {
+                staggerChildren: 0.1
+              }
+            }
+          }}
+        >
           {/* Card 1: Tổng nhân viên */}
-          <div className="bg-white rounded-2xl shadow-xl border-2 border-gray-100 overflow-hidden hover:shadow-2xl hover:scale-105 transition-all duration-300 group">
+          <motion.div 
+            className="bg-white rounded-2xl shadow-xl border-2 border-gray-100 overflow-hidden hover:shadow-2xl transition-all duration-300 group"
+            variants={{
+              hidden: { opacity: 0, y: 20 },
+              visible: { opacity: 1, y: 0 }
+            }}
+            whileHover={{ y: -8, boxShadow: "0 25px 50px -12px rgba(59, 130, 246, 0.25)" }}
+          >
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="w-14 h-14 bg-linear-to-br from-blue-500 to-blue-700 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
@@ -71,10 +95,17 @@ const AdminDashboard: React.FC = () => {
                 👥 Tổng số nhân viên hệ thống
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Card 2: Yêu cầu nghỉ phép */}
-          <div className="bg-white rounded-2xl shadow-xl border-2 border-gray-100 overflow-hidden hover:shadow-2xl hover:scale-105 transition-all duration-300 group">
+          <motion.div 
+            className="bg-white rounded-2xl shadow-xl border-2 border-gray-100 overflow-hidden hover:shadow-2xl transition-all duration-300 group"
+            variants={{
+              hidden: { opacity: 0, y: 20 },
+              visible: { opacity: 1, y: 0 }
+            }}
+            whileHover={{ y: -8, boxShadow: "0 25px 50px -12px rgba(249, 115, 22, 0.25)" }}
+          >
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="w-14 h-14 bg-linear-to-br from-orange-500 to-orange-700 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
@@ -94,10 +125,17 @@ const AdminDashboard: React.FC = () => {
                 ⏳ Đơn cần xem xét
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Card 3: Hoạt động mở đăng ký */}
-          <div className="bg-white rounded-2xl shadow-xl border-2 border-gray-100 overflow-hidden hover:shadow-2xl hover:scale-105 transition-all duration-300 group">
+          <motion.div 
+            className="bg-white rounded-2xl shadow-xl border-2 border-gray-100 overflow-hidden hover:shadow-2xl transition-all duration-300 group"
+            variants={{
+              hidden: { opacity: 0, y: 20 },
+              visible: { opacity: 1, y: 0 }
+            }}
+            whileHover={{ y: -8, boxShadow: "0 25px 50px -12px rgba(34, 197, 94, 0.25)" }}
+          >
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="w-14 h-14 bg-linear-to-br from-green-500 to-green-700 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
@@ -123,13 +161,21 @@ const AdminDashboard: React.FC = () => {
                 📝 Đang nhận đăng ký
               </div>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
         {/* Pie Charts - Side by Side */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
           {/* Pie Chart - Phân bổ chức vụ */}
-          <div className="bg-white rounded-2xl shadow-xl border-2 border-gray-100 p-8 hover:shadow-2xl transition-shadow duration-300">
+          <motion.div 
+            className="bg-white rounded-2xl shadow-xl border-2 border-gray-100 p-8 hover:shadow-2xl transition-shadow duration-300"
+            whileHover={{ y: -4 }}
+          >
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 bg-linear-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
                 <TrendingUp className="text-white w-5 h-5" />
@@ -177,10 +223,13 @@ const AdminDashboard: React.FC = () => {
                 <p>Không có dữ liệu</p>
               </div>
             )}
-          </div>
+          </motion.div>
 
           {/* Pie Chart - Phân bố hoạt động */}
-          <div className="bg-white rounded-2xl shadow-xl border-2 border-gray-100 p-8 hover:shadow-2xl transition-shadow duration-300">
+          <motion.div 
+            className="bg-white rounded-2xl shadow-xl border-2 border-gray-100 p-8 hover:shadow-2xl transition-shadow duration-300"
+            whileHover={{ y: -4 }}
+          >
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 bg-linear-to-br from-green-500 to-teal-600 rounded-xl flex items-center justify-center">
                 <Activity className="text-white w-5 h-5" />
@@ -228,11 +277,16 @@ const AdminDashboard: React.FC = () => {
                 <p>Không có dữ liệu</p>
               </div>
             )}
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
         {/* Quick Actions */}
-        <div className="bg-white rounded-2xl shadow-xl border-2 border-gray-100 p-8">
+        <motion.div 
+          className="bg-white rounded-2xl shadow-xl border-2 border-gray-100 p-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+        >
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
               Thao tác nhanh
@@ -241,9 +295,11 @@ const AdminDashboard: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
-            <button
+            <motion.button
               onClick={() => navigate("/admin/employee/create")}
-              className="group relative bg-linear-to-r from-blue-600 to-blue-700 text-white p-6 rounded-2xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 overflow-hidden"
+              className="group relative bg-linear-to-r from-blue-600 to-blue-700 text-white p-6 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden"
+              whileHover={{ scale: 1.05, y: -4 }}
+              whileTap={{ scale: 0.98 }}
             >
               <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16"></div>
               <div className="relative z-10 flex items-center gap-4">
@@ -255,9 +311,9 @@ const AdminDashboard: React.FC = () => {
                   <div className="text-sm text-blue-100">Tạo tài khoản nhân viên</div>
                 </div>
               </div>
-            </button>
+            </motion.button>
 
-            <button
+            <motion.button
               onClick={() => navigate("/admin/activities/create")}
               className="group relative bg-linear-to-r from-green-600 to-green-700 text-white p-6 rounded-2xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 overflow-hidden"
             >
@@ -271,9 +327,9 @@ const AdminDashboard: React.FC = () => {
                   <div className="text-sm text-green-100">Tạo sự kiện, cuộc thi</div>
                 </div>
               </div>
-            </button>
+            </motion.button>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

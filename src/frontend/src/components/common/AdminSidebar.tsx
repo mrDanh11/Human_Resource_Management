@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ChevronDown, Menu, ChevronLeft, Home, LayoutDashboard, FileText, Award, Calendar, ClipboardList, BarChart, Plus, XCircle, CheckCircle, UserCheck } from "lucide-react";
 import UserInfo from "./UserInfo";
@@ -8,6 +8,12 @@ const AdminSidebar: React.FC = () => {
   const navigate = useNavigate();
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [collapsed, setCollapsed] = useState<boolean>(false);
+  
+  useEffect(() => {
+    if (collapsed) {
+      setOpenDropdown(null);
+    }
+  }, [collapsed]);
   
   const menuItems = [
     { label: "Dashboard", to: "/admin/dashboard", icon: LayoutDashboard },
@@ -37,26 +43,13 @@ const AdminSidebar: React.FC = () => {
 
   return (
     <aside className={`${collapsed ? 'w-20' : 'w-64'} bg-white shadow-xl border-r border-gray-200 flex flex-col fixed h-full transition-width duration-200`}>
-      <div className="px-3 py-3 border-b border-gray-200 flex items-center justify-between">
-        <div className="flex items-center">
-          <button
-            type="button"
-            onClick={() => navigate('/admin/dashboard')}
-            aria-label="Admin home"
-            className="flex items-center gap-2 focus:outline-none"
-          >
-            <div className="w-8 h-8 flex items-center justify-center rounded-md text-blue-600">
-              <Home size={18} />
-            </div>
-            {!collapsed && <span className="text-2xl font-extrabold text-blue-600 tracking-wide">HRM Admin</span>}
-          </button>
-        </div>
+      <div className={`px-3 py-3 border-b border-gray-200 flex items-center ${collapsed ? 'justify-center' : 'justify-end'}`}>
         <button
           onClick={() => setCollapsed(!collapsed)}
           aria-label={collapsed ? 'Mở sidebar' : 'Thu sidebar'}
           className="p-1 rounded-md hover:bg-gray-100"
         >
-          {collapsed ? <Menu size={18} /> : <ChevronLeft size={18} />}
+          {collapsed ? <Menu size={22} /> : <ChevronLeft size={22} />}
         </button>
       </div>
 
@@ -101,7 +94,10 @@ const AdminSidebar: React.FC = () => {
                     {item.submenu.map((subItem, j) => (
                       <button
                         key={j}
-                        onClick={() => navigate(subItem.to)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(subItem.to);
+                        }}
                         title={subItem.label}
                         className={`w-full text-left ${collapsed ? 'flex justify-center py-2.5 px-3 text-sm' : 'flex items-center gap-2 py-2 px-5 rounded-lg text-sm font-medium'} transition-all ${
                           location.pathname === subItem.to

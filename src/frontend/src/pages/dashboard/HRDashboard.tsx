@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
+import { motion } from 'framer-motion';
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { fetchEmployeeStatistics, fetchActivityStatistics } from "../../store/employeeSlice";
 import { Loader2, Users, Activity, FileText, Plus, Gift, XCircle, Calendar, TrendingUp } from "lucide-react";
@@ -20,7 +21,12 @@ const HRDashboard: React.FC = () => {
     <div className="min-h-screen bg-linear-to-br from-blue-50 via-purple-50 to-pink-50 p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="relative rounded-2xl p-8 mb-10 bg-blue-600 overflow-hidden shadow-2xl">
+        <motion.div 
+          className="relative rounded-2xl p-8 mb-10 bg-blue-600 overflow-hidden shadow-2xl"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
           <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full -mr-32 -mt-32"></div>
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-10 rounded-full -ml-24 -mb-24"></div>
           
@@ -37,12 +43,30 @@ const HRDashboard: React.FC = () => {
               Tổng quan và quản lý hệ thống nhân sự
             </p>
           </div>
-        </div>
+        </motion.div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12"
+          initial="hidden"
+          animate="visible"
+          variants={{
+            visible: {
+              transition: {
+                staggerChildren: 0.1
+              }
+            }
+          }}
+        >
           {/* Card 1: Tổng nhân viên */}
-          <div className="bg-white rounded-2xl shadow-xl border-2 border-gray-100 overflow-hidden hover:shadow-2xl hover:scale-105 transition-all duration-300 group">
+          <motion.div 
+            className="bg-white rounded-2xl shadow-xl border-2 border-gray-100 overflow-hidden hover:shadow-2xl transition-all duration-300 group"
+            variants={{
+              hidden: { opacity: 0, y: 20 },
+              visible: { opacity: 1, y: 0 }
+            }}
+            whileHover={{ y: -8, boxShadow: "0 25px 50px -12px rgba(59, 130, 246, 0.25)" }}
+          >
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="w-14 h-14 bg-linear-to-br from-blue-500 to-blue-700 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
@@ -68,10 +92,17 @@ const HRDashboard: React.FC = () => {
                 👥 Nhân viên đang làm việc
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Card 2: Hoạt động đang diễn ra */}
-          <div className="bg-white rounded-2xl shadow-xl border-2 border-gray-100 overflow-hidden hover:shadow-2xl hover:scale-105 transition-all duration-300 group">
+          <motion.div 
+            className="bg-white rounded-2xl shadow-xl border-2 border-gray-100 overflow-hidden hover:shadow-2xl transition-all duration-300 group"
+            variants={{
+              hidden: { opacity: 0, y: 20 },
+              visible: { opacity: 1, y: 0 }
+            }}
+            whileHover={{ y: -8, boxShadow: "0 25px 50px -12px rgba(34, 197, 94, 0.25)" }}
+          >
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="w-14 h-14 bg-linear-to-br from-green-500 to-green-700 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
@@ -97,10 +128,17 @@ const HRDashboard: React.FC = () => {
                 🎯 Hoạt động đang hoạt động
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Card 3: Yêu cầu chờ xử lý */}
-          <div className="bg-white rounded-2xl shadow-xl border-2 border-gray-100 overflow-hidden hover:shadow-2xl hover:scale-105 transition-all duration-300 group">
+          <motion.div 
+            className="bg-white rounded-2xl shadow-xl border-2 border-gray-100 overflow-hidden hover:shadow-2xl transition-all duration-300 group"
+            variants={{
+              hidden: { opacity: 0, y: 20 },
+              visible: { opacity: 1, y: 0 }
+            }}
+            whileHover={{ y: -8, boxShadow: "0 25px 50px -12px rgba(249, 115, 22, 0.25)" }}
+          >
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="w-14 h-14 bg-linear-to-br from-orange-500 to-orange-700 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
@@ -120,11 +158,16 @@ const HRDashboard: React.FC = () => {
                 ⏳ Yêu cầu cần duyệt
               </div>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
         {/* Quick Actions Section */}
-        <div className="bg-white rounded-2xl shadow-xl border-2 border-gray-100 p-8">
+        <motion.div 
+          className="bg-white rounded-2xl shadow-xl border-2 border-gray-100 p-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
               Thao tác nhanh
@@ -132,10 +175,28 @@ const HRDashboard: React.FC = () => {
             <p className="text-gray-600">Truy cập nhanh các chức năng quan trọng</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Link
+          <motion.div 
+            className="grid grid-cols-1 md:grid-cols-2 gap-6"
+            initial="hidden"
+            animate="visible"
+            variants={{
+              visible: {
+                transition: {
+                  staggerChildren: 0.1
+                }
+              }
+            }}
+          >
+            <motion.div
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: { opacity: 1, y: 0 }
+              }}
+              whileHover={{ y: -4, scale: 1.02 }}
+            >
+              <Link
               to="/hr/activities/create"
-              className="group relative bg-linear-to-r from-blue-600 to-blue-700 text-white p-6 rounded-2xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 overflow-hidden"
+              className="block group relative bg-linear-to-r from-blue-600 to-blue-700 text-white p-6 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden"
             >
               <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16"></div>
               <div className="relative z-10 flex items-center gap-4">
@@ -148,10 +209,18 @@ const HRDashboard: React.FC = () => {
                 </div>
               </div>
             </Link>
+            </motion.div>
 
-            <Link
+            <motion.div
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: { opacity: 1, y: 0 }
+              }}
+              whileHover={{ y: -4, scale: 1.02 }}
+            >
+              <Link
               to="/hr/rewards/hr-reward"
-              className="group relative bg-linear-to-r from-green-600 to-green-700 text-white p-6 rounded-2xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 overflow-hidden"
+              className="block group relative bg-linear-to-r from-green-600 to-green-700 text-white p-6 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden"
             >
               <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16"></div>
               <div className="relative z-10 flex items-center gap-4">
@@ -164,10 +233,18 @@ const HRDashboard: React.FC = () => {
                 </div>
               </div>
             </Link>
+            </motion.div>
 
-            <Link
-              to="/hr/activities/cancel"
-              className="group relative bg-linear-to-r from-orange-600 to-orange-700 text-white p-6 rounded-2xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 overflow-hidden"
+            <motion.div
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: { opacity: 1, y: 0 }
+              }}
+              whileHover={{ y: -4, scale: 1.02 }}
+            >
+              <Link
+                to="/hr/activities/cancel"
+              className="block group relative bg-linear-to-r from-orange-600 to-orange-700 text-white p-6 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden"
             >
               <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16"></div>
               <div className="relative z-10 flex items-center gap-4">
@@ -180,10 +257,18 @@ const HRDashboard: React.FC = () => {
                 </div>
               </div>
             </Link>
+            </motion.div>
 
-            <Link
-              to="/hr/requests"
-              className="group relative bg-linear-to-r from-purple-600 to-purple-700 text-white p-6 rounded-2xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 overflow-hidden"
+            <motion.div
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: { opacity: 1, y: 0 }
+              }}
+              whileHover={{ y: -4, scale: 1.02 }}
+            >
+              <Link
+                to="/hr/requests"
+              className="block group relative bg-linear-to-r from-purple-600 to-purple-700 text-white p-6 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden"
             >
               <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16"></div>
               <div className="relative z-10 flex items-center gap-4">
@@ -196,8 +281,9 @@ const HRDashboard: React.FC = () => {
                 </div>
               </div>
             </Link>
-          </div>
-        </div>
+            </motion.div>
+          </motion.div>
+        </motion.div>
       </div>
     </div>
   );

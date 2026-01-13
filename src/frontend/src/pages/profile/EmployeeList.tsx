@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Users, Search, Filter, Mail, Building2, Briefcase, Loader2, AlertCircle, Eye, Pencil } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Users, Search, Filter, Mail, Building2, Briefcase, Loader2, AlertCircle, Eye, Pencil, Sparkles } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { fetchEmployees, updateEmployeeInfo, deleteEmployee } from '../../store/employeeSlice';
 import EmployeeDetailModal from '../../components/profile/EmployeeDetailModal';
@@ -232,39 +233,65 @@ const EmployeeList = () => {
     };
 
     return (
-        <div className="h-full bg-gray-50 p-6">
-            <div className="max-w-6xl mx-auto rounded-2xl overflow-hidden shadow-xl">
+        <motion.div 
+            className="h-full bg-linear-to-br from-blue-50 via-purple-50 to-pink-50 p-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+        >
+            <div className="max-w-6xl mx-auto rounded-2xl overflow-hidden shadow-2xl">
                 {/* Header */}
-                <div className="bg-linear-to-r from-blue-600 to-blue-700 p-6 shadow-lg">
-                    <div className="flex items-center space-x-3">
-                        <Users className="w-8 h-8 text-white" />
+                <div className="bg-blue-600 p-6 shadow-lg relative overflow-hidden">
+                    <div className="absolute inset-0 bg-linear-to-br from-white/10 to-transparent"></div>
+                    <div className="flex items-center space-x-3 relative z-10">
+                        <motion.div
+                            className="w-12 h-12 flex items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm shadow-lg"
+                            whileHover={{ scale: 1.1, rotate: 5 }}
+                            transition={{ type: "spring", stiffness: 400 }}
+                        >
+                            <Sparkles className="w-6 h-6 text-white" />
+                        </motion.div>
                         <div className="text-2xl font-bold text-white">Quản lý Hồ sơ Nhân viên</div>
                     </div>
                 </div>
 
                 {/* Search and Filter */}
-                <div className="bg-white p-6 shadow-md">
+                <motion.div 
+                    className="bg-white/80 backdrop-blur-sm p-6 shadow-md"
+                    initial={{ y: -20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.1 }}
+                >
                     {/* Search Bar */}
-                    <div className="mb-4">
+                    <motion.div 
+                        className="mb-4"
+                        initial={{ x: -20, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        transition={{ delay: 0.2 }}
+                    >
                         <div className="relative">
                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <Search className="h-5 w-5 text-gray-400" />
+                                <Search className="h-5 w-5 text-blue-500" />
                             </div>
                             <input
                                 type="text"
                                 placeholder="Tìm kiếm theo tên, mã nhân viên..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                                className="pl-10 w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-all bg-white shadow-sm"
                             />
                         </div>
-                    </div>
+                    </motion.div>
 
                     {/* Filters */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {/* Department Filter */}
-                        <div>
-                            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                        <motion.div
+                            initial={{ y: 20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ delay: 0.25 }}
+                        >
+                            <label className="flex items-center gap-2 text-sm font-medium text-blue-700 mb-2">
                                 <Building2 className="w-4 h-4" />
                                 Phòng ban
                             </label>
@@ -273,13 +300,17 @@ const EmployeeList = () => {
                                 placeholder="Nhập tên phòng ban..."
                                 value={selectedDepartment}
                                 onChange={(e) => setSelectedDepartment(e.target.value)}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                                className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-all bg-white shadow-sm"
                             />
-                        </div>
+                        </motion.div>
 
                         {/* Position/Role Filter */}
-                        <div>
-                            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                        <motion.div
+                            initial={{ y: 20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ delay: 0.3 }}
+                        >
+                            <label className="flex items-center gap-2 text-sm font-medium text-blue-700 mb-2">
                                 <Briefcase className="w-4 h-4" />
                                 Chức vụ
                             </label>
@@ -288,22 +319,26 @@ const EmployeeList = () => {
                                 placeholder="Nhập tên chức vụ..."
                                 value={selectedRole}
                                 onChange={(e) => setSelectedRole(e.target.value)}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                                className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-all bg-white shadow-sm"
                             />
-                        </div>
+                        </motion.div>
 
                         {/* Status Filter */}
-                        <div>
-                            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                        <motion.div
+                            initial={{ y: 20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ delay: 0.35 }}
+                        >
+                            <label className="flex items-center gap-2 text-sm font-medium text-blue-700 mb-2">
                                 <Filter className="w-4 h-4" />
                                 Trạng thái
                             </label>
                             <select
                                 value={selectedStatus}
                                 onChange={(e) => setSelectedStatus(e.target.value)}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:outline-none appearance-none bg-white cursor-pointer"
+                                className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none appearance-none bg-white cursor-pointer shadow-sm transition-all"
                                 style={{
-                                    backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+                                    backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%232563eb' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
                                     backgroundPosition: 'right 0.5rem center',
                                     backgroundRepeat: 'no-repeat',
                                     backgroundSize: '1.5em 1.5em',
@@ -315,41 +350,42 @@ const EmployeeList = () => {
                                 <option value="inactive">Tạm nghỉ</option>
                                 <option value="terminated">Đã nghỉ việc</option>
                             </select>
-                        </div>
+                        </motion.div>
                     </div>
 
                     {/* Bulk Delete Button */}
-                    <div 
-                        className={`mt-4 transition-all duration-300 ease-in-out overflow-hidden ${
-                            selectedEmployeeIds.size > 0 
-                                ? 'opacity-100 max-h-20 translate-y-0' 
-                                : 'opacity-0 max-h-0 -translate-y-2 pointer-events-none'
-                        }`}
-                    >
-                        <button
-                            onClick={handleBulkDelete}
-                            className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg transition-all duration-300 ease-in-out"
-                            onMouseEnter={(e) => {
-                                if (selectedEmployeeIds.size > 0) {
-                                    e.currentTarget.style.transform = 'translateY(-2px)';
-                                    e.currentTarget.style.boxShadow = '0 5px 20px rgba(220, 38, 38, 0.4)';
-                                }
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.transform = 'translateY(0)';
-                                e.currentTarget.style.boxShadow = 'none';
-                            }}
-                        >
-                            Xóa
-                        </button>
-                    </div>
-                </div>
+                    <AnimatePresence>
+                        {selectedEmployeeIds.size > 0 && (
+                            <motion.div 
+                                className="mt-4"
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                transition={{ duration: 0.2 }}
+                            >
+                                <motion.button
+                                    onClick={handleBulkDelete}
+                                    className="bg-linear-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white px-6 py-2.5 rounded-xl font-medium shadow-lg"
+                                    whileHover={{ scale: 1.05, y: -2 }}
+                                    whileTap={{ scale: 0.95 }}
+                                >
+                                    Xóa ({selectedEmployeeIds.size})
+                                </motion.button>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </motion.div>
 
                 {/* Employee Table */}
-                <div className="bg-white shadow-md">
+                <motion.div 
+                    className="bg-white/80 backdrop-blur-sm shadow-md"
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.4 }}
+                >
                     <div className="overflow-x-auto">
-                        <table className="min-w-full divide-y divide-gray-200">
-                            <thead className="bg-gray-50">
+                        <table className="min-w-full divide-y divide-blue-200">
+                            <thead className="bg-blue-50">
                                 <tr>
                                     <th scope="col" className="px-6 py-3 text-center">
                                         <input
@@ -359,19 +395,19 @@ const EmployeeList = () => {
                                             className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                                         />
                                     </th>
-                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">
                                         NHÂN VIÊN
                                     </th>
-                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">
                                         PHÒNG BAN
                                     </th>
-                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">
                                         CHỨC VỤ
                                     </th>
-                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">
                                         TRẠNG THÁI
                                     </th>
-                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">
                                         THAO TÁC
                                     </th>
                                 </tr>
@@ -403,8 +439,14 @@ const EmployeeList = () => {
                                         </td>
                                     </tr>
                                 ) : (
-                                    currentEmployees.map((employee) => (
-                                        <tr key={employee.id} className="hover:bg-gray-50">
+                                    currentEmployees.map((employee, index) => (
+                                        <motion.tr 
+                                            key={employee.id} 
+                                            className="hover:bg-blue-50/50 transition-colors"
+                                            initial={{ opacity: 0, x: -20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{ delay: index * 0.05 }}
+                                        >
                                             <td className="px-6 py-4 text-center">
                                                 <input
                                                     type="checkbox"
@@ -442,45 +484,27 @@ const EmployeeList = () => {
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-left text-sm font-medium">
                                                 <div className="flex gap-2">
-                                                    <button
+                                                    <motion.button
                                                         onClick={() => handleViewDetail(employee.id)}
-                                                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-all flex items-center gap-2"
-                                                        style={{
-                                                            transition: 'all 0.3s ease'
-                                                        }}
-                                                        onMouseEnter={(e) => {
-                                                            e.currentTarget.style.transform = 'translateY(-2px)';
-                                                            e.currentTarget.style.boxShadow = '0 5px 20px rgba(102, 126, 234, 0.4)';
-                                                        }}
-                                                        onMouseLeave={(e) => {
-                                                            e.currentTarget.style.transform = 'translateY(0)';
-                                                            e.currentTarget.style.boxShadow = 'none';
-                                                        }}
+                                                        className="bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-4 py-2 rounded-xl transition-all flex items-center gap-2 shadow-md"
+                                                        whileHover={{ scale: 1.05, y: -2 }}
+                                                        whileTap={{ scale: 0.95 }}
                                                     >
                                                         <Eye className="w-4 h-4" />
                                                         Chi tiết
-                                                    </button>
-                                                    <button
+                                                    </motion.button>
+                                                    <motion.button
                                                         onClick={() => handleUpdate(employee.id)}
-                                                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-all flex items-center gap-2"
-                                                        style={{
-                                                            transition: 'all 0.3s ease'
-                                                        }}
-                                                        onMouseEnter={(e) => {
-                                                            e.currentTarget.style.transform = 'translateY(-2px)';
-                                                            e.currentTarget.style.boxShadow = '0 5px 20px rgba(34, 197, 94, 0.4)';
-                                                        }}
-                                                        onMouseLeave={(e) => {
-                                                            e.currentTarget.style.transform = 'translateY(0)';
-                                                            e.currentTarget.style.boxShadow = 'none';
-                                                        }}
+                                                        className="bg-linear-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 rounded-xl transition-all flex items-center gap-2 shadow-md"
+                                                        whileHover={{ scale: 1.05, y: -2 }}
+                                                        whileTap={{ scale: 0.95 }}
                                                     >
                                                         <Pencil className="w-4 h-4" />
                                                         Sửa
-                                                    </button>
+                                                    </motion.button>
                                                 </div>
                                             </td>
-                                        </tr>
+                                        </motion.tr>
                                     ))
                                 )}
                             </tbody>
@@ -488,46 +512,57 @@ const EmployeeList = () => {
                     </div>
 
                     {/* Pagination */}
-                    <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+                    <motion.div 
+                        className="bg-white/80 backdrop-blur-sm px-4 py-3 flex items-center justify-between border-t-2 border-blue-200 sm:px-6"
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.5 }}
+                    >
                         <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                             <div>
-                                <p className="text-sm text-gray-700">
-                                    Hiển thị <span className="font-medium">{startIndex + 1}</span> - <span className="font-medium">{endIndex}</span> trong tổng số <span className="font-medium">{filteredEmployees.length}</span> nhân viên
+                                <p className="text-sm text-blue-700 font-medium">
+                                    Hiển thị <span className="font-bold">{startIndex + 1}</span> - <span className="font-bold">{endIndex}</span> trong tổng số <span className="font-bold">{filteredEmployees.length}</span> nhân viên
                                 </p>
                             </div>
                             <div>
                                 <nav className="relative z-0 inline-flex gap-1.5" aria-label="Pagination">
-                                    <button
+                                    <motion.button
                                         onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                                         disabled={currentPage === 1}
-                                        className="relative inline-flex items-center px-3 py-1.5 rounded border border-gray-400 bg-white text-xs font-medium text-black hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed justify-center"
+                                        className="relative inline-flex items-center px-3 py-1.5 rounded-lg border-2 border-blue-300 bg-white text-xs font-medium text-blue-700 hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed justify-center shadow-sm"
+                                        whileHover={{ scale: currentPage === 1 ? 1 : 1.05 }}
+                                        whileTap={{ scale: currentPage === 1 ? 1 : 0.95 }}
                                     >
                                         ‹
-                                    </button>
+                                    </motion.button>
                                     {Array.from({ length: totalFilteredPages }, (_, i) => i + 1).map((page) => (
-                                        <button
+                                        <motion.button
                                             key={page}
                                             onClick={() => setCurrentPage(page)}
-                                            className={`relative inline-flex items-center px-3 py-1.5 rounded border text-xs font-medium justify-center ${currentPage === page
+                                            className={`relative inline-flex items-center px-3 py-1.5 rounded-lg border-2 text-xs font-medium justify-center shadow-sm ${currentPage === page
                                                 ? 'bg-blue-600 border-blue-600 text-white'
-                                                : 'bg-white border-gray-400 text-black hover:bg-gray-50'
+                                                : 'bg-white border-blue-300 text-blue-700 hover:bg-blue-50'
                                                 }`}
+                                            whileHover={{ scale: 1.05 }}
+                                            whileTap={{ scale: 0.95 }}
                                         >
                                             {page}
-                                        </button>
+                                        </motion.button>
                                     ))}
-                                    <button
+                                    <motion.button
                                         onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalFilteredPages))}
                                         disabled={currentPage === totalFilteredPages}
-                                        className="relative inline-flex items-center px-3 py-1.5 rounded border border-gray-400 bg-white text-xs font-bold text-black hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed justify-center"
+                                        className="relative inline-flex items-center px-3 py-1.5 rounded-lg border-2 border-blue-300 bg-white text-xs font-bold text-blue-700 hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed justify-center shadow-sm"
+                                        whileHover={{ scale: currentPage === totalFilteredPages ? 1 : 1.05 }}
+                                        whileTap={{ scale: currentPage === totalFilteredPages ? 1 : 0.95 }}
                                     >
                                         ›
-                                    </button>
+                                    </motion.button>
                                 </nav>
                             </div>
                         </div>
-                    </div>
-                </div>
+                    </motion.div>
+                </motion.div>
             </div>
 
             {/* Employee Detail Modal */}
@@ -554,7 +589,7 @@ const EmployeeList = () => {
                 onCancel={handleCancelDelete}
             />
 
-        </div>
+        </motion.div>
     );
 };
 
