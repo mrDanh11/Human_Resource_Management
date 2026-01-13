@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { Search, Award, Upload } from "lucide-react";
 import Header from "../../components/common/Header";
-import Sidebar from "../../components/common/Sidebar";
+import Sidebar from "../../components/common/BaseSidebar";
 import Footer from "../../components/common/Footer";
 import ResultFilterChips from "../../components/activities/ResultFilterChips";
 import ProgressBar from "../../components/activities/ProgressBar";

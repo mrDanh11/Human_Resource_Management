@@ -133,10 +133,10 @@ const AttendancePage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 px-6 py-8">
+    <div className="min-h-screen bg-linear-to-br from-blue-50 via-indigo-50 to-purple-50 px-6 py-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl shadow-lg p-8 text-white">
+        <div className="mb-8 bg-linear-to-r from-blue-600 to-indigo-600 rounded-2xl shadow-lg p-8 text-white">
           <div className="flex items-center gap-4 mb-3">
             <div className="bg-white/20 backdrop-blur-sm p-3 rounded-xl">
               <Calendar className="w-8 h-8" />
@@ -158,7 +158,7 @@ const AttendancePage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {/* Tháng/Năm */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+              <label className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
                 <Calendar className="w-4 h-4 text-blue-600" />
                 Tháng/Năm
               </label>
@@ -177,7 +177,7 @@ const AttendancePage: React.FC = () => {
 
             {/* Ca làm việc */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+              <label className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
                 <Clock className="w-4 h-4 text-indigo-600" />
                 Ca làm việc
               </label>
@@ -196,7 +196,7 @@ const AttendancePage: React.FC = () => {
 
             {/* Tìm kiếm */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+              <label className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
                 <Search className="w-4 h-4 text-purple-600" />
                 Tìm kiếm
               </label>
@@ -213,7 +213,7 @@ const AttendancePage: React.FC = () => {
             <div className="flex items-end">
               <button 
                 onClick={() => setIsModalOpen(true)}
-                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-2.5 rounded-lg transition-all font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center gap-2"
+                className="w-full bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-2.5 rounded-lg transition-all font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center gap-2"
               >
                 <Send className="w-4 h-4" />
                 Gửi yêu cầu cập nhật
@@ -224,9 +224,9 @@ const AttendancePage: React.FC = () => {
 
         {/* Attendance Table */}
         <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg overflow-hidden mb-6 border border-white/20">
-          <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+          <div className="p-6 border-b border-gray-200 bg-linear-to-r from-blue-50 to-indigo-50">
             <h2 className="text-xl font-bold text-gray-800 flex items-center gap-3">
-              <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-2 rounded-lg">
+              <div className="bg-linear-to-r from-blue-600 to-indigo-600 p-2 rounded-lg">
                 <Calendar className="w-5 h-5 text-white" />
               </div>
               Chi tiết chấm công tháng {selectedMonth}
@@ -251,7 +251,7 @@ const AttendancePage: React.FC = () => {
           ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gradient-to-r from-blue-100 to-indigo-100 border-b-2 border-blue-200">
+              <thead className="bg-linear-to-r from-blue-100 to-indigo-100 border-b-2 border-blue-200">
                 <tr>
                   <th className="px-6 py-4 text-left text-sm font-bold text-blue-700">
                     Ngày
@@ -316,7 +316,7 @@ const AttendancePage: React.FC = () => {
               <button
                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className="px-3 py-2 border-2 border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-blue-50 hover:border-blue-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center"
+                className="w-10 h-10 border-2 border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-blue-50 hover:border-blue-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
@@ -326,9 +326,9 @@ const AttendancePage: React.FC = () => {
                   <button
                     key={page}
                     onClick={() => setCurrentPage(page)}
-                    className={`px-3 py-2 rounded-lg text-sm font-semibold transition-all border-2 ${
+                    className={`w-10 h-10 rounded-lg text-sm font-semibold transition-all border-2 flex items-center justify-center ${
                       currentPage === page
-                        ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-blue-600 shadow-lg'
+                        ? 'bg-linear-to-r from-blue-600 to-indigo-600 text-white border-blue-600 shadow-lg'
                         : 'text-gray-700 hover:bg-blue-50 border-gray-200 hover:border-blue-400'
                     }`}
                   >
@@ -340,7 +340,7 @@ const AttendancePage: React.FC = () => {
               <button
                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                 disabled={currentPage === totalPages}
-                className="px-3 py-2 border-2 border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-blue-50 hover:border-blue-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center"
+                className="w-10 h-10 border-2 border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-blue-50 hover:border-blue-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
@@ -356,14 +356,14 @@ const AttendancePage: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 mb-2 font-medium">Tổng công trong tháng</p>
-                <p className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-1">
+                <p className="text-3xl font-bold bg-linear-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-1">
                   {currentAttendance.summary.totalWorkDays}
                 </p>
                 <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">
                   ngày
                 </span>
               </div>
-              <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+              <div className="w-14 h-14 bg-linear-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
                 <Calendar className="w-7 h-7 text-white" />
               </div>
             </div>
@@ -374,14 +374,14 @@ const AttendancePage: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 mb-2 font-medium">Đi trễ / Về sớm</p>
-                <p className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent mb-1">
+                <p className="text-3xl font-bold bg-linear-to-r from-orange-600 to-red-600 bg-clip-text text-transparent mb-1">
                   {currentAttendance.summary.lateOrEarlyCount}
                 </p>
                 <span className="inline-block px-2 py-1 bg-orange-100 text-orange-700 text-xs font-semibold rounded-full">
                   lần
                 </span>
               </div>
-              <div className="w-14 h-14 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg">
+              <div className="w-14 h-14 bg-linear-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg">
                 <AlertCircle className="w-7 h-7 text-white" />
               </div>
             </div>
@@ -392,14 +392,14 @@ const AttendancePage: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 mb-2 font-medium">Giờ làm thêm</p>
-                <p className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-1">
+                <p className="text-3xl font-bold bg-linear-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-1">
                   {currentAttendance.summary.overtimeHours}
                 </p>
                 <span className="inline-block px-2 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
                   giờ
                 </span>
               </div>
-              <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
+              <div className="w-14 h-14 bg-linear-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
                 <Zap className="w-7 h-7 text-white" />
               </div>
             </div>
@@ -410,14 +410,14 @@ const AttendancePage: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 mb-2 font-medium">Nghỉ / Thiếu công</p>
-                <p className="text-3xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent mb-1">
+                <p className="text-3xl font-bold bg-linear-to-r from-red-600 to-pink-600 bg-clip-text text-transparent mb-1">
                   {currentAttendance.summary.absenceOrLeaveCount}
                 </p>
                 <span className="inline-block px-2 py-1 bg-red-100 text-red-700 text-xs font-semibold rounded-full">
                   ngày
                 </span>
               </div>
-              <div className="w-14 h-14 bg-gradient-to-br from-red-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg">
+              <div className="w-14 h-14 bg-linear-to-br from-red-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg">
                 <XCircle className="w-7 h-7 text-white" />
               </div>
             </div>

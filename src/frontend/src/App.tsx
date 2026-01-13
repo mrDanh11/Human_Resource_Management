@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import EmployeeList from "./pages/profile/EmployeeList";
 import CreateEmployee from "./pages/profile/CreateEmployee";
 import ProfilePage from "./pages/profile/ProfilePage";
-import LandingPage from "./pages/LandingPage/LandingPage";
+import LandingPage from "./pages/landingPage/LandingPage";
 import PointExchange from "./pages/rewards/PointExchange";
 import RewardDashboard from "./pages/rewards/RewardDashboard";
 import RewardPointHR from "./pages/rewards/RewardPointHR";
@@ -10,7 +10,6 @@ import PointsAdmin from "./pages/rewards/PointAdmin";
 import RewardHistory from "./pages/rewards/RewardHistory";
 import Login from "./pages/auth/Login";
 import Forbidden from "./pages/auth/Forbidden";
-import AdminLayout from "./layouts/AdminLayout";
 import AdminDashboard from "./pages/dashboard/AdminDashboard";
 import ActivityListPage from "./pages/activities/ActivityListPage";
 import AdminActivityListPage from "./pages/activities/AnalysisActivityListPage";
@@ -20,8 +19,7 @@ import ActivityResultPage from "./pages/activities/ActivityResultPage";
 import HistoryActivitiesPage from "./pages/activities/HistoryActivitiesPage";
 import ActivityPrivateResultPage from "./pages/activities/ActivityPrivateResultPage";
 import RecordActivityResultPage from "./pages/activities/RecordActivityResultPage";
-import EmployeeLayout from "./layouts/EmployeeLayout";
-import HRLayout from "./layouts/HRLayout";
+import Layout from "./layouts/Layout";
 import ProtectedRoute from "./components/helper/ProtectedRoute";
 import AttendancePage from "./pages/attendance/AttendancePage";
 import AttendanceManagementPage from "./pages/attendance/AttendanceManagementPage";
@@ -34,6 +32,7 @@ import LeaveRequestPage from './pages/requests/OnLeaveRequestList';
 import ManagerLayout from './layouts/ManagerLayout';
 import CreateOnLeaveRequest from './pages/requests/CreateOnLeaveRequest';
 import HRDashboard from "./pages/dashboard/HRDashboard";
+import ActivityListPageManage from "./pages/activities/ActivityListPageManage";
 
 const App = () => {
   return (
@@ -50,7 +49,7 @@ const App = () => {
           <Route path="/activities/results" element={<ActivityResultPage />} />
           
           {/* Employee Layout Routes */}
-          <Route element={<EmployeeLayout />}>
+          <Route element={<Layout />}>
             <Route path="/employee/profile/:id" element={<ProfilePage />} />
             <Route path="/rewards/hr-reward" element={<RewardPointHR />} />
             <Route path="rewards">
@@ -112,7 +111,7 @@ const App = () => {
 
           {/* HR Routes */}
           <Route element={<ProtectedRoute allowedRoles={["HR"]} />}>
-            <Route path="/hr" element={<HRLayout />}>
+            <Route path="/hr" element={<Layout />}>
               <Route path="dashboard" element={<HRDashboard />} />
               <Route path="employee/profile/:id" element={<ProfilePage />} />
               <Route path="requests" element={<AttendancePage />} />
@@ -122,6 +121,7 @@ const App = () => {
                 <Route path="cancel" element={<CancelActivityPage />} />
                 <Route path="history" element={<HistoryActivitiesPage />} />
                 <Route path="result" element={<ActivityPrivateResultPage />} />
+                <Route path="manage" element={<ActivityListPageManage />} />
               </Route>
               <Route path="employee">
                 <Route path="list" element={<EmployeeList />} />
@@ -138,7 +138,8 @@ const App = () => {
 
           {/* Admin Routes */}
           <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
-            <Route path="admin" element={<AdminLayout />}>
+            <Route path="admin" element={<Layout />}>
+              <Route path="employee/profile/:id" element={<ProfilePage />} />
               <Route path="dashboard" element={<AdminDashboard />} />
               <Route path="point" element={<PointsAdmin />} />
               <Route path="rewards" element={<PointsAdmin />} />

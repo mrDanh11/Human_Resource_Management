@@ -1,26 +1,37 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { User } from "lucide-react";
-import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { fetchEmployeeDetail } from "../../store/employeeSlice";
+import { employeeService } from "../../services/employeeService";
 
 interface UserInfoProps {
   collapsed?: boolean;
 }
 
 const UserInfo: React.FC<UserInfoProps> = ({ collapsed = false }) => {
-  const dispatch = useAppDispatch();
+  const [currentUserName, setCurrentUserName] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
   const userId = localStorage.getItem('userId');
   const userRole = localStorage.getItem('role');
-  
-  const { selectedEmployee, detailLoading } = useAppSelector((state) => state.employee);
 
   useEffect(() => {
-    if (userId) {
-      dispatch(fetchEmployeeDetail(Number(userId)));
-    }
-  }, [dispatch, userId]);
+    const fetchCurrentUser = async () => {
+      if (userId) {
+        setLoading(true);
+        try {
+          const userDetail = await employeeService.getEmployeeDetail(Number(userId));
+          setCurrentUserName(userDetail.fullname);
+        } catch (error) {
+          console.error('Failed to fetch current user info:', error);
+          setCurrentUserName(localStorage.getItem('name') || 'Người dùng');
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
 
-  const displayName = selectedEmployee?.fullname || localStorage.getItem('name') || 'Người dùng';
+    fetchCurrentUser();
+  }, [userId]);
+
+  const displayName = currentUserName || localStorage.getItem('name') || 'Người dùng';
 
   return (
     <div className={`border-t border-gray-200 ${collapsed ? 'px-3 py-3' : 'px-6 py-4'} bg-white sticky bottom-0`}>
@@ -32,7 +43,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ collapsed = false }) => {
         {!collapsed && (
           <div className="flex-1">
             <div className="font-semibold text-sm">
-              {detailLoading ? 'Đang tải...' : displayName}
+              {loading ? 'Đang tải...' : displayName}
             </div>
             <div className="text-xs text-gray-500 capitalize">{userRole}</div>
           </div>
