@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import EmployeeList from "./pages/profile/EmployeeList";
 import CreateEmployee from "./pages/profile/CreateEmployee";
 import ProfilePage from "./pages/profile/ProfilePage";
-import LandingPage from "./pages/landingPage/LandingPage";
+import LandingPage from "./pages/LandingPage/LandingPage";
 import PointExchange from "./pages/rewards/PointExchange";
 import RewardDashboard from "./pages/rewards/RewardDashboard";
 import RewardPointHR from "./pages/rewards/RewardPointHR";
