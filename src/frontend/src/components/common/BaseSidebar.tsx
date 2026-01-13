@@ -112,11 +112,11 @@ const BaseSidebar: React.FC = () => {
         icon: Activity,
         key: "activities",
         submenu: [
-          { label: "Quản lý điểm danh", to: "/admin/activities/attendance", icon: UserCheck },
           { label: "Danh sách hoạt động", to: "/admin/activities", icon: ClipboardList },
           { label: "Thống kê hoạt động", to: "/admin/activities/statistics", icon: BarChart },
           { label: "Thêm hoạt động", to: "/admin/activities/create", icon: Plus },
           { label: "Hủy hoạt động", to: "/admin/activities/cancel", icon: XCircle },
+           { label: "Quản lý điểm danh", to: "/admin/activities/attendance", icon: UserCheck },
           { label: "Ghi nhận kết quả", to: "/admin/activities/record-result", icon: CheckCircle },
         ]
       });
