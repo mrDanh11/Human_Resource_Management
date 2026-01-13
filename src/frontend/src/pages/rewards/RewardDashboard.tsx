@@ -6,11 +6,9 @@ import type {
   PointConversionRuleDto 
 } from '../../services/pointService';
 import { Loader2, AlertCircle, Target, Gift, TrendingUp, Sparkles, Award, ArrowRight, CheckCircle2 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 const RewardDashboard: React.FC = () => {
-  const [rewardTab, setRewardTab] = useState<'available' | 'history'>('available');
-  
   // States cho dữ liệu
   const [employeePoint, setEmployeePoint] = useState<EmployeePointDto | null>(null);
   const [transactions, setTransactions] = useState<PointTransactionDto[]>([]);
@@ -352,138 +350,78 @@ const RewardDashboard: React.FC = () => {
           </motion.div>
         )}
 
-        {/* Main Content Tabs */}
-        <div className="bg-white rounded-xl shadow-xs border border-gray-200 min-h-100">
-          <div className="flex border-b border-gray-200">
-            <button
-              onClick={() => setRewardTab('available')}
-              className={`flex-1 py-4 text-sm font-medium text-center transition-colors border-b-2 ${
-                rewardTab === 'available'
-                  ? 'border-blue-600 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              Các gói quy đổi
-            </button>
-            <button
-              onClick={() => setRewardTab('history')}
-              className={`flex-1 py-4 text-sm font-medium text-center transition-colors border-b-2 ${
-                rewardTab === 'history'
-                  ? 'border-blue-600 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              Lịch sử giao dịch
-            </button>
-          </div>
-
-          <div className="p-6">
-            {rewardTab === 'available' ? (
-              <div className="space-y-4">
-                <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 mb-6">
-                  <h4 className="font-semibold text-blue-800 mb-2">Bảng tỷ giá quy đổi hiện tại:</h4>
-                  {conversionRules.length === 0 ? (
-                    <p className="text-gray-600 italic">Chưa có quy tắc quy đổi nào.</p>
-                  ) : (
-                    <ul className="space-y-2">
-                      {conversionRules.map((rule, index) => (
-                        <motion.li 
-                          key={rule.id} 
-                          className="flex items-center justify-between bg-white p-4 rounded-xl border border-blue-200 hover:border-blue-400 transition-all duration-300 hover:shadow-md group"
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: index * 0.1 }}
-                          whileHover={{ x: 4 }}
-                        >
-                          <span className="font-semibold text-gray-700 flex items-center gap-2">
-                            <motion.div 
-                              className="w-2.5 h-2.5 rounded-full bg-linear-to-r from-blue-500 to-purple-500"
-                              animate={{ scale: [1, 1.2, 1] }}
-                              transition={{ duration: 2, repeat: Infinity, delay: index * 0.2 }}
-                            />
-                            Mốc {rule.pointValue} điểm
-                          </span>
-                          <span className="font-bold bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-1">
-                            = {rule.moneyValue.toLocaleString('vi-VN')} VNĐ
-                            {currentPoints >= rule.pointValue && (
-                              <CheckCircle2 className="w-4 h-4 text-green-500" />
-                            )}
-                          </span>
-                        </motion.li>
-                      ))}
-                    </ul>
-                  )}
-                  <p className="text-xs text-gray-500 mt-3 pt-3 border-t border-blue-100">
-                    * Lưu ý: Khi đổi điểm, hệ thống sẽ tự động chọn gói có lợi nhất cho bạn (ưu tiên mốc cao).
-                  </p>
+        {/* Conversion Rules */}
+        <motion.div 
+          className="space-y-4"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+        >
+          <div className="bg-linear-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 relative overflow-hidden group">
+            {/* linear overlay */}
+            <div className="absolute inset-0 bg-linear-to-br from-blue-100/50 via-purple-50/30 to-pink-50/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            
+            <div className="relative z-10">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="p-2 bg-blue-500 rounded-lg">
+                  <Target className="w-5 h-5 text-white" />
                 </div>
+                <h4 className="text-lg font-bold bg-linear-to-r from-blue-800 to-purple-800 bg-clip-text text-transparent">
+                  Bảng tỷ giá quy đổi hiện tại
+                </h4>
               </div>
-            ) : (
-              <div className="space-y-4">
-                {transactions.length === 0 ? (
-                  <motion.div 
-                    className="text-center py-12 text-gray-500"
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                  >
-                    <div className="flex flex-col items-center gap-3">
-                      <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
-                        <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                      </div>
-                      <p className="font-medium">Chưa có giao dịch nào phát sinh</p>
-                    </div>
-                  </motion.div>
-                ) : (
-                  <AnimatePresence>
-                    {transactions.map((transaction, index) => (
-                      <motion.div
-                        key={transaction.id}
-                        className="flex items-center justify-between p-4 border border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-md transition-all duration-300 bg-white/50 backdrop-blur-sm group"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
-                        transition={{ delay: index * 0.05 }}
-                        whileHover={{ x: 4 }}
-                      >
-                        <div className="flex items-center gap-4">
-                          <motion.div 
-                            className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold text-lg shadow-md ${
-                              transaction.type === 'earn' 
-                                ? 'bg-linear-to-br from-green-500 to-emerald-600 text-white' 
-                                : 'bg-linear-to-br from-orange-500 to-amber-600 text-white'
-                            }`}
-                            whileHover={{ scale: 1.1, rotate: 5 }}
+              
+              {conversionRules.length === 0 ? (
+                <p className="text-gray-600 italic">Chưa có quy tắc quy đổi nào.</p>
+              ) : (
+                <ul className="space-y-3">
+                  {conversionRules.map((rule, index) => (
+                    <motion.li 
+                      key={rule.id} 
+                      className="flex items-center justify-between bg-white/90 backdrop-blur-sm p-4 rounded-xl border-2 border-blue-200 hover:border-blue-400 transition-all duration-300 hover:shadow-lg group/item"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.6 + index * 0.1 }}
+                      whileHover={{ x: 8, scale: 1.02 }}
+                    >
+                      <span className="font-semibold text-gray-700 flex items-center gap-3">
+                        <motion.div 
+                          className="w-3 h-3 rounded-full bg-linear-to-r from-blue-500 to-purple-500 shadow-md"
+                          animate={{ scale: [1, 1.3, 1] }}
+                          transition={{ duration: 2, repeat: Infinity, delay: index * 0.2 }}
+                        />
+                        <span className="group-hover/item:text-blue-700 transition-colors">
+                          Mốc {rule.pointValue} điểm
+                        </span>
+                      </span>
+                      <span className="font-bold bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-2 text-lg">
+                        = {rule.moneyValue.toLocaleString('vi-VN')} VNĐ
+                        {currentPoints >= rule.pointValue && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ type: "spring", stiffness: 500 }}
                           >
-                            {transaction.type === 'earn' ? '+' : '-'}
+                            <CheckCircle2 className="w-5 h-5 text-green-500 drop-shadow-md" />
                           </motion.div>
-                          <div>
-                            <p className="font-semibold text-gray-900">{transaction.description || transaction.typeDisplay}</p>
-                            <p className="text-xs text-gray-500 flex items-center gap-1">
-                              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" /></svg>
-                              {new Date(transaction.createdAt).toLocaleString('vi-VN')}
-                            </p>
-                          </div>
-                        </div>
-                        <motion.span 
-                          className={`font-bold text-lg ${
-                            transaction.type === 'earn' ? 'text-green-600' : 'text-orange-600'
-                          }`}
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          transition={{ type: "spring", delay: index * 0.05 + 0.2 }}
-                        >
-                          {transaction.type === 'earn' ? '+' : '-'}{transaction.value}
-                        </motion.span>
-                      </motion.div>
-                    ))}
-                  </AnimatePresence>
-                )}
+                        )}
+                      </span>
+                    </motion.li>
+                  ))}
+                </ul>
+              )}
+              
+              <div className="mt-4 pt-4 border-t-2 border-blue-200/50">
+                <p className="text-xs text-gray-600 flex items-start gap-2">
+                  <span className="text-blue-600 font-bold text-sm">💡</span>
+                  <span>
+                    <span className="font-semibold text-blue-700">Lưu ý:</span> Khi đổi điểm, hệ thống sẽ tự động chọn gói có lợi nhất cho bạn (ưu tiên mốc cao).
+                  </span>
+                </p>
               </div>
-            )}
+            </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );
