@@ -109,6 +109,12 @@ export interface UpsertPointConversionRuleDto {
   moneyValue: number;
   isActive: boolean;
 }
+export interface UpdatePointDto {
+  value: number;
+  type: string;
+  description?: string;
+  actorId?: number;
+}
 // ============================================
 // SERVICE FUNCTIONS
 // ============================================
@@ -128,6 +134,24 @@ export const pointService = {
     }
 
     throw new Error(response.data.message || 'Lỗi khi lấy thông tin điểm');
+  },
+
+  /**
+   * Cập nhật điểm của nhân viên
+   * PUT /api/Point/employee/{employeeId}
+   */
+  updatePoint: async (
+    employeeId: number,
+    updateData: UpdatePointDto
+  ): Promise<UpdatePointDto> => {
+    const response = await apiDotNet.put<ApiResponse<UpdatePointDto>>(
+      `/Point/employee/${employeeId}`,
+      updateData
+    );
+      if (response.data.success) {
+      return response.data.data;
+    }
+    throw new Error(response.data.message || 'Lỗi khi cập nhật điểm');
   },
 
   /**
@@ -393,5 +417,22 @@ export const pointService = {
       return true;
     }
     throw new Error(response.data.message || "Lỗi khi xử lý yêu cầu");
+  },
+
+  updatePoint: async (
+    employeeId: number,
+    updateData: UpdatePointDto
+  ): Promise<UpdatePointDto> => {
+    const response = await apiDotNet.put<ApiResponse<UpdatePointDto>>(
+      `/Point/employee/${employeeId}`,
+      updateData
+    );
+
+    console.log("updatePoint:", updateData);
+
+    if (response.data.success) {
+      return response.data.data;
+    }
+    throw new Error(response.data.message || 'Lỗi khi cập nhật điểm');
   },
 };

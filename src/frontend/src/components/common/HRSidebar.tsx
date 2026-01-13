@@ -3,6 +3,8 @@ import { Home, User, FileText, Activity, Award, ChevronDown } from "lucide-react
 import { useLocation, useNavigate } from "react-router-dom";
 
 const userId = localStorage.getItem('userId');
+const userName = localStorage.getItem('name') || 'Nguyễn Văn A';
+const userRole = localStorage.getItem('role');
 
 const HRSidebar: React.FC = () => {
   const location = useLocation();
@@ -40,16 +42,28 @@ const HRSidebar: React.FC = () => {
       ]
     },
   ];
-
+  {/* USER INFO – BOTTOM */}
+        <div className="border-t border-gray-200 px-6 py-4 bg-white sticky bottom-0">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white shadow-md relative">
+              <User size={20} />
+              <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+            </div>
+            <div className="flex-1">
+              <div className="font-semibold text-sm">{userName}</div>
+              <div className="text-xs text-gray-500 capitalize">{userRole}</div>
+            </div>
+          </div>
+        </div>
   return (
-    <aside className="w-56 min-h-screen bg-white border-r border-[#E6E6E6] flex flex-col pt-8 pb-4 px-2">
+    <aside className="w-56 bg-white border-r border-[#E6E6E6] flex flex-col pt-8 pb-4 px-2 fixed h-full">
 
       <div className="mb-6 px-4">
         <div className="text-xl font-bold text-blue-600">HR Portal</div>
         <div className="text-xs text-gray-500">Human Resources</div>
       </div>
 
-      <nav className="flex flex-col gap-2">
+      <nav className="flex-1 flex flex-col gap-2 overflow-y-auto">
         {menuItems.map((item, i) => {
           const Icon = item.icon;
 
@@ -114,6 +128,21 @@ const HRSidebar: React.FC = () => {
           );
         })}
       </nav>
+
+      {/* USER INFO – BOTTOM */}
+      <div className="border-t border-gray-200 px-6 py-4 bg-white sticky bottom-0">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white shadow-md relative">
+            <User size={20} />
+            <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+          </div>
+          <div className="flex-1">
+            <div className="font-semibold text-sm">{userName}</div>
+            <div className="text-xs text-gray-500 capitalize">{userRole}</div>
+          </div>
+        </div>
+      </div>
+
     </aside>
   );
 }

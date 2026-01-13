@@ -159,12 +159,9 @@ public class ParticipationService : IParticipationService
     }
 
     // ============================================
-    // NEW METHODS - JSONB Support
+    // JSONB SUPPORT METHODS
     // ============================================
 
-    /// <summary>
-    /// Update participation result with JSONB data
-    /// </summary>
     public async Task<ApiResponse<ParticipationDto>> UpdateParticipationResultAsync(
         int activityId,
         int employeeId,
@@ -182,7 +179,6 @@ public class ParticipationService : IParticipationService
                     new List<string> { "Không tồn tại bản ghi tham gia này" });
             }
 
-            // Validate that activity is completed/attended
             if (participation.Status != "attended")
             {
                 return ApiResponse<ParticipationDto>.ErrorResponse(
@@ -190,13 +186,11 @@ public class ParticipationService : IParticipationService
                     new List<string> { "Chỉ có thể cập nhật kết quả cho hoạt động đã tham gia (status = 'attended')" });
             }
 
-            // Convert dictionary to JsonDocument
             var jsonString = JsonSerializer.Serialize(dto.ResultData);
             participation.Result = JsonDocument.Parse(jsonString);
 
             await _participationRepository.UpdateAsync(participation);
 
-            // Reload with includes
             var updatedParticipation = await _participationRepository
                 .GetByActivityIdEmployeeIdAsync(activityId, employeeId);
             
@@ -216,9 +210,6 @@ public class ParticipationService : IParticipationService
         }
     }
 
-    /// <summary>
-    /// Get results by activity type
-    /// </summary>
     public async Task<ApiResponse<List<ParticipationDto>>> GetResultsByActivityTypeAsync(
         string activityType)
     {
@@ -227,7 +218,6 @@ public class ParticipationService : IParticipationService
             var participations = await _participationRepository
                 .GetByActivityTypeAsync(activityType);
 
-            // Filter only participations with result data
             var dtos = _mapper.Map<List<ParticipationDto>>(
                 participations.Where(p => p.Result != null));
 
@@ -244,10 +234,6 @@ public class ParticipationService : IParticipationService
         }
     }
 
-    /// <summary>
-    /// Get top performers for a specific activity type
-    /// Example: Top 10 fastest runners
-    /// </summary>
     public async Task<ApiResponse<List<ParticipationDto>>> GetTopPerformersAsync(
         string activityType,
         string sortKey,
@@ -274,9 +260,6 @@ public class ParticipationService : IParticipationService
         }
     }
 
-    /// <summary>
-    /// Get all participations with results
-    /// </summary>
     public async Task<ApiResponse<List<ParticipationDto>>> GetAllWithResultsAsync()
     {
         try
@@ -297,9 +280,6 @@ public class ParticipationService : IParticipationService
         }
     }
 
-    /// <summary>
-    /// Get employees who received certificates
-    /// </summary>
     public async Task<ApiResponse<List<ParticipationDto>>> GetCertifiedEmployeesAsync()
     {
         try
@@ -320,9 +300,6 @@ public class ParticipationService : IParticipationService
         }
     }
 
-    /// <summary>
-    /// Get volunteer hours statistics by employee
-    /// </summary>
     public async Task<ApiResponse<Dictionary<int, double>>> GetVolunteerHoursStatsAsync()
     {
         try
@@ -342,9 +319,6 @@ public class ParticipationService : IParticipationService
         }
     }
 
-    /// <summary>
-    /// Get statistics about results by activity type
-    /// </summary>
     public async Task<ApiResponse<Dictionary<string, int>>> GetResultStatsByActivityTypeAsync(
         string activityType)
     {
@@ -366,9 +340,6 @@ public class ParticipationService : IParticipationService
         }
     }
 
-    /// <summary>
-    /// Get running results with time under specified duration
-    /// </summary>
     public async Task<ApiResponse<List<ParticipationDto>>> GetRunningResultsUnderTimeAsync(
         string maxTime)
     {
@@ -392,9 +363,6 @@ public class ParticipationService : IParticipationService
         }
     }
 
-    /// <summary>
-    /// Get training results with quiz score above threshold
-    /// </summary>
     public async Task<ApiResponse<List<ParticipationDto>>> GetTrainingResultsAboveScoreAsync(
         int minScore)
     {
@@ -418,9 +386,6 @@ public class ParticipationService : IParticipationService
         }
     }
 
-    /// <summary>
-    /// Search in result JSONB field
-    /// </summary>
     public async Task<ApiResponse<List<ParticipationDto>>> SearchInResultsAsync(
         string searchTerm)
     {
@@ -451,10 +416,6 @@ public class ParticipationService : IParticipationService
         }
     }
 
-    /// <summary>
-    /// Get participations by result key
-    /// Example: Get all participations that have "certificate_issued" field
-    /// </summary>
     public async Task<ApiResponse<List<ParticipationDto>>> GetByResultKeyAsync(
         string key)
     {
@@ -483,10 +444,6 @@ public class ParticipationService : IParticipationService
         }
     }
 
-    /// <summary>
-    /// Get participations by result key-value pair
-    /// Example: Get all participations where certificate_issued = true
-    /// </summary>
     public async Task<ApiResponse<List<ParticipationDto>>> GetByResultValueAsync(
         string key,
         object value)
@@ -518,9 +475,10 @@ public class ParticipationService : IParticipationService
         }
     }
 
-    /// <summary>
-    /// Update attendance status (điểm danh) - TỰ ĐỘNG CỘNG ĐIỂM
-    /// </summary>
+    // ============================================
+    // ATTENDANCE METHOD
+    // ============================================
+
     public async Task<ApiResponse<ParticipationDto>> UpdateAttendanceStatusAsync(
         int activityId,
         int employeeId,
@@ -530,7 +488,6 @@ public class ParticipationService : IParticipationService
         
         try
         {
-            // 1. Lấy participation với full details
             var participation = await _participationRepository
                 .GetByActivityIdEmployeeIdForAttendanceAsync(activityId, employeeId);
 
@@ -541,7 +498,6 @@ public class ParticipationService : IParticipationService
                     new List<string> { "Nhân viên chưa đăng ký hoạt động này" });
             }
 
-            // 2. Validate current status
             if (participation.Status == "cancelled")
             {
                 return ApiResponse<ParticipationDto>.ErrorResponse(
@@ -549,7 +505,6 @@ public class ParticipationService : IParticipationService
                     new List<string> { "Không thể điểm danh cho đăng ký đã bị hủy" });
             }
 
-            // 3. Check if activity has started
             if (participation.Activity.StartDate > DateTime.UtcNow)
             {
                 return ApiResponse<ParticipationDto>.ErrorResponse(
@@ -557,11 +512,9 @@ public class ParticipationService : IParticipationService
                     new List<string> { "Hoạt động chưa bắt đầu" });
             }
 
-            // 4. Kiểm tra trạng thái hiện tại
             var oldStatus = participation.Status;
             var isChangingToAttended = dto.Status == "attended" && oldStatus != "attended";
             
-            // Không cho phép điểm danh lại nếu đã attended
             if (oldStatus == "attended" && dto.Status == "attended")
             {
                 return ApiResponse<ParticipationDto>.ErrorResponse(
@@ -569,23 +522,19 @@ public class ParticipationService : IParticipationService
                     new List<string> { "Nhân viên đã được điểm danh 'Có mặt' rồi" });
             }
 
-            // 5. ⭐ LOGIC CỘNG ĐIỂM: Chỉ cộng khi chuyển sang "attended"
             int? pointsToAdd = null;
             string pointMessage = "";
 
             if (isChangingToAttended)
             {
-                // Kiểm tra activity có điểm không
                 if (participation.Activity.Points.HasValue && participation.Activity.Points.Value > 0)
                 {
                     pointsToAdd = participation.Activity.Points.Value;
                     
-                    // Lấy thông tin điểm của employee
                     var employeePoint = await _pointRepository.GetByEmployeeIdAsync(employeeId);
                     
                     if (employeePoint == null)
                     {
-                        // Tạo point record mới nếu chưa có
                         employeePoint = new Point
                         {
                             EmployeeId = employeeId,
@@ -596,18 +545,16 @@ public class ParticipationService : IParticipationService
                         await _context.SaveChangesAsync();
                     }
 
-                    // Cộng điểm
                     employeePoint.PointTotal = (employeePoint.PointTotal ?? 0) + pointsToAdd.Value;
                     employeePoint.LastUpdate = DateTime.UtcNow;
                     await _pointRepository.UpdateAsync(employeePoint);
 
-                    // Tạo transaction history
                     var pointTransaction = new PointTransactionHistory
                     {
                         EmployeeId = employeeId,
                         Value = pointsToAdd.Value,
                         Type = "earn",
-                        ActorId = null, // TODO: Lấy từ authenticated user
+                        ActorId = null,
                         Description = $"Điểm danh tham gia hoạt động: {participation.Activity.Name}",
                         CreatedAt = DateTime.UtcNow
                     };
@@ -621,21 +568,16 @@ public class ParticipationService : IParticipationService
                 }
             }
 
-            // 6. Update participation status
             participation.Status = dto.Status;
 
-            // Nếu marking as absent, xóa result (nếu có)
             if (dto.Status == "absent")
             {
                 participation.Result = null;
             }
 
             await _participationRepository.UpdateAsync(participation);
-
-            // 7. Commit transaction
             await transaction.CommitAsync();
 
-            // 8. Reload with full details để return
             var updatedParticipation = await _participationRepository
                 .GetByActivityIdEmployeeIdAsync(activityId, employeeId);
             
@@ -661,6 +603,165 @@ public class ParticipationService : IParticipationService
                 activityId, employeeId);
             return ApiResponse<ParticipationDto>.ErrorResponse(
                 "Lỗi khi điểm danh",
+                new List<string> { ex.Message });
+        }
+    }
+
+    // ============================================
+    // NEW: PERFORMANCE METHODS
+    // ============================================
+
+    /// <summary>
+    /// Update performance rating for a participation
+    /// </summary>
+    public async Task<ApiResponse<ParticipationDto>> UpdatePerformanceAsync(
+        int activityId,
+        int employeeId,
+        UpdatePerformanceDto dto)
+    {
+        try
+        {
+            var participation = await _participationRepository
+                .GetByActivityIdEmployeeIdAsync(activityId, employeeId);
+
+            if (participation == null)
+            {
+                return ApiResponse<ParticipationDto>.ErrorResponse(
+                    "Không tìm thấy thông tin tham gia",
+                    new List<string> { "Không tồn tại bản ghi tham gia này" });
+            }
+
+            // Validate: Only update performance for attended activities
+            if (participation.Status != "attended")
+            {
+                return ApiResponse<ParticipationDto>.ErrorResponse(
+                    "Không thể đánh giá hiệu suất",
+                    new List<string> { "Chỉ có thể đánh giá hiệu suất cho hoạt động đã tham gia (status = 'attended')" });
+            }
+
+            // Update performance
+            participation.Performance = dto.Performance;
+
+            await _participationRepository.UpdateAsync(participation);
+
+            // Reload with full details
+            var updatedParticipation = await _participationRepository
+                .GetByActivityIdEmployeeIdAsync(activityId, employeeId);
+            
+            var resultDto = _mapper.Map<ParticipationDto>(updatedParticipation);
+
+            _logger.LogInformation(
+                "Performance updated: Activity {ActivityId}, Employee {EmployeeId}, Performance: {Performance}",
+                activityId, employeeId, dto.Performance);
+
+            var performanceText = dto.Performance switch
+            {
+                "bad" => "Kém",
+                "good" => "Tốt",
+                "excellent" => "Xuất sắc",
+                _ => dto.Performance
+            };
+
+            return ApiResponse<ParticipationDto>.SuccessResponse(
+                resultDto,
+                $"Cập nhật đánh giá hiệu suất thành công: {performanceText}");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, 
+                "Error updating performance for Activity {ActivityId}, Employee {EmployeeId}", 
+                activityId, employeeId);
+            return ApiResponse<ParticipationDto>.ErrorResponse(
+                "Lỗi khi cập nhật đánh giá",
+                new List<string> { ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Get participations by performance level
+    /// </summary>
+    public async Task<ApiResponse<List<ParticipationDto>>> GetByPerformanceAsync(string performance)
+    {
+        try
+        {
+            // Validate performance value
+            var validPerformances = new[] { "bad", "good", "excellent" };
+            if (!validPerformances.Contains(performance.ToLower()))
+            {
+                return ApiResponse<List<ParticipationDto>>.ErrorResponse(
+                    "Giá trị không hợp lệ",
+                    new List<string> { "Performance phải là: bad, good, hoặc excellent" });
+            }
+
+            var participations = await _participationRepository
+                .GetByPerformanceAsync(performance.ToLower());
+            
+            var dtos = _mapper.Map<List<ParticipationDto>>(participations);
+
+            var performanceText = performance.ToLower() switch
+            {
+                "bad" => "Kém",
+                "good" => "Tốt",
+                "excellent" => "Xuất sắc",
+                _ => performance
+            };
+
+            return ApiResponse<List<ParticipationDto>>.SuccessResponse(
+                dtos,
+                $"Tìm thấy {dtos.Count} nhân viên có hiệu suất {performanceText}");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting participations by performance {Performance}", performance);
+            return ApiResponse<List<ParticipationDto>>.ErrorResponse(
+                "Lỗi khi lấy danh sách",
+                new List<string> { ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Get overall performance statistics
+    /// </summary>
+    public async Task<ApiResponse<Dictionary<string, int>>> GetPerformanceStatsAsync()
+    {
+        try
+        {
+            var stats = await _participationRepository.GetPerformanceStatsAsync();
+
+            return ApiResponse<Dictionary<string, int>>.SuccessResponse(
+                stats,
+                "Lấy thống kê hiệu suất thành công");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting performance statistics");
+            return ApiResponse<Dictionary<string, int>>.ErrorResponse(
+                "Lỗi khi lấy thống kê",
+                new List<string> { ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Get performance statistics by activity type
+    /// </summary>
+    public async Task<ApiResponse<Dictionary<string, int>>> GetPerformanceStatsByActivityTypeAsync(
+        string activityType)
+    {
+        try
+        {
+            var stats = await _participationRepository
+                .GetPerformanceStatsByActivityTypeAsync(activityType);
+
+            return ApiResponse<Dictionary<string, int>>.SuccessResponse(
+                stats,
+                $"Lấy thống kê hiệu suất cho {activityType} thành công");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, 
+                "Error getting performance stats for activity type {ActivityType}", activityType);
+            return ApiResponse<Dictionary<string, int>>.ErrorResponse(
+                "Lỗi khi lấy thống kê",
                 new List<string> { ex.Message });
         }
     }

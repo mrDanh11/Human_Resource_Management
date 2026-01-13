@@ -13,7 +13,7 @@ export default function Header() {
   const location = useLocation();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const isLandingPage = location.pathname === "/landing" || location.pathname === "/";
-  
+
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth" });
@@ -60,18 +60,22 @@ export default function Header() {
 
       {/* Navigation */}
       <nav className="flex items-center gap-6">
-        {isLoggedIn && isLandingPage && (
-          <Link
-            to={
-              localStorage.getItem("role") === "admin"
-                ? "/admin/dashboard"
-                : `/employee/profile/${localStorage.getItem("userId")}`
-            }
-            className="text-base hover:text-gray-900 transition"
-          >
-            {localStorage.getItem("role") === "employee" ? "Hồ sơ" : "Dashboard"}
-          </Link>
-        )}
+        {isLoggedIn && isLandingPage && (() => {
+          const userId = localStorage.getItem("userId");
+          const role = localStorage.getItem("role");
+          const dashboardLink = role === "admin" 
+            ? "/admin/dashboard" 
+            : `/employee/profile/${userId}`;
+          
+          return (
+            <Link
+              to={dashboardLink}
+              className="text-base hover:text-gray-900 transition"
+            >
+              {role === "employee" ? "Hồ sơ" : "Dashboard"}
+            </Link>
+          );
+        })()}
 
         {isLandingPage && (
           <>

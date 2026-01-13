@@ -161,6 +161,55 @@ public class ParticipationController : ControllerBase
     }
 
     /// <summary>
+    /// NEW: Update performance rating for participation
+    /// </summary>
+    [HttpPut("{activityId}-{employeeId}/performance")]
+    [ProducesResponseType(typeof(ApiResponse<ParticipationDto>), 200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(404)]
+    [Authorize(Policy = "participate:update")]
+    public async Task<ActionResult<ApiResponse<ParticipationDto>>> UpdatePerformance(
+        int activityId, 
+        int employeeId,
+        [FromBody] UpdatePerformanceDto dto)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+
+                return BadRequest(ApiResponse<ParticipationDto>.ErrorResponse(
+                    "Dữ liệu không hợp lệ", errors));
+            }
+
+            var result = await _participationService.UpdatePerformanceAsync(
+                activityId, employeeId, dto);
+
+            if (!result.Success)
+            {
+                if (result.Message.Contains("Không tìm thấy"))
+                {
+                    return NotFound(result);
+                }
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating performance rating");
+            return StatusCode(500, ApiResponse<ParticipationDto>.ErrorResponse(
+                "Lỗi khi cập nhật đánh giá hiệu suất",
+                new List<string> { ex.Message }));
+        }
+    }
+
+    /// <summary>
     /// Get participation results by activity type
     /// </summary>
     [HttpGet("results/by-type/{activityType}")]
@@ -180,6 +229,35 @@ public class ParticipationController : ControllerBase
             _logger.LogError(ex, "Error getting results by activity type");
             return StatusCode(500, ApiResponse<List<ParticipationDto>>.ErrorResponse(
                 "Lỗi khi lấy kết quả theo loại hoạt động",
+                new List<string> { ex.Message }));
+        }
+    }
+
+    /// <summary>
+    /// NEW: Get participations by performance level
+    /// </summary>
+    [HttpGet("by-performance/{performance}")]
+    [ProducesResponseType(typeof(ApiResponse<List<ParticipationDto>>), 200)]
+    [Authorize(Policy = "participate:list")]
+    public async Task<ActionResult<ApiResponse<List<ParticipationDto>>>> GetByPerformance(
+        string performance)
+    {
+        try
+        {
+            var result = await _participationService.GetByPerformanceAsync(performance);
+
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting participations by performance");
+            return StatusCode(500, ApiResponse<List<ParticipationDto>>.ErrorResponse(
+                "Lỗi khi lấy danh sách theo hiệu suất",
                 new List<string> { ex.Message }));
         }
     }

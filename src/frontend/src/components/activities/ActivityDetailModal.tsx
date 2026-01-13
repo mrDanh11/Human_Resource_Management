@@ -94,10 +94,10 @@ export default function ActivityDetailModal({
 
       {/* Modal Container */}
       <div className="flex items-center justify-center min-h-screen px-4 py-6 relative z-10">
-        <div className="bg-white rounded-lg text-left overflow-y-auto shadow-xl transform transition-all w-full max-w-3xl max-h-[90vh]">
+        <div className="bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all w-full max-w-3xl max-h-[90vh] flex flex-col">
           {/* Header Image */}
           {activity.imageUrl && (
-            <div className="h-64 overflow-hidden relative">
+            <div className="h-64 overflow-hidden relative shrink-0">
               <img 
                 src={activity.imageUrl} 
                 alt={activity.name}
@@ -114,7 +114,7 @@ export default function ActivityDetailModal({
             </div>
           )}
 
-          <div className="bg-white px-6 pt-5 pb-4">
+          <div className="bg-white px-6 pt-5 pb-4 overflow-y-auto flex-1">
             {/* Close button if no image */}
             {!activity.imageUrl && (
               <div className="absolute top-4 right-4">

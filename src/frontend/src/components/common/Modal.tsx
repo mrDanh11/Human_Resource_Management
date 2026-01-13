@@ -55,12 +55,12 @@ const Modal = ({ isOpen, onClose, title, titleIcon, children, size = 'lg' }: Mod
             {/* Modal */}
             <div className="flex min-h-full items-center justify-center p-4">
                 <div
-                className={`relative bg-white rounded-lg shadow-xl ${sizeClasses[size]} w-full max-h-[90vh] overflow-y-auto`}
+                className={`relative bg-white rounded-lg shadow-xl ${sizeClasses[size]} w-full max-h-[90vh] overflow-hidden flex flex-col`}
                 onClick={(e) => e.stopPropagation()}
                 >
                     {/* Header */}
                     {title && (
-                        <div className="p-6">
+                        <div className="p-6 shrink-0">
                             <div className="flex items-center justify-between pb-4 border-b mx-4">
                                 <div className="flex-1 flex items-center justify-center gap-2">
                                     {titleIcon && <span className="text-gray-700">{titleIcon}</span>}
@@ -87,7 +87,7 @@ const Modal = ({ isOpen, onClose, title, titleIcon, children, size = 'lg' }: Mod
                     )}
 
                     {/* Content */}
-                    <div className="p-6">{children}</div>
+                    <div className="p-6 overflow-y-auto flex-1">{children}</div>
                 </div>
             </div>
         </div>

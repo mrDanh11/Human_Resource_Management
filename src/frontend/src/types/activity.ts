@@ -96,7 +96,7 @@ export interface ParticipationData {
   registerDate: Date,
   cancelDate: Date,
   status: string,
-  result: string,
+  result: Record<string, any>,
   imgPath: string,
 }
 

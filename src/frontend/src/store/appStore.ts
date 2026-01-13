@@ -9,6 +9,7 @@ import pointReducer from './pointSlice';
 import conversionRuleReducer from './conversionRuleSlice';
 import participationReducer from './participationSlice';
 import completedActivityReducer from './completedActivitySlice';
+import requestReducer from './requestSlice';
 
 export const store = configureStore({
   reducer: {
@@ -17,6 +18,7 @@ export const store = configureStore({
     conversionRule: conversionRuleReducer,
     participation: participationReducer,
     completedActivity: completedActivityReducer,
+    requests: requestReducer,
   },
 });
 

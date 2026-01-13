@@ -25,6 +25,17 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.badRequest().body(errorResponse);
     }
+
+    @ExceptionHandler(BaseException.class)
+    public ResponseEntity<ErrorResponse> handleBaseException(BaseException ex, WebRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                ex.getStatus().value(),
+                ex.getMessage(),
+                request.getDescription(false).replace("uri=", ""),
+                LocalDateTime.now()
+        );
+        return ResponseEntity.status(ex.getStatus()).body(errorResponse);
+    }
     
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
@@ -47,9 +58,10 @@ public class GlobalExceptionHandler {
     
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(Exception ex, WebRequest request) {
+        ex.printStackTrace(); // Log stack trace to console
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "An unexpected error occurred",
+                "An unexpected error occurred: " + ex.getMessage(),
                 request.getDescription(false).replace("uri=", ""),
                 LocalDateTime.now()
         );

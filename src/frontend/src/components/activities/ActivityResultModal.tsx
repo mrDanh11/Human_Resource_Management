@@ -109,7 +109,7 @@ export default function ActivityResultModal({ participation, isOpen, onClose }: 
                                     <div className="flex-1">
                                         <p className="font-semibold text-gray-900 mb-1">Thành tích của bạn</p>
                                         <p className="text-sm text-gray-700">
-                                            {participation.result || "Chưa có kết quả"}
+                                            {JSON.stringify(participation.result) || "Chưa có kết quả"}
                                         </p>
                                     </div>
                                 </div>

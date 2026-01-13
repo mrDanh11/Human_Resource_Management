@@ -83,21 +83,15 @@ public class ParticipationRepository : IParticipationRepository
     }
 
     // ============================================
-    // NEW METHODS - JSONB Support
+    // JSONB SUPPORT METHODS
     // ============================================
 
-    /// <summary>
-    /// Update participation (including result JSONB field)
-    /// </summary>
     public async Task UpdateAsync(Participation participation)
     {
         _context.Participations.Update(participation);
         await _context.SaveChangesAsync();
     }
 
-    /// <summary>
-    /// Get all participations for a specific activity type
-    /// </summary>
     public async Task<IEnumerable<Participation>> GetByActivityTypeAsync(string activityType)
     {
         return await _context.Participations
@@ -108,9 +102,6 @@ public class ParticipationRepository : IParticipationRepository
             .ToListAsync();
     }
 
-    /// <summary>
-    /// Get all participations that have result data
-    /// </summary>
     public async Task<IEnumerable<Participation>> GetWithResultsAsync()
     {
         return await _context.Participations
@@ -121,13 +112,8 @@ public class ParticipationRepository : IParticipationRepository
             .ToListAsync();
     }
 
-    /// <summary>
-    /// Get participations where result contains a specific key
-    /// Example: GetByResultKeyAsync("certificate_issued")
-    /// </summary>
     public async Task<IEnumerable<Participation>> GetByResultKeyAsync(string key)
     {
-        // Use raw SQL for JSONB operator ?
         var sql = @"
             SELECT p.* 
             FROM participation p
@@ -143,15 +129,10 @@ public class ParticipationRepository : IParticipationRepository
             .ToListAsync();
     }
 
-    /// <summary>
-    /// Get participations where result[key] = value
-    /// Example: GetByResultValueAsync("certificate_issued", true)
-    /// </summary>
     public async Task<IEnumerable<Participation>> GetByResultValueAsync(string key, object value)
     {
         var valueJson = JsonSerializer.Serialize(value);
         
-        // Use raw SQL for JSONB operator ->>
         var sql = @"
             SELECT p.* 
             FROM participation p
@@ -167,16 +148,11 @@ public class ParticipationRepository : IParticipationRepository
             .ToListAsync();
     }
 
-    /// <summary>
-    /// Get top performers by activity type, sorted by a result field
-    /// Example: GetTopPerformersByActivityTypeAsync("sports", "rank", 10)
-    /// </summary>
     public async Task<IEnumerable<Participation>> GetTopPerformersByActivityTypeAsync(
         string activityType, 
         string sortKey, 
         int limit = 10)
     {
-        // Use raw SQL for JSONB casting and ordering
         var sql = $@"
             SELECT p.* 
             FROM participation p
@@ -195,14 +171,8 @@ public class ParticipationRepository : IParticipationRepository
             .ToListAsync();
     }
 
-    /// <summary>
-    /// Get statistics about results by activity type
-    /// Returns count of participations with different result keys
-    /// </summary>
     public async Task<Dictionary<string, int>> GetResultStatsByActivityTypeAsync(string activityType)
     {
-        // This is a complex query - for now return basic stats
-        // In production, you might want to create a stored procedure
         var participations = await _context.Participations
             .Include(p => p.Activity)
             .Where(p => 
@@ -216,8 +186,7 @@ public class ParticipationRepository : IParticipationRepository
             { "total_attended", participations.Count(p => p.Status == "attended") }
         };
 
-        // Count participations with specific keys
-        var keysToCheck = new[] { "rank", "score", "certificate_issued", "time", "hours_contributed" };
+        var keysToCheck = new[] { "rank", "score", "certificate_issued", "time", "hours_contributed", "donation_amount" };
         
         foreach (var key in keysToCheck)
         {
@@ -234,9 +203,6 @@ public class ParticipationRepository : IParticipationRepository
         return stats;
     }
 
-    /// <summary>
-    /// Get participation for attendance update (lighter query)
-    /// </summary>
     public async Task<Participation?> GetByActivityIdEmployeeIdForAttendanceAsync(
         int activityId, 
         int employeeId)
@@ -247,14 +213,11 @@ public class ParticipationRepository : IParticipationRepository
             .Where(p => p.ActivityId == activityId && p.EmployeeId == employeeId)
             .FirstOrDefaultAsync();
     }
+
     // ============================================
     // ADVANCED QUERY EXAMPLES
     // ============================================
 
-    /// <summary>
-    /// Get running results with time under specified duration
-    /// Example: GetRunningResultsUnderTimeAsync("01:30:00")
-    /// </summary>
     public async Task<IEnumerable<Participation>> GetRunningResultsUnderTimeAsync(string maxTime)
     {
         var sql = @"
@@ -274,9 +237,6 @@ public class ParticipationRepository : IParticipationRepository
             .ToListAsync();
     }
 
-    /// <summary>
-    /// Get training results with quiz score above threshold
-    /// </summary>
     public async Task<IEnumerable<Participation>> GetTrainingResultsAboveScoreAsync(int minScore)
     {
         var sql = @"
@@ -296,9 +256,6 @@ public class ParticipationRepository : IParticipationRepository
             .ToListAsync();
     }
 
-    /// <summary>
-    /// Get volunteer hours summary by employee
-    /// </summary>
     public async Task<Dictionary<int, double>> GetVolunteerHoursByEmployeeAsync()
     {
         var sql = @"
@@ -321,9 +278,6 @@ public class ParticipationRepository : IParticipationRepository
             x => (double)x.TotalHours);
     }
 
-    /// <summary>
-    /// Get employees with certificates issued
-    /// </summary>
     public async Task<IEnumerable<Participation>> GetCertifiedEmployeesAsync()
     {
         var sql = @"
@@ -342,10 +296,6 @@ public class ParticipationRepository : IParticipationRepository
             .ToListAsync();
     }
 
-    /// <summary>
-    /// Search in result JSONB field
-    /// Example: SearchInResultsAsync("excellent")
-    /// </summary>
     public async Task<IEnumerable<Participation>> SearchInResultsAsync(string searchTerm)
     {
         var sql = @"
@@ -360,6 +310,145 @@ public class ParticipationRepository : IParticipationRepository
             .FromSqlRaw(sql, $"%{searchTerm}%")
             .Include(p => p.Activity)
             .Include(p => p.Employee)
+            .ToListAsync();
+    }
+
+    // ============================================
+    // NEW: PERFORMANCE-RELATED METHODS
+    // ============================================
+
+    /// <summary>
+    /// Get participations by performance level
+    /// </summary>
+    public async Task<IEnumerable<Participation>> GetByPerformanceAsync(string performance)
+    {
+        return await _context.Participations
+            .Include(p => p.Activity)
+            .Include(p => p.Employee)
+            .Where(p => p.Performance == performance)
+            .OrderByDescending(p => p.CreatedAt)
+            .ToListAsync();
+    }
+
+    /// <summary>
+    /// Get overall performance statistics across all activities
+    /// </summary>
+    public async Task<Dictionary<string, int>> GetPerformanceStatsAsync()
+    {
+        var stats = new Dictionary<string, int>();
+
+        // Total participations with performance ratings
+        var totalWithPerformance = await _context.Participations
+            .Where(p => p.Performance != null)
+            .CountAsync();
+
+        stats["total_with_performance"] = totalWithPerformance;
+
+        // Count by each performance level
+        var bad = await _context.Participations
+            .Where(p => p.Performance == "bad")
+            .CountAsync();
+        
+        var good = await _context.Participations
+            .Where(p => p.Performance == "good")
+            .CountAsync();
+        
+        var excellent = await _context.Participations
+            .Where(p => p.Performance == "excellent")
+            .CountAsync();
+
+        stats["bad"] = bad;
+        stats["good"] = good;
+        stats["excellent"] = excellent;
+
+        // Total attended (potential candidates for performance rating)
+        var totalAttended = await _context.Participations
+            .Where(p => p.Status == "attended")
+            .CountAsync();
+        
+        stats["total_attended"] = totalAttended;
+        stats["not_rated_yet"] = totalAttended - totalWithPerformance;
+
+        return stats;
+    }
+
+    /// <summary>
+    /// Get performance statistics by activity type
+    /// </summary>
+    public async Task<Dictionary<string, int>> GetPerformanceStatsByActivityTypeAsync(
+        string activityType)
+    {
+        var stats = new Dictionary<string, int>();
+
+        var query = _context.Participations
+            .Include(p => p.Activity)
+            .Where(p => p.Activity.ActivityType == activityType);
+
+        // Total for this activity type
+        var total = await query.CountAsync();
+        stats["total"] = total;
+
+        // Total attended
+        var totalAttended = await query
+            .Where(p => p.Status == "attended")
+            .CountAsync();
+        stats["total_attended"] = totalAttended;
+
+        // Total with performance ratings
+        var totalWithPerformance = await query
+            .Where(p => p.Performance != null)
+            .CountAsync();
+        stats["total_with_performance"] = totalWithPerformance;
+
+        // Count by each performance level
+        var bad = await query
+            .Where(p => p.Performance == "bad")
+            .CountAsync();
+        
+        var good = await query
+            .Where(p => p.Performance == "good")
+            .CountAsync();
+        
+        var excellent = await query
+            .Where(p => p.Performance == "excellent")
+            .CountAsync();
+
+        stats["bad"] = bad;
+        stats["good"] = good;
+        stats["excellent"] = excellent;
+        stats["not_rated_yet"] = totalAttended - totalWithPerformance;
+
+        return stats;
+    }
+
+    /// <summary>
+    /// Get all employees with excellent performance
+    /// </summary>
+    public async Task<IEnumerable<Participation>> GetExcellentPerformersAsync()
+    {
+        return await _context.Participations
+            .Include(p => p.Activity)
+            .Include(p => p.Employee)
+            .Where(p => p.Performance == "excellent")
+            .OrderByDescending(p => p.CreatedAt)
+            .ToListAsync();
+    }
+
+    /// <summary>
+    /// Get participations by performance and activity type
+    /// Useful for queries like "Show me all excellent performers in sports activities"
+    /// </summary>
+    public async Task<IEnumerable<Participation>> GetByPerformanceAndActivityTypeAsync(
+        string performance, 
+        string activityType)
+    {
+        return await _context.Participations
+            .Include(p => p.Activity)
+            .Include(p => p.Employee)
+            .Where(p => 
+                p.Performance == performance && 
+                p.Activity.ActivityType == activityType)
+            .OrderByDescending(p => p.CreatedAt)
             .ToListAsync();
     }
 }

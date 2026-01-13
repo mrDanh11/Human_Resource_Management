@@ -1,6 +1,5 @@
-using AutoMapper;
 using HRMApi.Data;
-using HRMApi.DTOs.Attendance;
+using HRMApi.DTOs;
 using HRMApi.Models;
 using HRMApi.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -11,437 +10,276 @@ public class AttendanceService : IAttendanceService
 {
     private readonly IAttendanceRepository _attendanceRepository;
     private readonly HrmDbContext _context;
-    private readonly IMapper _mapper;
     private readonly ILogger<AttendanceService> _logger;
-
-    // Company policy settings (có thể move vào config)
-    private readonly TimeSpan _standardCheckinTime = new TimeSpan(8, 30, 0); // 8:30 AM
-    private readonly TimeSpan _standardCheckoutTime = new TimeSpan(17, 30, 0); // 5:30 PM
-    private readonly int _lateThresholdMinutes = 15; // Muộn > 15 phút
-    private readonly int _earlyLeaveThresholdMinutes = 15; // Về sớm > 15 phút
 
     public AttendanceService(
         IAttendanceRepository attendanceRepository,
         HrmDbContext context,
-        IMapper mapper,
         ILogger<AttendanceService> logger)
     {
         _attendanceRepository = attendanceRepository;
         _context = context;
-        _mapper = mapper;
         _logger = logger;
     }
 
-    // ============================================
-    // EMPLOYEE METHODS
-    // ============================================
-
-    public async Task<TimesheetSummaryDto> GetMyTimesheetAsync(int employeeId, DateOnly fromDate, DateOnly toDate)
+    public async Task<PagedResult<AttendanceListDto>> GetAttendancesAsync(
+        int pageNumber,
+        int pageSize,
+        int? employeeId = null,
+        DateOnly? startDate = null,
+        DateOnly? endDate = null,
+        string? status = null)
     {
-        var employee = await _context.Employees
-            .FirstOrDefaultAsync(e => e.Id == employeeId);
-
-        if (employee == null)
-            throw new KeyNotFoundException("Employee not found");
-
-        var attendances = await _attendanceRepository.GetByEmployeeIdAsync(employeeId, fromDate, toDate);
-
-        var attendanceResponses = attendances.Select(a => MapToResponseDto(a, employee)).ToList();
-
-        var summary = new TimesheetSummaryDto
+        try
         {
-            EmployeeId = employeeId,
-            EmployeeName = employee.Fullname,
-            FromDate = fromDate,
-            ToDate = toDate,
-            TotalWorkingDays = attendances.Count,
-            PresentDays = attendances.Count(a => a.Status == "present"),
-            AbsentDays = attendances.Count(a => a.Status == "absent"),
-            LateDays = attendances.Count(a => a.Status == "late"),
-            HalfDays = attendances.Count(a => a.Status == "half_day"),
-            WfhDays = attendances.Count(a => a.Status == "wfh"),
-            TotalWorkHours = attendances.Sum(a => a.WorkHours ?? 0),
-            TotalOvertimeHours = attendances.Sum(a => a.OvertimeHours ?? 0),
-            Attendances = attendanceResponses
-        };
+            var (items, totalCount) = await _attendanceRepository.GetPagedAsync(
+                pageNumber, pageSize, employeeId, startDate, endDate, status);
 
-        if (summary.TotalWorkingDays > 0)
-        {
-            summary.AverageWorkHoursPerDay = summary.TotalWorkHours / summary.TotalWorkingDays;
-        }
-
-        return summary;
-    }
-
-    public async Task<AttendanceResponseDto?> GetAttendanceByDateAsync(int employeeId, DateOnly date)
-    {
-        var attendance = await _attendanceRepository.GetByEmployeeAndDateAsync(employeeId, date);
-
-        if (attendance == null)
-            return null;
-
-        return MapToResponseDto(attendance, attendance.Employee);
-    }
-
-    public async Task<AttendanceStatisticsDto> GetMyAttendanceStatisticsAsync(int employeeId, int year, int month)
-    {
-        var employee = await _context.Employees
-            .FirstOrDefaultAsync(e => e.Id == employeeId);
-
-        if (employee == null)
-            throw new KeyNotFoundException("Employee not found");
-
-        var fromDate = new DateOnly(year, month, 1);
-        var toDate = fromDate.AddMonths(1).AddDays(-1);
-
-        var attendances = await _attendanceRepository.GetByEmployeeIdAsync(employeeId, fromDate, toDate);
-
-        var totalLateMinutes = 0;
-        var lateDaysCount = 0;
-
-        foreach (var attendance in attendances)
-        {
-            if (attendance.CheckinTime.HasValue)
+            var attendanceDtos = items.Select(a => new AttendanceListDto
             {
-                var checkinTimeOnly = attendance.CheckinTime.Value.TimeOfDay;
-                if (checkinTimeOnly > _standardCheckinTime)
-                {
-                    var lateMinutes = (int)(checkinTimeOnly - _standardCheckinTime).TotalMinutes;
-                    if (lateMinutes > _lateThresholdMinutes)
-                    {
-                        totalLateMinutes += lateMinutes;
-                        lateDaysCount++;
-                    }
-                }
+                Id = a.Id,
+                EmployeeId = a.EmployeeId,
+                EmployeeName = a.Employee?.Fullname ?? "",
+                Date = a.Date,
+                CheckinTime = a.CheckinTime,
+                CheckoutTime = a.CheckoutTime,
+                Status = a.Status,
+                WorkHours = a.WorkHours,
+                OvertimeHours = a.OvertimeHours,
+                Note = a.Note
+            }).ToList();
+
+            return new PagedResult<AttendanceListDto>
+            {
+                Items = attendanceDtos,
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting attendances list");
+            throw;
+        }
+    }
+
+    public async Task<AttendanceDetailDto?> GetAttendanceByIdAsync(int id)
+    {
+        try
+        {
+            var attendance = await _attendanceRepository.GetByIdAsync(id);
+
+            if (attendance == null)
+                return null;
+
+            return new AttendanceDetailDto
+            {
+                Id = attendance.Id,
+                EmployeeId = attendance.EmployeeId,
+                EmployeeName = attendance.Employee?.Fullname ?? "",
+                Date = attendance.Date,
+                CheckinTime = attendance.CheckinTime,
+                CheckoutTime = attendance.CheckoutTime,
+                Status = attendance.Status,
+                Attachment = attendance.Attachment,
+                WorkHours = attendance.WorkHours,
+                OvertimeHours = attendance.OvertimeHours,
+                Note = attendance.Note,
+                CreatedAt = attendance.CreatedAt,
+                UpdatedAt = attendance.UpdatedAt
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting attendance {AttendanceId}", id);
+            throw;
+        }
+    }
+
+    public async Task<ApiResponse<AttendanceDetailDto>> CreateAttendanceAsync(CreateAttendanceDto dto)
+    {
+        try
+        {
+            // Kiểm tra nhân viên tồn tại
+            var employeeExists = await _context.Employees.AnyAsync(e => e.Id == dto.EmployeeId);
+            if (!employeeExists)
+            {
+                return ApiResponse<AttendanceDetailDto>.ErrorResponse(
+                    "Không tìm thấy nhân viên",
+                    new List<string> { $"Nhân viên với ID {dto.EmployeeId} không tồn tại" });
             }
-        }
 
-        var presentDays = attendances.Count(a => a.Status == "present" || a.Status == "late");
-
-        return new AttendanceStatisticsDto
-        {
-            EmployeeId = employeeId,
-            EmployeeName = employee.Fullname,
-            Year = year,
-            Month = month,
-            TotalWorkingDays = attendances.Count,
-            PresentDays = presentDays,
-            AbsentDays = attendances.Count(a => a.Status == "absent"),
-            LateDays = attendances.Count(a => a.Status == "late"),
-            WfhDays = attendances.Count(a => a.Status == "wfh"),
-            TotalWorkHours = attendances.Sum(a => a.WorkHours ?? 0),
-            TotalOvertimeHours = attendances.Sum(a => a.OvertimeHours ?? 0),
-            AttendanceRate = presentDays > 0 ? (decimal)presentDays / attendances.Count * 100 : 0,
-            TotalLateMinutes = totalLateMinutes,
-            AverageLateMinutes = lateDaysCount > 0 ? totalLateMinutes / lateDaysCount : 0
-        };
-    }
-
-    public async Task<int> CreateAttendanceCorrectionRequestAsync(
-        int employeeId, 
-        CreateAttendanceCorrectionRequestDto dto)
-    {
-        // Kiểm tra attendance có tồn tại không
-        var existingAttendance = await _attendanceRepository.GetByEmployeeAndDateAsync(employeeId, dto.Date);
-
-        if (existingAttendance == null)
-            throw new InvalidOperationException("Attendance record not found for this date");
-
-        // Tạo request
-        var request = new Request
-        {
-            EmployeeId = employeeId,
-            Type = "attendance_correction",
-            Description = $"Correction request for {dto.Date}: {dto.Reason}",
-            StartTime = dto.RequestedCheckinTime,
-            EndTime = dto.RequestedCheckoutTime,
-            Attachment = dto.Attachment,
-            Status = "pending",
-            CreatedAt = DateTime.UtcNow
-        };
-
-        _context.Requests.Add(request);
-        await _context.SaveChangesAsync();
-
-        _logger.LogInformation(
-            "Attendance correction request created. RequestId: {RequestId}, EmployeeId: {EmployeeId}, Date: {Date}",
-            request.Id, employeeId, dto.Date);
-
-        return request.Id;
-    }
-
-    // ============================================
-    // HR METHODS
-    // ============================================
-
-    public async Task<List<AttendanceResponseDto>> GetAllAttendancesAsync(AttendanceFilterDto filter)
-    {
-        var (attendances, _) = await _attendanceRepository.GetPagedAsync(
-            filter.PageNumber,
-            filter.PageSize,
-            filter.EmployeeId,
-            filter.FromDate,
-            filter.ToDate,
-            filter.Status
-        );
-
-        return attendances.Select(a => MapToResponseDto(a, a.Employee)).ToList();
-    }
-
-    public async Task<AttendanceResponseDto?> GetAttendanceByIdAsync(int id)
-    {
-        var attendance = await _attendanceRepository.GetByIdAsync(id);
-
-        return attendance == null ? null : MapToResponseDto(attendance, attendance.Employee);
-    }
-
-    public async Task<AttendanceResponseDto> CreateAttendanceAsync(CreateAttendanceDto dto, int createdBy)
-    {
-        // Kiểm tra duplicate
-        var exists = await _attendanceRepository.ExistsAsync(dto.EmployeeId, dto.Date);
-        if (exists)
-            throw new InvalidOperationException($"Attendance already exists for employee {dto.EmployeeId} on {dto.Date}");
-
-        var employee = await _context.Employees.FindAsync(dto.EmployeeId);
-        if (employee == null)
-            throw new KeyNotFoundException("Employee not found");
-
-        var attendance = _mapper.Map<Attendance>(dto);
-        
-        // Calculate work hours if not provided
-        if (!attendance.WorkHours.HasValue && attendance.CheckinTime.HasValue && attendance.CheckoutTime.HasValue)
-        {
-            attendance.WorkHours = CalculateWorkHours(attendance.CheckinTime, attendance.CheckoutTime);
-        }
-
-        var created = await _attendanceRepository.AddAsync(attendance);
-
-        _logger.LogInformation(
-            "Attendance created manually. Id: {Id}, EmployeeId: {EmployeeId}, Date: {Date}, CreatedBy: {CreatedBy}",
-            created.Id, dto.EmployeeId, dto.Date, createdBy);
-
-        return MapToResponseDto(created, employee);
-    }
-
-    public async Task<AttendanceResponseDto> UpdateAttendanceAsync(int id, UpdateAttendanceDto dto, int updatedBy)
-    {
-        var attendance = await _attendanceRepository.GetByIdAsync(id);
-
-        if (attendance == null)
-            throw new KeyNotFoundException("Attendance not found");
-
-        // Map updates
-        _mapper.Map(dto, attendance);
-
-        // Recalculate work hours if times changed
-        if ((dto.CheckinTime.HasValue || dto.CheckoutTime.HasValue) && !dto.WorkHours.HasValue)
-        {
-            attendance.WorkHours = CalculateWorkHours(attendance.CheckinTime, attendance.CheckoutTime);
-        }
-
-        attendance.UpdatedAt = DateTime.UtcNow;
-
-        await _attendanceRepository.UpdateAsync(attendance);
-
-        _logger.LogInformation(
-            "Attendance updated. Id: {Id}, EmployeeId: {EmployeeId}, UpdatedBy: {UpdatedBy}",
-            id, attendance.EmployeeId, updatedBy);
-
-        return MapToResponseDto(attendance, attendance.Employee);
-    }
-
-    public async Task<bool> DeleteAttendanceAsync(int id)
-    {
-        var exists = await _attendanceRepository.ExistsByIdAsync(id);
-        if (!exists)
-            return false;
-
-        await _attendanceRepository.DeleteAsync(id);
-
-        _logger.LogInformation("Attendance deleted. Id: {Id}", id);
-
-        return true;
-    }
-
-    public async Task<BulkCreateAttendanceResultDto> BulkCreateAttendancesAsync(
-        List<CreateAttendanceDto> dtos, 
-        int createdBy)
-    {
-        var result = new BulkCreateAttendanceResultDto
-        {
-            TotalRecords = dtos.Count
-        };
-
-        foreach (var dto in dtos)
-        {
-            try
+            // Kiểm tra trùng lặp (một nhân viên chỉ có một bản ghi attendance cho mỗi ngày)
+            var exists = await _attendanceRepository.ExistsAsync(dto.EmployeeId, dto.Date);
+            if (exists)
             {
-                // Kiểm tra duplicate
-                var exists = await CheckAttendanceExistsAsync(dto.EmployeeId, dto.Date);
-                if (exists)
+                return ApiResponse<AttendanceDetailDto>.ErrorResponse(
+                    "Bản ghi đã tồn tại",
+                    new List<string> { $"Đã có bản ghi chấm công cho nhân viên này vào ngày {dto.Date}" });
+            }
+
+            // Tính work_hours từ checkin và checkout time
+            decimal? workHours = null;
+            if (dto.CheckinTime.HasValue && dto.CheckoutTime.HasValue)
+            {
+                if (dto.CheckoutTime.Value <= dto.CheckinTime.Value)
                 {
-                    result.FailedCount++;
-                    result.Errors.Add($"Employee {dto.EmployeeId} - {dto.Date}: Already exists");
-                    continue;
+                    return ApiResponse<AttendanceDetailDto>.ErrorResponse(
+                        "Thời gian không hợp lệ",
+                        new List<string> { "Thời gian checkout phải sau thời gian checkin" });
                 }
 
-                var created = await CreateAttendanceAsync(dto, createdBy);
-                result.CreatedAttendances.Add(created);
-                result.SuccessCount++;
+                var timeSpan = dto.CheckoutTime.Value - dto.CheckinTime.Value;
+                workHours = (decimal)timeSpan.TotalHours;
             }
-            catch (Exception ex)
+
+            var attendance = new Attendance
             {
-                result.FailedCount++;
-                result.Errors.Add($"Employee {dto.EmployeeId} - {dto.Date}: {ex.Message}");
-                _logger.LogError(ex, "Failed to create attendance for employee {EmployeeId} on {Date}", 
-                    dto.EmployeeId, dto.Date);
+                EmployeeId = dto.EmployeeId,
+                Date = dto.Date,
+                CheckinTime = dto.CheckinTime,
+                CheckoutTime = dto.CheckoutTime,
+                Status = dto.Status,
+                Attachment = dto.Attachment,
+                WorkHours = workHours,
+                OvertimeHours = dto.OvertimeHours ?? 0,
+                Note = dto.Note
+            };
+
+            var created = await _attendanceRepository.CreateAsync(attendance);
+
+            var resultDto = new AttendanceDetailDto
+            {
+                Id = created.Id,
+                EmployeeId = created.EmployeeId,
+                EmployeeName = created.Employee?.Fullname ?? "",
+                Date = created.Date,
+                CheckinTime = created.CheckinTime,
+                CheckoutTime = created.CheckoutTime,
+                Status = created.Status,
+                Attachment = created.Attachment,
+                WorkHours = created.WorkHours,
+                OvertimeHours = created.OvertimeHours,
+                Note = created.Note,
+                CreatedAt = created.CreatedAt,
+                UpdatedAt = created.UpdatedAt
+            };
+
+            return ApiResponse<AttendanceDetailDto>.SuccessResponse(
+                resultDto,
+                "Tạo bản ghi chấm công thành công");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating attendance");
+            return ApiResponse<AttendanceDetailDto>.ErrorResponse(
+                "Lỗi khi tạo bản ghi chấm công",
+                new List<string> { ex.Message });
+        }
+    }
+
+    public async Task<ApiResponse<AttendanceDetailDto>> UpdateAttendanceAsync(int id, UpdateAttendanceDto dto)
+    {
+        try
+        {
+            var attendance = await _attendanceRepository.GetByIdAsync(id);
+            if (attendance == null)
+            {
+                return ApiResponse<AttendanceDetailDto>.ErrorResponse(
+                    "Không tìm thấy bản ghi chấm công",
+                    new List<string> { $"Bản ghi chấm công với ID {id} không tồn tại" });
             }
-        }
 
-        _logger.LogInformation(
-            "Bulk attendance creation completed. Total: {Total}, Success: {Success}, Failed: {Failed}",
-            result.TotalRecords, result.SuccessCount, result.FailedCount);
+            // Cập nhật các trường
+            if (dto.CheckinTime.HasValue)
+                attendance.CheckinTime = dto.CheckinTime;
 
-        return result;
-    }
+            if (dto.CheckoutTime.HasValue)
+                attendance.CheckoutTime = dto.CheckoutTime;
 
-    // ============================================
-    // SYSTEM METHODS
-    // ============================================
+            if (!string.IsNullOrEmpty(dto.Status))
+                attendance.Status = dto.Status;
 
-    public async Task<AttendanceResponseDto> SyncFromDeviceAsync(SyncAttendanceFromDeviceDto dto)
-    {
-        var employee = await _context.Employees.FindAsync(dto.EmployeeId);
-        if (employee == null)
-            throw new KeyNotFoundException("Employee not found");
+            if (dto.Attachment != null)
+                attendance.Attachment = dto.Attachment;
 
-        // Kiểm tra xem đã có attendance cho ngày này chưa
-        var existingAttendance = await _attendanceRepository.GetByEmployeeAndDateAsync(dto.EmployeeId, dto.Date);
+            if (dto.OvertimeHours.HasValue)
+                attendance.OvertimeHours = dto.OvertimeHours;
 
-        if (existingAttendance != null)
-        {
-            // Cập nhật nếu đã tồn tại
-            existingAttendance.CheckinTime = dto.CheckinTime;
-            existingAttendance.CheckoutTime = dto.CheckoutTime;
-            existingAttendance.WorkHours = CalculateWorkHours(dto.CheckinTime, dto.CheckoutTime);
-            existingAttendance.Status = DetermineStatus(dto.CheckinTime);
-            existingAttendance.UpdatedAt = DateTime.UtcNow;
-            
-            await _attendanceRepository.UpdateAsync(existingAttendance);
+            if (dto.Note != null)
+                attendance.Note = dto.Note;
 
-            _logger.LogInformation(
-                "Attendance synced from device. Id: {Id}, EmployeeId: {EmployeeId}, DeviceId: {DeviceId}",
-                existingAttendance.Id, dto.EmployeeId, dto.DeviceId);
-
-            return MapToResponseDto(existingAttendance, employee);
-        }
-
-        // Tạo mới
-        var attendance = _mapper.Map<Attendance>(dto);
-        attendance.WorkHours = CalculateWorkHours(dto.CheckinTime, dto.CheckoutTime);
-        attendance.Status = DetermineStatus(dto.CheckinTime);
-
-        var created = await _attendanceRepository.AddAsync(attendance);
-
-        _logger.LogInformation(
-            "New attendance synced from device. Id: {Id}, EmployeeId: {EmployeeId}, DeviceId: {DeviceId}",
-            created.Id, dto.EmployeeId, dto.DeviceId);
-
-        return MapToResponseDto(created, employee);
-    }
-
-    // ============================================
-    // UTILITY METHODS
-    // ============================================
-
-    public async Task<bool> CheckAttendanceExistsAsync(int employeeId, DateOnly date)
-    {
-        return await _attendanceRepository.ExistsAsync(employeeId, date);
-    }
-
-    private AttendanceResponseDto MapToResponseDto(Attendance attendance, Employee employee)
-    {
-        var isLate = false;
-        var isEarlyLeave = false;
-        TimeSpan? lateMinutes = null;
-        TimeSpan? earlyLeaveMinutes = null;
-
-        if (attendance.CheckinTime.HasValue)
-        {
-            var checkinTimeOnly = attendance.CheckinTime.Value.TimeOfDay;
-            if (checkinTimeOnly > _standardCheckinTime)
+            // Tính lại work_hours nếu có checkin và checkout
+            if (attendance.CheckinTime.HasValue && attendance.CheckoutTime.HasValue)
             {
-                var lateDuration = checkinTimeOnly - _standardCheckinTime;
-                if (lateDuration.TotalMinutes > _lateThresholdMinutes)
+                if (attendance.CheckoutTime.Value <= attendance.CheckinTime.Value)
                 {
-                    isLate = true;
-                    lateMinutes = lateDuration;
+                    return ApiResponse<AttendanceDetailDto>.ErrorResponse(
+                        "Thời gian không hợp lệ",
+                        new List<string> { "Thời gian checkout phải sau thời gian checkin" });
                 }
-            }
-        }
 
-        if (attendance.CheckoutTime.HasValue)
-        {
-            var checkoutTimeOnly = attendance.CheckoutTime.Value.TimeOfDay;
-            if (checkoutTimeOnly < _standardCheckoutTime)
+                var timeSpan = attendance.CheckoutTime.Value - attendance.CheckinTime.Value;
+                attendance.WorkHours = (decimal)timeSpan.TotalHours;
+            }
+            else
             {
-                var earlyDuration = _standardCheckoutTime - checkoutTimeOnly;
-                if (earlyDuration.TotalMinutes > _earlyLeaveThresholdMinutes)
-                {
-                    isEarlyLeave = true;
-                    earlyLeaveMinutes = earlyDuration;
-                }
+                attendance.WorkHours = null;
             }
-        }
 
-        return new AttendanceResponseDto
+            var updated = await _attendanceRepository.UpdateAsync(attendance);
+
+            var resultDto = new AttendanceDetailDto
+            {
+                Id = updated.Id,
+                EmployeeId = updated.EmployeeId,
+                EmployeeName = updated.Employee?.Fullname ?? "",
+                Date = updated.Date,
+                CheckinTime = updated.CheckinTime,
+                CheckoutTime = updated.CheckoutTime,
+                Status = updated.Status,
+                Attachment = updated.Attachment,
+                WorkHours = updated.WorkHours,
+                OvertimeHours = updated.OvertimeHours,
+                Note = updated.Note,
+                CreatedAt = updated.CreatedAt,
+                UpdatedAt = updated.UpdatedAt
+            };
+
+            return ApiResponse<AttendanceDetailDto>.SuccessResponse(
+                resultDto,
+                "Cập nhật bản ghi chấm công thành công");
+        }
+        catch (Exception ex)
         {
-            Id = attendance.Id,
-            EmployeeId = attendance.EmployeeId,
-            EmployeeName = employee.Fullname,
-            EmployeeEmail = employee.Email,
-            Date = attendance.Date,
-            CheckinTime = attendance.CheckinTime,
-            CheckoutTime = attendance.CheckoutTime,
-            Status = attendance.Status,
-            Attachment = attendance.Attachment,
-            WorkHours = attendance.WorkHours,
-            OvertimeHours = attendance.OvertimeHours,
-            Note = attendance.Note,
-            CreatedAt = attendance.CreatedAt,
-            UpdatedAt = attendance.UpdatedAt,
-            IsLate = isLate,
-            IsEarlyLeave = isEarlyLeave,
-            LateMinutes = lateMinutes,
-            EarlyLeaveMinutes = earlyLeaveMinutes
-        };
+            _logger.LogError(ex, "Error updating attendance {AttendanceId}", id);
+            return ApiResponse<AttendanceDetailDto>.ErrorResponse(
+                "Lỗi khi cập nhật bản ghi chấm công",
+                new List<string> { ex.Message });
+        }
     }
 
-    private decimal CalculateWorkHours(DateTime? checkinTime, DateTime? checkoutTime)
+    public async Task<ApiResponse<bool>> DeleteAttendanceAsync(int id)
     {
-        if (!checkinTime.HasValue || !checkoutTime.HasValue)
-            return 0;
-
-        var duration = checkoutTime.Value - checkinTime.Value;
-        
-        // Trừ đi giờ nghỉ trưa (1 giờ nếu làm việc > 4 giờ)
-        if (duration.TotalHours > 4)
+        try
         {
-            duration = duration.Subtract(TimeSpan.FromHours(1));
+            var deleted = await _attendanceRepository.DeleteAsync(id);
+            if (!deleted)
+            {
+                return ApiResponse<bool>.ErrorResponse(
+                    "Không tìm thấy bản ghi chấm công",
+                    new List<string> { $"Bản ghi chấm công với ID {id} không tồn tại" });
+            }
+
+            return ApiResponse<bool>.SuccessResponse(true, "Xóa bản ghi chấm công thành công");
         }
-
-        return (decimal)Math.Max(0, duration.TotalHours);
-    }
-
-    private string DetermineStatus(DateTime checkinTime)
-    {
-        var checkinTimeOnly = checkinTime.TimeOfDay;
-        
-        if (checkinTimeOnly > _standardCheckinTime.Add(TimeSpan.FromMinutes(_lateThresholdMinutes)))
+        catch (Exception ex)
         {
-            return "late";
+            _logger.LogError(ex, "Error deleting attendance {AttendanceId}", id);
+            return ApiResponse<bool>.ErrorResponse(
+                "Lỗi khi xóa bản ghi chấm công",
+                new List<string> { ex.Message });
         }
-
-        return "present";
     }
 }

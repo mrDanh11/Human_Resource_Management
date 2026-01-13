@@ -105,7 +105,7 @@ export default function ActivityFormModal({ isOpen, onClose, onSubmit, initialDa
           <form onSubmit={handleSubmit} className="p-6 space-y-6 max-h-[80vh] overflow-y-auto">
             {/* Name */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Tên hoạt động</label>
+              <label className="block text-sm font-medium text-blue-600 mb-1">Tên hoạt động</label>
               <div className="relative">
                 <Type className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
@@ -122,7 +122,7 @@ export default function ActivityFormModal({ isOpen, onClose, onSubmit, initialDa
 
             {/* Description */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Mô tả</label>
+              <label className="block text-sm font-medium text-blue-600 mb-1">Mô tả</label>
               <div className="relative">
                 <AlignLeft className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
                 <textarea
@@ -140,7 +140,7 @@ export default function ActivityFormModal({ isOpen, onClose, onSubmit, initialDa
             {/* Dates */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Ngày bắt đầu</label>
+                <label className="block text-sm font-medium text-blue-600 mb-1">Ngày bắt đầu</label>
                 <input
                   type="datetime-local"
                   name="startDate"
@@ -151,7 +151,7 @@ export default function ActivityFormModal({ isOpen, onClose, onSubmit, initialDa
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Ngày kết thúc</label>
+                <label className="block text-sm font-medium text-blue-600 mb-1">Ngày kết thúc</label>
                 <input
                   type="datetime-local"
                   name="endDate"
@@ -165,7 +165,7 @@ export default function ActivityFormModal({ isOpen, onClose, onSubmit, initialDa
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Bắt đầu đăng ký</label>
+                <label className="block text-sm font-medium text-blue-600 mb-1">Bắt đầu đăng ký</label>
                 <input
                   type="datetime-local"
                   name="registrationStartDate"
@@ -176,7 +176,7 @@ export default function ActivityFormModal({ isOpen, onClose, onSubmit, initialDa
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Kết thúc đăng ký</label>
+                <label className="block text-sm font-medium text-blue-600 mb-1">Kết thúc đăng ký</label>
                 <input
                   type="datetime-local"
                   name="registrationEndDate"
@@ -191,7 +191,7 @@ export default function ActivityFormModal({ isOpen, onClose, onSubmit, initialDa
             {/* Location & Participants */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Địa điểm</label>
+                <label className="block text-sm font-medium text-blue-600 mb-1">Địa điểm</label>
                 <div className="relative">
                   <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <input
@@ -206,7 +206,7 @@ export default function ActivityFormModal({ isOpen, onClose, onSubmit, initialDa
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Số lượng tối đa</label>
+                <label className="block text-sm font-medium text-blue-600 mb-1">Số lượng tối đa</label>
                 <div className="relative">
                   <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <input
@@ -225,7 +225,7 @@ export default function ActivityFormModal({ isOpen, onClose, onSubmit, initialDa
             {/* Type & Points */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Loại hoạt động</label>
+                <label className="block text-sm font-medium text-blue-600 mb-1">Loại hoạt động</label>
                 <select
                   name="activityType"
                   value={formData.activityType}
@@ -240,7 +240,7 @@ export default function ActivityFormModal({ isOpen, onClose, onSubmit, initialDa
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Điểm thưởng</label>
+                <label className="block text-sm font-medium text-blue-600 mb-1">Điểm thưởng</label>
                 <div className="relative">
                   <Award className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <input
@@ -259,7 +259,7 @@ export default function ActivityFormModal({ isOpen, onClose, onSubmit, initialDa
             {/* Organizer & Image */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Đơn vị tổ chức</label>
+                <label className="block text-sm font-medium text-blue-600 mb-1">Đơn vị tổ chức</label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <input
@@ -274,7 +274,7 @@ export default function ActivityFormModal({ isOpen, onClose, onSubmit, initialDa
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">URL Hình ảnh</label>
+                <label className="block text-sm font-medium text-blue-600 mb-1">URL Hình ảnh</label>
                 <div className="relative">
                   <ImageIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <input
@@ -294,14 +294,34 @@ export default function ActivityFormModal({ isOpen, onClose, onSubmit, initialDa
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                className="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg transition-all"
+                style={{ transition: 'all 0.3s ease' }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 5px 20px rgba(156, 163, 175, 0.4)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
               >
                 Hủy
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all flex items-center gap-2 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{ transition: 'all 0.3s ease' }}
+                onMouseEnter={(e) => {
+                  if (!loading) {
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.boxShadow = '0 5px 20px rgba(37, 99, 235, 0.4)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
               >
                 {loading ? 'Đang xử lý...' : 'Lưu thay đổi'}
               </button>

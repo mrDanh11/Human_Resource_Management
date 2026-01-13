@@ -5,7 +5,6 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { pointService } from '../../services/pointService';
 import type { 
   EmployeePointDto, 
-  PointTransactionDto,
 } from '../../services/pointService';
 
 interface RewardEmployee {
@@ -109,6 +108,9 @@ export default function RewardPointHR() {
                     setPointOfHR(hrPoint);
                 }
 
+                setSelectedEmployees([]);
+                setPointsPerPerson(50);
+                setNote('');
                 dispatch(fetchAllEmployeePoints({ pageNumber: 1, pageSize: 100 }));
 
                 setShowToast(true);

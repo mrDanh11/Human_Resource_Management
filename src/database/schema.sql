@@ -328,3 +328,4 @@ CREATE INDEX idx_attendance_date ON attendance(date);
 CREATE INDEX idx_request_employee ON request(employee_id);
 CREATE INDEX idx_request_status ON request(status);
 CREATE INDEX idx_approval_request ON approval_history(request_id);
+
