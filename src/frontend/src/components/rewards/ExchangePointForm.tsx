@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { THEME_COLORS } from "../common/THEME_COLORS";
+import { THEME_COLORS } from "../../types/themeColors";
 
 export default function ExchangePointForm({
   current,

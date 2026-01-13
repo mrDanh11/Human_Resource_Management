@@ -1,5 +1,5 @@
 import { X, Award, TrendingUp, Download, FileText, Table, Calendar, MapPin, Tag } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import type { CompletedActivityData } from '../../types/activity';

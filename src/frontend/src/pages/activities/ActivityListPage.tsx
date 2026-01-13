@@ -5,24 +5,23 @@ import ActivityListCard from '../../components/activities/ActivityListCard';
 import ActivityDetailModal from '../../components/activities/ActivityDetailModal';
 import ConfirmRegistrationModal from '../../components/activities/ConfirmRegistrationModal';
 import ActivityFormModal from '../../components/activities/ActivityFormModal';
-import type { ActivityData } from '../../data/activityData';
 import { getAllActivities, registerActivity, unregisterActivity, getMyParticipations, deleteActivity, updateActivity } from '../../services/activityService';
 import type { Activity, CreateActivityRequest } from '../../types/activity';
 
 export default function ActivityListPage() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedType, setSelectedType] = useState<ActivityData['type'] | 'all'>('all');
+  const [selectedType, setSelectedType] = useState<Activity['activityType'] | 'all'>('all');
   const [selectedStatus, setSelectedStatus] = useState<'all' | 'open' | 'closed'>('all');
-  const [selectedActivity, setSelectedActivity] = useState<ActivityData | null>(null);
+  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editingActivity, setEditingActivity] = useState<ActivityData | null>(null);
-  const [activityToRegister, setActivityToRegister] = useState<ActivityData | null>(null);
+  const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
+  const [activityToRegister, setActivityToRegister] = useState<Activity | null>(null);
   
   const [userRole, setUserRole] = useState<string>('');
 
-  const [activities, setActivities] = useState<ActivityData[]>([]);
+  const [activities, setActivities] = useState<Activity[]>([]);
   const [myParticipations, setMyParticipations] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
   
@@ -70,22 +69,24 @@ export default function ActivityListPage() {
     try {
       setLoading(true);
       const response = await getAllActivities({ page: 1, pageSize: 100 }); // Fetch all for now
-      const mappedActivities: ActivityData[] = response.activities.map((a: Activity) => ({
-        id: a.id.toString(),
+      const mappedActivities: Activity[] = response.activities.map((a: Activity) => ({
+        id: a.id,
         name: a.name,
         description: a.description,
         startDate: a.startDate,
         endDate: a.endDate,
-        registrationStart: a.registrationStartDate,
-        registrationEnd: a.registrationEndDate,
+        registrationStartDate: a.registrationStartDate,
+        registrationEndDate: a.registrationEndDate,
         maxParticipants: a.maxParticipants,
         currentParticipants: a.currentParticipants || 0,
         location: a.location,
-        type: a.activityType as any,
+        activityType: a.activityType as any,
         status: a.status as any,
         imageUrl: a.imageUrl,
         organizer: a.organizer,
-        points: a.points
+        points: a.points,
+        createdAt: a.createdAt,
+        updatedAt: a.updatedAt,
       }));
       setActivities(mappedActivities);
     } catch (error) {
@@ -96,7 +97,7 @@ export default function ActivityListPage() {
   };
 
   const handleViewDetails = (activityId: string) => {
-    const activity = activities.find(a => a.id === activityId);
+    const activity = activities.find(a => a.id === +activityId);
     if (activity) {
       setSelectedActivity(activity);
       setIsModalOpen(true);
@@ -104,7 +105,7 @@ export default function ActivityListPage() {
   };
 
   const handleRegister = (activityId: string) => {
-    const activity = activities.find(a => a.id === activityId);
+    const activity = activities.find(a => a.id === +activityId);
     if (activity) {
       setActivityToRegister(activity);
       setIsConfirmModalOpen(true);
@@ -155,7 +156,7 @@ export default function ActivityListPage() {
     }
   };
 
-  const handleEditClick = (activity: ActivityData) => {
+  const handleEditClick = (activity: Activity) => {
     setEditingActivity(activity);
     setIsEditModalOpen(true);
   };
@@ -182,14 +183,14 @@ export default function ActivityListPage() {
       activity.description.toLowerCase().includes(searchQuery.toLowerCase());
 
     // Type filter
-    const matchesType = selectedType === 'all' || activity.type === selectedType;
+    const matchesType = selectedType === 'all' || activity.activityType === selectedType;
 
     // Status filter
     let matchesStatus = true;
     if (selectedStatus !== 'all') {
       const now = new Date();
-      const regStart = new Date(activity.registrationStart);
-      const regEnd = new Date(activity.registrationEnd);
+      const regStart = new Date(activity.registrationStartDate);
+      const regEnd = new Date(activity.registrationEndDate);
       const isOpen = now >= regStart && now <= regEnd;
 
       matchesStatus = selectedStatus === 'open' ? isOpen : !isOpen;
@@ -256,7 +257,7 @@ export default function ActivityListPage() {
                 <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <select
                   value={selectedType}
-                  onChange={(e) => setSelectedType(e.target.value as ActivityData['type'] | 'all')}
+                  onChange={(e) => setSelectedType(e.target.value as Activity['activityType'] | 'all')}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 appearance-none"
                 >
                   <option value="all">Tất cả loại</option>

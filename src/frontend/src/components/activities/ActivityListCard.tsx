@@ -1,19 +1,19 @@
 import { useState } from 'react';
 import { Calendar, MapPin, Users, Eye, UserPlus, UserMinus, Trash2, Pencil } from 'lucide-react';
-import type { ActivityData } from '../../data/activityData';
+import type { Activity } from '../../types/activity';
 
 interface ActivityListCardProps {
-  activity: ActivityData;
+  activity: Activity;
   onViewDetails: (activityId: string) => void;
   onRegister: (activityId: string) => void;
   onUnregister?: (activityId: string) => void;
   onDelete?: (activityId: string) => void;
-  onEdit?: (activity: ActivityData) => void;
+  onEdit?: (activity: Activity) => void;
   isRegistered?: boolean;
   userRole?: string;
 }
 
-const activityTypeLabels: Record<ActivityData['type'], string> = {
+const activityTypeLabels: Record<Activity['activityType'], string> = {
   sports: 'Thể thao',
   charity: 'Từ thiện',
   training: 'Đào tạo',
@@ -21,7 +21,7 @@ const activityTypeLabels: Record<ActivityData['type'], string> = {
   volunteer: 'Tình nguyện'
 };
 
-const activityTypeColors: Record<ActivityData['type'], string> = {
+const activityTypeColors: Record<Activity['activityType'], string> = {
   sports: 'bg-blue-100 text-blue-800',
   charity: 'bg-pink-100 text-pink-800',
   training: 'bg-purple-100 text-purple-800',
@@ -54,8 +54,8 @@ export default function ActivityListCard({
 
   const isRegistrationOpen = () => {
     const now = new Date();
-    const regStart = new Date(activity.registrationStart);
-    const regEnd = new Date(activity.registrationEnd);
+    const regStart = new Date(activity.registrationStartDate);
+    const regEnd = new Date(activity.registrationEndDate);
     return now >= regStart && now <= regEnd;
   };
 
@@ -67,8 +67,8 @@ export default function ActivityListCard({
   const getRegistrationStatus = () => {
     if (!isRegistrationOpen()) {
       const now = new Date();
-      const regStart = new Date(activity.registrationStart);
-      const regEnd = new Date(activity.registrationEnd);
+      const regStart = new Date(activity.registrationStartDate);
+      const regEnd = new Date(activity.registrationEndDate);
       
       if (now < regStart) {
         return { text: 'Chưa mở đăng ký', color: 'text-gray-500' };
@@ -106,8 +106,8 @@ export default function ActivityListCard({
           <h3 className="text-xl font-bold text-gray-900 flex-1 line-clamp-2" style={{ minHeight: '3.5rem', lineHeight: '1.75rem' }}>
             {activity.name}
           </h3>
-          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${activityTypeColors[activity.type]}`}>
-            {activityTypeLabels[activity.type]}
+          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${activityTypeColors[activity.activityType]}`}>
+            {activityTypeLabels[activity.activityType]}
           </span>
         </div>
 
@@ -129,7 +129,7 @@ export default function ActivityListCard({
           <div className="flex items-center text-sm text-gray-700">
             <Calendar className="w-4 h-4 mr-2 text-green-600" />
             <span className="font-medium mr-2">Đăng ký:</span>
-            <span>{formatDateTime(activity.registrationStart)} - {formatDateTime(activity.registrationEnd)}</span>
+            <span>{formatDateTime(activity.registrationStartDate)} - {formatDateTime(activity.registrationEndDate)}</span>
           </div>
 
           {/* Location */}
@@ -176,7 +176,7 @@ export default function ActivityListCard({
         {/* Actions */}
         <div className="flex gap-3">
           <button
-            onClick={() => onViewDetails(activity.id)}
+            onClick={() => onViewDetails(activity.id.toString())}
             className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg transition-all duration-200"
             style={{
               transition: 'all 0.3s ease'
@@ -219,7 +219,7 @@ export default function ActivityListCard({
               )}
               {onDelete && (
                 <button
-                  onClick={() => onDelete(activity.id)}
+                  onClick={() => onDelete(activity.id.toString())}
                   className="flex items-center justify-center px-4 py-2 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg transition-all duration-200"
                   style={{
                     transition: 'all 0.3s ease'
@@ -252,7 +252,7 @@ export default function ActivityListCard({
                   </button>
                 ) : (
                   <button
-                    onClick={() => onUnregister && onUnregister(activity.id)}
+                    onClick={() => onUnregister && onUnregister(activity.id.toString())}
                     className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-600 hover:bg-red-600 text-white rounded-lg transition-all duration-200"
                     style={{
                       transition: 'all 0.3s ease'
@@ -283,7 +283,7 @@ export default function ActivityListCard({
                 )
               ) : (
                 <button
-                  onClick={() => onRegister(activity.id)}
+                  onClick={() => onRegister(activity.id.toString())}
                   disabled={!canRegister}
                   className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ${
                     canRegister

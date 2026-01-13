@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { Home, User, FileText, Activity, Award, ChevronDown } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
+import UserInfo from "./UserInfo";
 
 const userId = localStorage.getItem('userId');
-const userName = localStorage.getItem('name') || 'Nguyễn Văn A';
-const userRole = localStorage.getItem('role');
 
 const HRSidebar: React.FC = () => {
   const location = useLocation();
@@ -15,17 +14,17 @@ const HRSidebar: React.FC = () => {
     { label: "Trang chủ", icon: Home, to: "/landing" },
     { label: "Dashboard", icon: FileText, to: "/hr/dashboard" },
     { label: "Hồ sơ cá nhân", icon: User, to: `/employee/profile/${userId}` },
-    { label: "Yêu cầu", icon: FileText, to: "/requests" },
+    { label: "Yêu cầu", icon: FileText, to: "hr/requests" },
     {
       label: "Hoạt động",
       icon: Activity,
       key: "activities",
       submenu: [
-        { label: "Đang mở", to: "/activities" },
-        { label: "Tạo hoạt động", to: "/activities/create" },
-        { label: "Hủy hoạt động", to: "/activities/cancel" },
-        { label: "Đã đăng ký", to: "/activities/history" },
-        { label: "Kết quả", to: "/activities/result" }
+        { label: "Đang mở", to: "hr/activities" },
+        { label: "Tạo hoạt động", to: "hr/activities/create" },
+        { label: "Hủy hoạt động", to: "hr/activities/cancel" },
+        { label: "Đã đăng ký", to: "hr/activities/history" },
+        { label: "Kết quả", to: "hr/activities/result" }
       ]
     },
     { 
@@ -33,30 +32,16 @@ const HRSidebar: React.FC = () => {
       icon: Award, 
       key: "rewards",
       submenu: [
-        { label: "Tổng quan", to: "/rewards/points" },
-
-        { label: "Thưởng điểm HR", to: "/rewards/hr-reward" },
-        { label: "Lịch sử giao dịch", to: "/rewards/history" },
-        { label: "Đổi thưởng", to: "/rewards/exchange" },
-
+        { label: "Tổng quan", to: "hr/rewards/points" },
+        { label: "Thưởng điểm HR", to: "hr/rewards/hr-reward" },
+        { label: "Lịch sử giao dịch", to: "hr/rewards/history" },
+        { label: "Đổi thưởng", to: "hr/rewards/exchange" },
       ]
     },
   ];
-  {/* USER INFO – BOTTOM */}
-        <div className="border-t border-gray-200 px-6 py-4 bg-white sticky bottom-0">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white shadow-md relative">
-              <User size={20} />
-              <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-            </div>
-            <div className="flex-1">
-              <div className="font-semibold text-sm">{userName}</div>
-              <div className="text-xs text-gray-500 capitalize">{userRole}</div>
-            </div>
-          </div>
-        </div>
+
   return (
-    <aside className="w-56 bg-white border-r border-[#E6E6E6] flex flex-col pt-8 pb-4 px-2 fixed h-full">
+    <aside className="w-64 bg-white border-r border-[#E6E6E6] flex flex-col pt-8 pb-4 px-2 fixed h-full">
 
       <div className="mb-6 px-4">
         <div className="text-xl font-bold text-blue-600">HR Portal</div>
@@ -129,19 +114,7 @@ const HRSidebar: React.FC = () => {
         })}
       </nav>
 
-      {/* USER INFO – BOTTOM */}
-      <div className="border-t border-gray-200 px-6 py-4 bg-white sticky bottom-0">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white shadow-md relative">
-            <User size={20} />
-            <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-          </div>
-          <div className="flex-1">
-            <div className="font-semibold text-sm">{userName}</div>
-            <div className="text-xs text-gray-500 capitalize">{userRole}</div>
-          </div>
-        </div>
-      </div>
+      <UserInfo />
 
     </aside>
   );

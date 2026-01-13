@@ -1,12 +1,12 @@
 import { useState, useRef } from "react";
 import { Search, Award, Upload } from "lucide-react";
-import Header from "../../components/LandingPage/Header";
+import Header from "../../components/common/Header";
 import Sidebar from "../../components/common/Sidebar";
-import Footer from "../../components/LandingPage/Footer";
-import ResultFilterChips from "./components/ResultFilterChips";
-import ProgressBar from "./components/ProgressBar";
-import BulkActionBar from "./components/BulkActionBar";
-import ResultTable, { type ParticipantResult } from "./components/ResultTable";
+import Footer from "../../components/common/Footer";
+import ResultFilterChips from "../../components/activities/ResultFilterChips";
+import ProgressBar from "../../components/activities/ProgressBar";
+import BulkActionBar from "../../components/activities/BulkActionBar";
+import ResultTable, { type ParticipantResult } from "../../components/activities/ResultTable";
 
 export default function ActivityResultPage() {
   const [selectedActivity, setSelectedActivity] = useState("marathon2024");

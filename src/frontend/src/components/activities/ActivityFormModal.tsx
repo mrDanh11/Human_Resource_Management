@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { X, MapPin, Users, Image as ImageIcon, Type, AlignLeft, Award, User } from 'lucide-react';
 import type { CreateActivityRequest } from '../../types/activity';
-import type { ActivityData } from '../../data/activityData';
+import type { Activity } from '../../types/activity';
 
 interface ActivityFormModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: CreateActivityRequest) => Promise<void>;
-  initialData?: ActivityData;
+  initialData?: Activity;
   title: string;
 }
 
@@ -36,11 +36,11 @@ export default function ActivityFormModal({ isOpen, onClose, onSubmit, initialDa
         description: initialData.description,
         startDate: initialData.startDate,
         endDate: initialData.endDate,
-        registrationStartDate: initialData.registrationStart,
-        registrationEndDate: initialData.registrationEnd,
+        registrationStartDate: initialData.registrationStartDate,
+        registrationEndDate: initialData.registrationEndDate,
         maxParticipants: initialData.maxParticipants || 0,
         location: initialData.location,
-        activityType: initialData.type,
+        activityType: initialData.activityType,
         imageUrl: initialData.imageUrl || '',
         organizer: initialData.organizer,
         points: initialData.points || 0

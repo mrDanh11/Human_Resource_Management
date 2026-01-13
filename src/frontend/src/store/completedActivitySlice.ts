@@ -5,7 +5,7 @@
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { getCompletedActivities } from '../services/activityService';
-import type { CompletedActivityData } from '../data/completedActivityData';
+import type { CompletedActivityData } from '../types/activity';
 
 interface CompletedActivityState {
   activities: CompletedActivityData[];

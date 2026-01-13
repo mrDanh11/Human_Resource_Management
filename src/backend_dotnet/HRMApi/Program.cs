@@ -9,10 +9,10 @@ using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using HRMApi.BackgroundServices;
 
-var builder = WebApplication.CreateBuilder(args);
-
 // Load .env
 Env.Load();
+
+var builder = WebApplication.CreateBuilder(args);
 
 // ========== Fix JWT Claim Mapping ==========
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();

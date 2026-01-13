@@ -24,6 +24,8 @@ export default function AdminActivityListPage() {
     dispatch(fetchCompletedActivities());
   }, [dispatch]);
 
+  console.log('Completed Activities:', activities);
+
   useEffect(() => {
     if (isStatisticsModalOpen) {
       document.body.style.overflow = 'hidden';

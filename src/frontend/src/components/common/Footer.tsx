@@ -1,4 +1,3 @@
-// src/pages/landing/components/Footer.tsx
 export default function Footer() {
   return (
     <footer
@@ -7,7 +6,7 @@ export default function Footer() {
     >
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between py-2 px-8 gap-8 text-lg text-gray-700">
         {/* Logo & Slogan */}
-        <div className="flex flex-col gap-2 items-center md:items-start flex-1 min-w-[220px]">
+        <div className="flex flex-col gap-2 items-center md:items-start flex-1 min-w-55">
           <div className="flex flex-col items-center md:items-start">
             <div className="flex items-center gap-2">
               {/* Heroicon CheckCircle */}
@@ -50,7 +49,7 @@ export default function Footer() {
         </div>
 
         {/* Socials & More */}
-        <div className="flex flex-col items-center md:items-end text-base text-gray-700 min-w-[200px] flex-1 justify-center">
+        <div className="flex flex-col items-center md:items-end text-base text-gray-700 min-w-50 flex-1 justify-center">
           <div className="font-bold text-blue-700 mb-1 tracking-wide">Kết nối với chúng tôi</div>
           <div className="flex gap-2">
             <a href="#" className="hover:text-blue-600" title="Facebook">

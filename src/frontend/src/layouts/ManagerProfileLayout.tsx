@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
-import Header from "../components/LandingPage/Header";
-import { BACKGROUNDS } from "../constants/styles";
+import Header from "../components/common/Header";
+import { BACKGROUNDS } from "../types/styles";
 import ManagerSidebar from "../components/common/ManagerSideBar";
 
 interface ProfileLayoutProps {

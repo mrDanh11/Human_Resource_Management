@@ -32,7 +32,7 @@ interface CommonFieldsProps {
 
 // --- COMPONENTS CON ---
 const PerformanceRating = ({ form, employeeId, onFormChange }: CommonFieldsProps) => (
-  <div className="mb-4 p-4 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg border border-yellow-200">
+  <div className="mb-4 p-4 bg-linear-to-r from-yellow-50 to-orange-50 rounded-lg border border-yellow-200">
     <label className="flex items-center gap-2 text-sm font-semibold text-gray-800 mb-2">
       <Award className="w-4 h-4 text-yellow-600" />
       Đánh giá hiệu suất <span className="text-red-500">*</span>
@@ -698,7 +698,7 @@ export default function RecordActivityResultPage() {
         
         {/* HEADER SECTION */}
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-6">
-          <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-6">
+          <div className="bg-linear-to-r from-blue-600 to-blue-700 text-white px-8 py-6">
             <div className="flex items-center gap-3 mb-2">
               <ClipboardList className="w-8 h-8" />
               <h1 className="text-3xl font-bold">Ghi nhận thành tích</h1>

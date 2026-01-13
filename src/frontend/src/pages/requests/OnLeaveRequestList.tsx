@@ -4,12 +4,6 @@
  * Filter by status, type, date range
  */
 
-// Filter controls (status, type, date)
-// Request cards với actions
-// Bulk approve functionality (manager)
-// Create new request button
-// Stats summary (pending, approved, rejected)
-
 import { useEffect, useMemo, useState } from 'react';
 import { Search, FileClock, Eye } from 'lucide-react';
 import LeaveRequestDetail from '../../components/requests/RequestOnLeaveDetail';

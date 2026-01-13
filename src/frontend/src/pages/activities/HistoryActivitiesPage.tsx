@@ -2,16 +2,16 @@ import { useState, useEffect } from 'react';
 import { Search, Filter, Calendar, CheckCircle } from 'lucide-react';
 import ActivityListCard from '../../components/activities/ActivityListCard';
 import ActivityDetailModal from '../../components/activities/ActivityDetailModal';
-import type { ActivityData } from '../../data/activityData';
+import type { Activity } from '../../types/activity';
 import { getMyParticipations, unregisterActivity } from '../../services/activityService';
 import type { MyParticipationResponse } from '../../types/activity';
 
 export default function HistoryActivitiesPage() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedType, setSelectedType] = useState<ActivityData['type'] | 'all'>('all');
-  const [selectedActivity, setSelectedActivity] = useState<ActivityData | null>(null);
+  const [selectedType, setSelectedType] = useState<Activity['activityType'] | 'all'>('all');
+  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [activities, setActivities] = useState<ActivityData[]>([]);
+  const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
   
   // Pagination
@@ -26,22 +26,24 @@ export default function HistoryActivitiesPage() {
     try {
       setLoading(true);
       const data = await getMyParticipations();
-      const mappedActivities: ActivityData[] = data.map((p: MyParticipationResponse) => ({
-        id: p.activityId.toString(),
+      const mappedActivities: Activity[] = data.map((p: MyParticipationResponse) => ({
+        id: p.activityId,
         name: p.activityName,
         description: p.description,
         startDate: p.startDate,
         endDate: p.endDate,
-        registrationStart: p.registrationStartDate,
-        registrationEnd: p.registrationEndDate,
+        registrationStartDate: p.registrationStartDate,
+        registrationEndDate: p.registrationEndDate,
         maxParticipants: p.maxParticipants,
         currentParticipants: p.currentParticipants || 0,
         location: p.location,
-        type: p.activityType as any,
+        activityType: p.activityType as any,
         status: p.activityStatus as any,
         imageUrl: p.imageUrl,
         organizer: p.organizer,
-        points: p.points
+        points: p.points,
+        createdAt: '',
+        updatedAt: '',
       }));
       setActivities(mappedActivities);
     } catch (error) {
@@ -52,7 +54,7 @@ export default function HistoryActivitiesPage() {
   };
 
   const handleViewDetails = (activityId: string) => {
-    const activity = activities.find(a => a.id === activityId);
+    const activity = activities.find(a => a.id === +activityId);
     if (activity) {
       setSelectedActivity(activity);
       setIsModalOpen(true);
@@ -60,7 +62,7 @@ export default function HistoryActivitiesPage() {
   };
 
   const handleUnregister = async (activityId: string) => {
-    const activity = activities.find(a => a.id === activityId);
+    const activity = activities.find(a => a.id === +activityId);
     if (activity && window.confirm(`Bạn có chắc muốn hủy đăng ký hoạt động "${activity.name}"?`)) {
       try {
         await unregisterActivity(Number(activityId));
@@ -85,7 +87,7 @@ export default function HistoryActivitiesPage() {
                          activity.description.toLowerCase().includes(searchQuery.toLowerCase());
     
     // Type filter
-    const matchesType = selectedType === 'all' || activity.type === selectedType;
+    const matchesType = selectedType === 'all' || activity.activityType === selectedType;
     
     return matchesSearch && matchesType;
   });
@@ -146,7 +148,7 @@ export default function HistoryActivitiesPage() {
                 <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <select
                   value={selectedType}
-                  onChange={(e) => setSelectedType(e.target.value as ActivityData['type'] | 'all')}
+                  onChange={(e) => setSelectedType(e.target.value as Activity['activityType'] | 'all')}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500 appearance-none"
                 >
                   <option value="all">Tất cả loại</option>

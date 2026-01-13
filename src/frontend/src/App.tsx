@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import EmployeeList from "./pages/profile/EmployeeList";
 import CreateEmployee from "./pages/profile/CreateEmployee";
 import ProfilePage from "./pages/profile/ProfilePage";
-import LandingPage from "./pages/LandingPage/LandingPage";
+import LandingPage from "./pages/landingPage/LandingPage";
 import PointExchange from "./pages/rewards/PointExchange";
 import RewardDashboard from "./pages/rewards/RewardDashboard";
 import RewardPointHR from "./pages/rewards/RewardPointHR";
@@ -11,7 +11,7 @@ import RewardHistory from "./pages/rewards/RewardHistory";
 import Login from "./pages/auth/Login";
 import Forbidden from "./pages/auth/Forbidden";
 import AdminLayout from "./layouts/AdminLayout";
-import AdminDashboard from "./pages/AdminDashboard";
+import AdminDashboard from "./pages/dashboard/AdminDashboard";
 import ActivityListPage from "./pages/activities/ActivityListPage";
 import AdminActivityListPage from "./pages/activities/AnalysisActivityListPage";
 import CreateActivityPage from "./pages/activities/CreateActivityPage";
@@ -22,17 +22,18 @@ import ActivityPrivateResultPage from "./pages/activities/ActivityPrivateResultP
 import RecordActivityResultPage from "./pages/activities/RecordActivityResultPage";
 import EmployeeLayout from "./layouts/EmployeeLayout";
 import HRLayout from "./layouts/HRLayout";
-import ProtectedRoute from "./components/ProtectedRoute";
+import ProtectedRoute from "./components/helper/ProtectedRoute";
 import AttendancePage from "./pages/attendance/AttendancePage";
 import AttendanceManagementPage from "./pages/attendance/AttendanceManagementPage";
 import AttendanceActivityPage from "./pages/activities/AttendanceActivityPage";
 import RequestSelectionPage from "./pages/requests/RequestSelectionPage";
 import RequestFormPage from "./pages/requests/RequestFormPage";
 import MyRequestsPage from "./pages/requests/MyRequestsPage";
-import WfhRequestPage from "./pages/wfh/WfhRequestPage";
+import WfhRequestPage from "./pages/requests/WfhRequestPage";
 import LeaveRequestPage from './pages/requests/OnLeaveRequestList';
 import ManagerLayout from './layouts/ManagerLayout';
 import CreateOnLeaveRequest from './pages/requests/CreateOnLeaveRequest';
+import HRDashboard from "./pages/dashboard/HRDashboard";
 
 const App = () => {
   return (
@@ -51,45 +52,40 @@ const App = () => {
 
           {/* Employee Layout Routes */}
           <Route element={<EmployeeLayout />}>
-            <Route path="/rewards/exchange" element={<PointExchange />} />
-            <Route path="/rewards/history" element={<RewardHistory />} />
-            <Route path="/rewards/points" element={<RewardDashboard />} />
             <Route path="/rewards/hr-reward" element={<RewardPointHR />} />
-            <Route path="" element={<EmployeeLayout />}>
-              <Route path="rewards">
-                <Route path="exchange" element={<PointExchange />} />
-                <Route path="history" element={<RewardHistory />} />
-                <Route path="points" element={<RewardDashboard />} />
-              </Route>
-              <Route path="/requests" element={<AttendancePage />} />
-              <Route
-                path="/requests/create"
-                element={<RequestSelectionPage />}
-              />
-              <Route
-                path="/requests/create/:type"
-                element={<RequestFormPage />}
-              />
-              <Route path="/requests/create/wfh" element={<WfhRequestPage />} />
-              <Route
-                path="/requests/my-requests"
-                element={<MyRequestsPage />}
-              />
-              <Route
-                path="/timesheet/manage"
-                element={<AttendanceManagementPage />}
-              />
-              <Route path="/rewards" element={<PointsAdmin />} />
-              <Route path="/activities" element={<ActivityListPage />} />
-              <Route
-                path="/activities/history"
-                element={<HistoryActivitiesPage />}
-              />
-              <Route
-                path="/activities/result"
-                element={<ActivityPrivateResultPage />}
-              />
+            <Route path="rewards">
+              <Route path="exchange" element={<PointExchange />} />
+              <Route path="history" element={<RewardHistory />} />
+              <Route path="points" element={<RewardDashboard />} />
             </Route>
+            <Route path="/requests" element={<AttendancePage />} />
+            <Route
+              path="/requests/create"
+              element={<RequestSelectionPage />}
+            />
+            <Route
+              path="/requests/create/:type"
+              element={<RequestFormPage />}
+            />
+            <Route path="/requests/create/wfh" element={<WfhRequestPage />} />
+            <Route
+              path="/requests/my-requests"
+              element={<MyRequestsPage />}
+            />
+            <Route
+              path="/timesheet/manage"
+              element={<AttendanceManagementPage />}
+            />
+            <Route path="/rewards" element={<PointsAdmin />} />
+            <Route path="/activities" element={<ActivityListPage />} />
+            <Route
+              path="/activities/history"
+              element={<HistoryActivitiesPage />}
+            />
+            <Route
+              path="/activities/result"
+              element={<ActivityPrivateResultPage />}
+            />
             <Route path="requests">
               <Route path="" element={<LeaveRequestPage />} />
               <Route path="create/on-leave" element={<CreateOnLeaveRequest />} />
@@ -102,38 +98,29 @@ const App = () => {
             <Route path="/activities/result" element={<ActivityPrivateResultPage />} />
           </Route>
 
-
-        <Route element={<ProtectedRoute allowedRoles={['MANAGER']} />}>
-          <Route path="/employee/profile/:id" element={<ProfilePage />} />
-          <Route path="/manager" element={<ManagerLayout />}>
-            <Route path="on-leave-requests" element={<LeaveRequestPage />} />
-            <Route path="rewards">
-              <Route path="exchange" element={<PointExchange />} />
-              <Route path="history" element={<RewardHistory />} />
-              <Route path="points" element={<RewardDashboard />} />
+          <Route element={<ProtectedRoute allowedRoles={['MANAGER']} />}>
+            <Route path="/employee/profile/:id" element={<ProfilePage />} />
+            <Route path="/manager" element={<ManagerLayout />}>
+              <Route path="on-leave-requests" element={<LeaveRequestPage />} />
+              <Route path="rewards">
+                <Route path="exchange" element={<PointExchange />} />
+                <Route path="history" element={<RewardHistory />} />
+                <Route path="points" element={<RewardDashboard />} />
+              </Route>
             </Route>
           </Route>
-        </Route>
+          
           {/* HR Routes */}
           <Route element={<ProtectedRoute allowedRoles={["HR"]} />}>
-            <Route element={<HRLayout />}>
-              <Route path="/rewards/hr-reward" element={<RewardPointHR />} />
-              <Route path="/activities" element={<AdminActivityListPage />} />
-              <Route path="/employee">
+            <Route path="/hr" element={<HRLayout />}>
+              <Route path="dashboard" element={<HRDashboard />} />
+              <Route path="rewards/hr-reward" element={<RewardPointHR />} />
+              <Route path="activities" element={<AdminActivityListPage />} />
+              <Route path="activities/record-result" element={<RecordActivityResultPage />} />
+              <Route path="employee">
                 <Route path="list" element={<EmployeeList />} />
                 <Route path="create" element={<CreateEmployee />} />
               </Route>
-            </Route>
-            {/* Nếu HR cần layout riêng, thêm layout ở đây */}
-            <Route path="/rewards/hr-reward" element={<RewardPointHR />} />
-            <Route path="/hr">
-              <Route path="activities" element={<AdminActivityListPage />} />
-              <Route
-                path="activities/record-result"
-                element={<RecordActivityResultPage />}
-              />
-              <Route path="employee/list" element={<EmployeeList />} />
-              <Route path="employee/create" element={<CreateEmployee />} />
             </Route>
           </Route>
 

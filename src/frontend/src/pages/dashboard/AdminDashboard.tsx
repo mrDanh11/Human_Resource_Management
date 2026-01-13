@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
-import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { fetchEmployeeStatistics, fetchActivityStatistics } from '../store/employeeSlice';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { fetchEmployeeStatistics, fetchActivityStatistics } from '../../store/employeeSlice';
 
 const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899'];
 

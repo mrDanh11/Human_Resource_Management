@@ -1,11 +1,3 @@
-/**
- * RewardHistory - Main page for viewing reward transaction history
- * Follows SOLID principles:
- * - Single Responsibility: Orchestrate child components
- * - Open/Closed: Easy to add new features via composition
- * - Dependency Inversion: Depends on hooks abstraction
- */
-
 import { useEffect, useState } from 'react';
 import { Award, TrendingUp, TrendingDown } from 'lucide-react';
 import { usePointSummary } from '../../hooks/usePointSummary';

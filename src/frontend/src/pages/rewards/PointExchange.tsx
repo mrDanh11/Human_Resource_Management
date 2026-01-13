@@ -3,17 +3,11 @@ import PointExchangeLayout from "../../components/rewards/PointExchangeLayout";
 import HalfCircleProgress from "../../components/rewards/HalfCircleProgress";
 import ConversionRateInfo from "../../components/rewards/ConversionRateInfo";
 import TickSelector from "../../components/rewards/TickSelector";
-import { usePointExchange } from "../../hooks/usePointExchange";
-// import { calculateMoneyFromPoints } from "../../utils/pointCalculations"; // Không dùng hàm cũ nữa
 import { Loader2, Clock } from "lucide-react";
 import { pointService } from "../../services/pointService";
 import type { PointToMoneyHistoryDto, PointConversionRuleDto } from "../../services/pointService";
 import ConfirmExchangeModal from "../../components/rewards/ConfirmExchangeModal";
 import ExchangePointSuccessToast from "../../components/rewards/ExchangePointSuccessToast";
-
-/* -------------------------------------------------------------------------- */
-/* MAIN SCREEN                                 */
-/* -------------------------------------------------------------------------- */
 
 export default function PointExchange() {
   const employeeId = parseInt(localStorage.getItem("userId") || "1");
@@ -54,8 +48,6 @@ export default function PointExchange() {
     ? (conversionRules.find(r => r.pointValue <= Math.round(currentPoints * percent / 100)) 
        || conversionRules[0]) 
     : null;
-
-  const totalMoney = calculateMoney(currentPoints); // Tổng tiền nếu đổi hết 100% điểm
 
   useEffect(() => {
     fetchData();
@@ -216,7 +208,7 @@ export default function PointExchange() {
                   </p>
                 </div>
               ) : (
-                <ConversionRateInfo rate={conversionRules[0]} />
+                <ConversionRateInfo rate={+conversionRules[0]} />
               )}
             </div>
           </div>
@@ -226,9 +218,9 @@ export default function PointExchange() {
             <div className="p-6 rounded-2xl bg-white shadow border border-[#E6E6E6] w-full flex flex-col" style={{ boxShadow: '0 1px 4px rgba(0,102,255,0.08)' }}>
               <TickSelector
                 max={currentPoints}
-                rate ={conversionRules[0]} // Truyền rate mặc định để tránh lỗi component con
+                rate ={+conversionRules[0]} // Truyền rate mặc định để tránh lỗi component con
                 onChangePercent={(p: number) => setPercent(p)}
-                onSelect={(points, money) => handleOpenModal(points)} // Chỉ cần truyền points, money sẽ tính lại trong hàm handleOpen
+                onSelect={(points) => handleOpenModal(points)} // Chỉ cần truyền points, money sẽ tính lại trong hàm handleOpen
               />
             </div>
           </div>

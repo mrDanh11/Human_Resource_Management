@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../../services/authService";
 import type { LoginRequest } from "../../types/auth";
-import Header from "../../components/LandingPage/Header";
+import Header from "../../components/common/Header";
 import { Mail, Lock, Eye, EyeOff, ArrowRight, AlertCircle } from 'lucide-react';
 
 const Login: React.FC = () => {
