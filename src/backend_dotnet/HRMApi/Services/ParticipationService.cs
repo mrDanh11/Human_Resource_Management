@@ -49,14 +49,7 @@ public class ParticipationService : IParticipationService
                     new List<string> { $"Nhân viên với ID {employeeId} không tồn tại" });
             }
 
-            var participation = await _participationRepository.GetByEmployeeIdAsync(employeeId);
-
-            if (participation == null || !participation.Any())
-            {
-                return ApiResponse<IEnumerable<ParticipationDto>>.ErrorResponse(
-                    "Không tìm thấy thông tin tham gia",
-                    new List<string> { "Nhân viên chưa tham gia hoạt động nào" });
-            }
+            var participation = await _participationRepository.GetByEmployeeIdAsync(employeeId) ?? Enumerable.Empty<Participation>();
 
             var dto = _mapper.Map<IEnumerable<ParticipationDto>>(participation);
 
