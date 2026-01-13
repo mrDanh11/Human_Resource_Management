@@ -11,7 +11,7 @@ const HRLayout: React.FC = () => {
       <div className="flex flex-1">
         <HRSidebar />
 
-        <main className="flex-1 bg-gray-100 ml-64">
+        <main className="flex-1 bg-white ml-64">
           <Outlet />
         </main>
       </div>

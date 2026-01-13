@@ -13,18 +13,18 @@ const HRSidebar: React.FC = () => {
   const menuItems = [
     { label: "Trang chủ", icon: Home, to: "/landing" },
     { label: "Dashboard", icon: FileText, to: "/hr/dashboard" },
-    { label: "Hồ sơ cá nhân", icon: User, to: `/employee/profile/${userId}` },
-    { label: "Yêu cầu", icon: FileText, to: "hr/requests" },
+    { label: "Hồ sơ cá nhân", icon: User, to: `/hr/employee/profile/${userId}` },
+    { label: "Yêu cầu", icon: FileText, to: "/hr/requests" },
     {
       label: "Hoạt động",
       icon: Activity,
       key: "activities",
       submenu: [
-        { label: "Đang mở", to: "hr/activities" },
-        { label: "Tạo hoạt động", to: "hr/activities/create" },
-        { label: "Hủy hoạt động", to: "hr/activities/cancel" },
-        { label: "Đã đăng ký", to: "hr/activities/history" },
-        { label: "Kết quả", to: "hr/activities/result" }
+        { label: "Đang mở", to: "/hr/activities" },
+        { label: "Tạo hoạt động", to: "/hr/activities/create" },
+        { label: "Hủy hoạt động", to: "/hr/activities/cancel" },
+        { label: "Đã đăng ký", to: "/hr/activities/history" },
+        { label: "Kết quả", to: "/hr/activities/result" }
       ]
     },
     { 
@@ -32,22 +32,16 @@ const HRSidebar: React.FC = () => {
       icon: Award, 
       key: "rewards",
       submenu: [
-        { label: "Tổng quan", to: "hr/rewards/points" },
-        { label: "Thưởng điểm HR", to: "hr/rewards/hr-reward" },
-        { label: "Lịch sử giao dịch", to: "hr/rewards/history" },
-        { label: "Đổi thưởng", to: "hr/rewards/exchange" },
+        { label: "Tổng quan", to: "/hr/rewards/points" },
+        { label: "Thưởng điểm HR", to: "/hr/rewards/hr-reward" },
+        { label: "Lịch sử giao dịch", to: "/hr/rewards/history" },
+        { label: "Đổi thưởng", to: "/hr/rewards/exchange" },
       ]
     },
   ];
 
   return (
     <aside className="w-64 bg-white border-r border-[#E6E6E6] flex flex-col pt-8 pb-4 px-2 fixed h-full">
-
-      <div className="mb-6 px-4">
-        <div className="text-xl font-bold text-blue-600">HR Portal</div>
-        <div className="text-xs text-gray-500">Human Resources</div>
-      </div>
-
       <nav className="flex-1 flex flex-col gap-2 overflow-y-auto">
         {menuItems.map((item, i) => {
           const Icon = item.icon;

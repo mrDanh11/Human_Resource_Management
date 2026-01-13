@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import PointExchangeLayout from "../../components/rewards/PointExchangeLayout";
+import PointExchangeLayout from "../../layouts/PointExchangeLayout";
 import HalfCircleProgress from "../../components/rewards/HalfCircleProgress";
 import ConversionRateInfo from "../../components/rewards/ConversionRateInfo";
 import TickSelector from "../../components/rewards/TickSelector";
@@ -136,35 +136,51 @@ export default function PointExchange() {
 
   return (
     <PointExchangeLayout>
-      <div className="w-full p-6 md:p-10" style={{ background: '#fafdff' }}>
+      <div className="w-full p-6 md:p-10 bg-linear-to-br from-blue-50 via-purple-50 to-pink-50 min-h-screen">
         {/* HEADER */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-blue-600">
-            Quy đổi điểm thưởng
-          </h1>
-          <p className="text-gray-600 text-lg mt-1">
-            Chuyển đổi điểm thưởng của bạn thành tiền mặt
-          </p>
+        <div className="mb-8 relative">
+          <div className="relative rounded-2xl p-8 bg-linear-to-r from-blue-600 via-purple-600 to-pink-600 overflow-hidden shadow-2xl">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full -mr-32 -mt-32"></div>
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-10 rounded-full -ml-24 -mb-24"></div>
+            
+            <div className="relative z-10 text-center">
+              <div className="flex items-center justify-center gap-4 mb-3">
+                <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                  <span className="text-4xl">💰</span>
+                </div>
+                <h1 className="text-4xl font-bold text-white tracking-tight">
+                  Quy đổi điểm thưởng
+                </h1>
+              </div>
+              <p className="text-white/90 text-lg font-light">
+                Chuyển đổi điểm thưởng của bạn thành tiền mặt
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Pending Request Alert */}
         {hasPendingRequest && (
-          <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 sm:p-6 mb-6 max-w-6xl mx-auto">
-            <div className="flex items-start gap-3">
-              <Clock className="w-5 h-5 text-yellow-600 shrink-0 mt-0.5" />
+          <div className="bg-linear-to-r from-yellow-50 to-orange-50 border-2 border-yellow-200 rounded-2xl p-6 mb-8 max-w-6xl mx-auto shadow-lg hover:shadow-xl transition-shadow duration-300">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-yellow-500 rounded-xl flex items-center justify-center shrink-0">
+                <Clock className="w-6 h-6 text-white" />
+              </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-yellow-800 text-lg sm:text-xl mb-2">
+                <h3 className="font-bold text-yellow-800 text-xl mb-2">
                   Yêu cầu đang chờ xử lý
                 </h3>
-                <p className="text-base text-yellow-700 mb-3">
+                <p className="text-base text-yellow-700 mb-4 font-medium">
                   Bạn có {pendingRequests.length} yêu cầu quy đổi đang chờ admin duyệt. 
                   Vui lòng đợi trước khi gửi yêu cầu mới.
                 </p>
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {pendingRequests.map((req) => (
-                    <div key={req.id} className="bg-yellow-100 rounded-lg px-3 py-2 text-base">
-                      <span className="font-medium">{req.pointRequested} điểm</span> → {req.moneyReceived.toLocaleString('vi-VN')}đ
-                      <span className="text-gray-600 ml-2">
+                    <div key={req.id} className="bg-white rounded-xl px-4 py-3 text-base shadow-sm border border-yellow-200">
+                      <span className="font-bold text-yellow-800">{req.pointRequested} điểm</span> 
+                      <span className="text-yellow-600 mx-2">→</span> 
+                      <span className="font-bold text-green-600">{req.moneyReceived.toLocaleString('vi-VN')}đ</span>
+                      <span className="text-gray-600 ml-3 text-sm">
                         ({new Date(req.createdAt).toLocaleDateString('vi-VN')})
                       </span>
                     </div>
@@ -179,7 +195,7 @@ export default function PointExchange() {
           
           {/* LEFT — 1/3 */}
           <div className="lg:w-1/3 flex">
-            <div className="p-6 rounded-2xl bg-white shadow border border-[#E6E6E6] w-full flex flex-col" style={{ boxShadow: '0 1px 4px rgba(0,102,255,0.08)' }}>
+            <div className="p-6 rounded-2xl bg-white shadow-lg border-2 border-gray-100 w-full flex flex-col hover:shadow-xl transition-shadow duration-300">
 
               {/* HALF CIRCLE */}
               <HalfCircleProgress
@@ -191,19 +207,19 @@ export default function PointExchange() {
 
               <div className="relative w-full my-8 flex justify-center">
                 <div
-                  className="w-full h-0.5 rounded-full backdrop-blur-sm"
+                  className="w-full h-1 rounded-full"
                   style={{
-                    background: `linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(153,180,255,0.4) 50%, rgba(255,255,255,0) 100%)`,
-                    boxShadow: "0 0 10px rgba(30, 90, 255, 0.25)",
+                    background: `linear-linear(90deg, rgba(59,130,246,0.1) 0%, rgba(147,51,234,0.3) 50%, rgba(236,72,153,0.1) 100%)`,
+                    boxShadow: "0 0 15px rgba(147, 51, 234, 0.3)",
                   }}
                 ></div>
               </div>
 
               {/* INFO BOX: Hiển thị tỷ giá đang áp dụng */}
               {currentAppliedRule ? (
-                <div className="text-center p-4 bg-blue-50 rounded-xl border border-blue-100">
-                  <p className="text-sm text-gray-500 mb-1">Tỷ giá đang áp dụng</p>
-                  <p className="text-lg font-bold text-blue-600">
+                <div className="text-center p-5 bg-linear-to-r from-blue-50 to-purple-50 rounded-xl border-2 border-blue-200 shadow-sm">
+                  <p className="text-sm text-gray-600 mb-2 font-semibold">Tỷ giá đang áp dụng</p>
+                  <p className="text-xl font-bold bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                     {currentAppliedRule.pointValue} điểm = {currentAppliedRule.moneyValue.toLocaleString('vi-VN')}đ
                   </p>
                 </div>
@@ -215,7 +231,7 @@ export default function PointExchange() {
 
           {/* RIGHT — 2/3 */}
           <div className="lg:w-2/3 flex">
-            <div className="p-6 rounded-2xl bg-white shadow border border-[#E6E6E6] w-full flex flex-col" style={{ boxShadow: '0 1px 4px rgba(0,102,255,0.08)' }}>
+            <div className="p-6 rounded-2xl bg-white shadow-lg border-2 border-gray-100 w-full flex flex-col hover:shadow-xl transition-shadow duration-300">
               <TickSelector
                 max={currentPoints}
                 rate ={+conversionRules[0]} // Truyền rate mặc định để tránh lỗi component con
@@ -239,10 +255,10 @@ export default function PointExchange() {
         <ExchangePointSuccessToast show={toast} />
 
         {exchanging && (
-          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-xl shadow-xl flex flex-col items-center">
-              <Loader2 className="h-10 w-10 text-blue-600 animate-spin mb-3" />
-              <p className="text-gray-700 font-medium">Đang gửi yêu cầu quy đổi...</p>
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="bg-white p-8 rounded-2xl shadow-2xl flex flex-col items-center border-2 border-gray-100">
+              <Loader2 className="h-12 w-12 text-blue-600 animate-spin mb-4" />
+              <p className="text-gray-800 font-bold text-lg">Đang gửi yêu cầu quy đổi...</p>
             </div>
           </div>
         )}
