@@ -19,7 +19,7 @@ export default function ActivityListResultCard({
             {activity.activityId && (
                 <div className="h-48 overflow-hidden">
                     <img
-                        src={activity.imgPath}
+                        src={activity.image_url}
                         alt={activity.activityName}
                         className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                     />
