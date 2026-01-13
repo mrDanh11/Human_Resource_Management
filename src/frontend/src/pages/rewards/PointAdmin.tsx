@@ -404,12 +404,12 @@ export default function PointsAdmin() {
                 {/* TAB 3: CONVERSION */}
                 {activeTab === 'conversion' && (
                     <>
-                        <div className="bg-gradient-to-r from-orange-600 to-orange-700 rounded-lg p-6 mb-6 text-white shadow-lg">
+                        <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg p-6 mb-6 text-white shadow-lg">
                             <div className="flex items-center gap-3">
                                 <ArrowLeftRight className="w-8 h-8" />
                                 <div>
                                     <h1 className="text-2xl font-bold">Bảng quy đổi điểm</h1>
-                                    <p className="text-orange-100 mt-1">Quản lý tỷ giá quy đổi điểm sang tiền mặt</p>
+                                    <p className="text-blue-100 mt-1">Quản lý tỷ giá quy đổi điểm sang tiền mặt</p>
                                 </div>
                             </div>
                         </div>
@@ -463,12 +463,12 @@ export default function PointsAdmin() {
                 {/* TAB 4: REQUESTS */}
                 {activeTab === 'requests' && (
                     <>
-                        <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-lg p-6 mb-6 text-white shadow-lg">
+                        <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg p-6 mb-6 text-white shadow-lg">
                             <div className="flex items-center gap-3">
                                 <CheckCircle className="w-8 h-8" />
                                 <div>
                                     <h1 className="text-2xl font-bold">Duyệt yêu cầu đổi điểm</h1>
-                                    <p className="text-green-100 mt-1">Xử lý các yêu cầu đổi điểm thưởng sang tiền mặt</p>
+                                    <p className="text-blue-100 mt-1">Xử lý các yêu cầu đổi điểm thưởng sang tiền mặt</p>
                                 </div>
                             </div>
                         </div>
@@ -541,12 +541,12 @@ export default function PointsAdmin() {
                 {/* TAB 5: CONVERSION HISTORY - Component riêng */}
                 {activeTab === 'conversion-history' && (
                     <>
-                        <div className="bg-gradient-to-r from-purple-600 to-purple-700 rounded-lg p-6 mb-6 text-white shadow-lg">
+                        <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg p-6 mb-6 text-white shadow-lg">
                             <div className="flex items-center gap-3">
                                 <Clock className="w-8 h-8" />
                                 <div>
                                     <h1 className="text-2xl font-bold">Lịch sử đổi điểm</h1>
-                                    <p className="text-purple-100 mt-1">Theo dõi các giao dịch đổi điểm đã được duyệt</p>
+                                    <p className="text-blue-100 mt-1">Theo dõi các giao dịch đổi điểm đã được duyệt</p>
                                 </div>
                             </div>
                         </div>
@@ -557,12 +557,12 @@ export default function PointsAdmin() {
                 {/* TAB 6: HISTORY */}
                 {activeTab === 'history' && (
                     <>
-                        <div className="bg-gradient-to-r from-indigo-600 to-indigo-700 rounded-lg p-6 mb-6 text-white shadow-lg">
+                        <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg p-6 mb-6 text-white shadow-lg">
                             <div className="flex items-center gap-3">
                                 <Calendar className="w-8 h-8" />
                                 <div>
                                     <h1 className="text-2xl font-bold">Lịch sử giao dịch điểm</h1>
-                                    <p className="text-indigo-100 mt-1">Nhật ký biến động điểm thưởng trong hệ thống</p>
+                                    <p className="text-blue-100 mt-1">Nhật ký biến động điểm thưởng trong hệ thống</p>
                                 </div>
                             </div>
                         </div>
