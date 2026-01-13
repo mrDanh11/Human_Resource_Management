@@ -1,5 +1,3 @@
-// FILE: pages/RecordActivityResultPage.tsx
-
 import { useState, useEffect, useMemo } from 'react';
 import { 
   Search, CheckCircle, AlertCircle, Users, Calendar, 
@@ -54,7 +52,7 @@ export default function RecordActivityResultPage() {
     }
   }, [selectedActivityId]);
 
-  // Reset về trang 1 khi đổi tab hoặc tìm kiếm
+  // Reset về trang 1 khi đổi tab hoặc tìm kiếm hoặc đổi hoạt động
   useEffect(() => {
     setCurrentPage(1);
   }, [activeTab, searchQuery, selectedActivityId]);
@@ -82,11 +80,17 @@ export default function RecordActivityResultPage() {
   };
 
   const fetchParticipants = async (activityId: number) => {
+    // 1. Reset dữ liệu cũ để tránh hiển thị sai
+    setParticipants([]);
+    setLoading(true);
+
     try {
-      setLoading(true);
       const data = await participationService.getActivityParticipants(activityId);
       
-      const attendedParticipants = data
+      // An toàn với mảng rỗng hoặc null
+      const safeData = Array.isArray(data) ? data : [];
+
+      const attendedParticipants = safeData
         .filter((p: any) => p.status === 'attended')
         .map((p: any) => ({
           id: p.id,
@@ -102,7 +106,7 @@ export default function RecordActivityResultPage() {
       setParticipants(attendedParticipants);
     } catch (error) {
       console.error('Failed to fetch participants', error);
-      alert('Không thể tải danh sách người tham gia');
+      // Không alert lỗi ở đây nữa để UI tự hiện "Empty State"
     } finally {
       setLoading(false);
     }
@@ -142,6 +146,7 @@ export default function RecordActivityResultPage() {
       const { performance, ...resultOnlyData } = rawData;
       
       const resultData = { ...resultOnlyData };
+      // Parse numbers logic
       if (resultData.distance_m) resultData.distance_m = parseInt(resultData.distance_m) || 0;
       if (resultData.distance_km) resultData.distance_km = parseFloat(resultData.distance_km) || 0;
       if (resultData.rank) resultData.rank = parseInt(resultData.rank) || 0;
@@ -165,7 +170,7 @@ export default function RecordActivityResultPage() {
         { performance, note: resultData.note }
       );
 
-      // Cập nhật local state ngay lập tức để UI phản hồi nhanh mà không cần loading lại toàn trang
+      // Cập nhật local state ngay lập tức
       setParticipants(prev => prev.map(p => {
         if (p.employeeId === employeeId) {
           return { ...p, result: resultData, performance: performance };
@@ -185,7 +190,6 @@ export default function RecordActivityResultPage() {
 
   // --- FILTERING & PAGINATION LOGIC ---
   
-  // 1. Lọc theo search & tab
   const filteredParticipants = useMemo(() => {
     return participants.filter(p => {
       // Filter by Search
@@ -202,7 +206,6 @@ export default function RecordActivityResultPage() {
     });
   }, [participants, searchQuery, activeTab]);
 
-  // 2. Tính toán phân trang
   const totalPages = Math.ceil(filteredParticipants.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedParticipants = filteredParticipants.slice(startIndex, startIndex + ITEMS_PER_PAGE);
@@ -414,9 +417,13 @@ export default function RecordActivityResultPage() {
           ) : (
             <div className="bg-white rounded-lg shadow-sm p-12 text-center border border-gray-200">
               <XCircle className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-              <h3 className="text-lg font-medium text-gray-900">Không tìm thấy dữ liệu</h3>
+              <h3 className="text-lg font-medium text-gray-900">
+                {searchQuery ? 'Không tìm thấy kết quả' : 'Chưa có dữ liệu tham gia'}
+              </h3>
               <p className="text-gray-500 mt-1">
-                {searchQuery ? `Không có kết quả nào khớp với "${searchQuery}"` : 'Danh sách trống'}
+                {searchQuery 
+                  ? `Không có kết quả nào khớp với "${searchQuery}"` 
+                  : 'Hoạt động này hiện chưa có nhân viên nào tham gia hoặc chưa được ghi nhận.'}
               </p>
             </div>
           )
