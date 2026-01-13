@@ -69,8 +69,9 @@ export interface ParticipationDto {
     registerDate: Date,
     cancelDate: Date,
     status: string,
+    performance: string,
     result: Record<string, any>,
-    imgPath: string,
+    image_url: string,
 }
 
 export interface ApiResponse<T> {
@@ -95,6 +96,8 @@ export const participationService = {
         const response = await apiDotNet.get<ApiResponse<ParticipationDto[]>>(
             `/Participation/employee/${employeeId}`
         );
+
+        console.log('Response from getActivityEmployeeAttended:', response.data);
 
         if (response.data.success) {
             return response.data.data;

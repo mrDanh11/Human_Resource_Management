@@ -105,28 +105,8 @@ export default function ActivityPrivateResultPage() {
                                             Không tìm thấy hoạt động
                                         </h3>
                                         <p className="text-gray-600 max-w-md">
-                                            Không có hoạt động nào phù hợp với bộ lọc của bạn.
-                                            Hãy thử điều chỉnh tiêu chí tìm kiếm.
+                                            Không có hoạt động phù hợp. Có thể bạn chưa tham gia hoạt động nào.
                                         </p>
-                                        <button
-                                            onClick={() => {
-                                                setSearchQuery('');
-                                            }}
-                                            className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all"
-                                            style={{
-                                                transition: 'all 0.3s ease'
-                                            }}
-                                            onMouseEnter={(e) => {
-                                                e.currentTarget.style.transform = 'translateY(-2px)';
-                                                e.currentTarget.style.boxShadow = '0 5px 20px rgba(37, 99, 235, 0.4)';
-                                            }}
-                                            onMouseLeave={(e) => {
-                                                e.currentTarget.style.transform = 'translateY(0)';
-                                                e.currentTarget.style.boxShadow = 'none';
-                                            }}
-                                        >
-                                            Đặt lại bộ lọc
-                                        </button>
                                     </div>
                                 </div>
                             )}
