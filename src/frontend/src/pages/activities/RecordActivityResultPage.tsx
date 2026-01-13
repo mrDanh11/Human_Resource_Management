@@ -1,18 +1,17 @@
-import { useState, useEffect } from 'react';
+// FILE: pages/RecordActivityResultPage.tsx
+
+import { useState, useEffect, useMemo } from 'react';
 import { 
-  Search, 
-  CheckCircle, 
-  AlertCircle, 
-  Users, 
-  Calendar, 
-  ClipboardList, 
-  XCircle, 
-  Edit2 
+  Search, CheckCircle, AlertCircle, Users, Calendar, 
+  ClipboardList, XCircle, Edit2, ChevronLeft, ChevronRight 
 } from 'lucide-react';
 import { participationService } from '../../services/participationService';
 import { getAllActivities } from '../../services/activityService';
 import type { Activity } from '../../types/activity';
-import ResultModal from '../../components/activities/ResultModal'; // Import Modal vừa tạo
+import ResultModal from '../../components/activities/ResultModal';
+
+// Số dòng hiển thị trên một trang
+const ITEMS_PER_PAGE = 10;
 
 interface ParticipantWithResult {
   id: number;
@@ -29,11 +28,17 @@ export default function RecordActivityResultPage() {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [selectedActivityId, setSelectedActivityId] = useState<number | null>(null);
   const [participants, setParticipants] = useState<ParticipantWithResult[]>([]);
+  
+  // State tìm kiếm & lọc
   const [searchQuery, setSearchQuery] = useState('');
-  const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'pending' | 'completed'>('pending');
   
-  // State cho Modal
+  // State phân trang
+  const [currentPage, setCurrentPage] = useState(1);
+  
+  const [loading, setLoading] = useState(false);
+  
+  // State Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingParticipant, setEditingParticipant] = useState<ParticipantWithResult | null>(null);
   const [formData, setFormData] = useState<any>({});
@@ -48,6 +53,11 @@ export default function RecordActivityResultPage() {
       fetchParticipants(selectedActivityId);
     }
   }, [selectedActivityId]);
+
+  // Reset về trang 1 khi đổi tab hoặc tìm kiếm
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeTab, searchQuery, selectedActivityId]);
 
   const hasValidResult = (result: any) => {
     if (!result) return false;
@@ -115,7 +125,6 @@ export default function RecordActivityResultPage() {
     }));
   };
 
-  // --- SAVE LOGIC (GIỮ NGUYÊN HOÀN TOÀN) ---
   const handleSaveResult = async () => {
     if (!selectedActivityId || !editingParticipant) return;
 
@@ -124,17 +133,14 @@ export default function RecordActivityResultPage() {
       const employeeId = editingParticipant.employeeId;
       const rawData = formData;
       
-      // Validate performance
       if (!rawData.performance) {
         alert('Vui lòng chọn đánh giá hiệu suất trước khi lưu!');
         setIsSaving(false);
         return;
       }
       
-      // Extract performance (will be sent separately)
       const { performance, ...resultOnlyData } = rawData;
       
-      // Convert data types for result (Logic parse giữ nguyên)
       const resultData = { ...resultOnlyData };
       if (resultData.distance_m) resultData.distance_m = parseInt(resultData.distance_m) || 0;
       if (resultData.distance_km) resultData.distance_km = parseFloat(resultData.distance_km) || 0;
@@ -147,23 +153,28 @@ export default function RecordActivityResultPage() {
       if (resultData.donation_amount) resultData.donation_amount = parseFloat(resultData.donation_amount) || 0;
       if (resultData.hours_volunteered) resultData.hours_volunteered = parseFloat(resultData.hours_volunteered) || 0;
       
-      // 1. Update result (JSONB data)
       await participationService.updateParticipationResult(
         selectedActivityId,
         employeeId,
         { resultData }
       );
 
-      // 2. Update performance (separate field)
       await participationService.updatePerformance(
         selectedActivityId,
         employeeId,
         { performance, note: resultData.note }
       );
 
+      // Cập nhật local state ngay lập tức để UI phản hồi nhanh mà không cần loading lại toàn trang
+      setParticipants(prev => prev.map(p => {
+        if (p.employeeId === employeeId) {
+          return { ...p, result: resultData, performance: performance };
+        }
+        return p;
+      }));
+
       alert('Đã lưu kết quả thành công!');
       setIsModalOpen(false);
-      await fetchParticipants(selectedActivityId); // Reload data
     } catch (error) {
       console.error('Failed to save result', error);
       alert('Lỗi khi lưu kết quả. Vui lòng thử lại.');
@@ -172,22 +183,29 @@ export default function RecordActivityResultPage() {
     }
   };
 
-  // --- FILTERING ---
-  const searchedParticipants = participants.filter(p =>
-    p.employeeName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    p.employeeCode.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // --- FILTERING & PAGINATION LOGIC ---
+  
+  // 1. Lọc theo search & tab
+  const filteredParticipants = useMemo(() => {
+    return participants.filter(p => {
+      // Filter by Search
+      const matchesSearch = 
+        p.employeeName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.employeeCode.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      if (!matchesSearch) return false;
 
-  const pendingCount = searchedParticipants.filter(p => !hasValidResult(p.result)).length;
-  const completedCount = searchedParticipants.filter(p => hasValidResult(p.result)).length;
+      // Filter by Tab
+      const hasResult = hasValidResult(p.result);
+      if (activeTab === 'completed') return hasResult;
+      return !hasResult; 
+    });
+  }, [participants, searchQuery, activeTab]);
 
-  const displayedParticipants = searchedParticipants.filter(p => {
-    const hasResult = hasValidResult(p.result);
-    if (activeTab === 'completed') return hasResult;
-    return !hasResult; 
-  });
-
-  const selectedActivity = activities.find(a => a.id === selectedActivityId);
+  // 2. Tính toán phân trang
+  const totalPages = Math.ceil(filteredParticipants.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedParticipants = filteredParticipants.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   // Helper Badge
   const getPerformanceBadge = (performance?: string) => {
@@ -205,6 +223,10 @@ export default function RecordActivityResultPage() {
       </span>
     );
   };
+
+  const pendingCount = participants.filter(p => !hasValidResult(p.result)).length;
+  const completedCount = participants.filter(p => hasValidResult(p.result)).length;
+  const selectedActivity = activities.find(a => a.id === selectedActivityId);
 
   return (
     <div className="min-h-screen bg-gray-50 pb-10">
@@ -288,81 +310,114 @@ export default function RecordActivityResultPage() {
           )}
         </div>
 
-        {/* MAIN CONTENT - TABLE VIEW */}
+        {/* CONTENT */}
         {loading ? (
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mx-auto"></div>
             <p className="mt-4 text-gray-600">Đang tải dữ liệu...</p>
           </div>
         ) : selectedActivityId ? (
-          displayedParticipants.length > 0 ? (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Nhân viên
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Trạng thái
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Đánh giá
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Thao tác
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {displayedParticipants.map((participant) => (
-                    <tr key={participant.employeeId} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                            <span className="text-blue-600 font-bold text-sm">
-                              {participant.employeeName.charAt(0)}
-                            </span>
-                          </div>
-                          <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900">{participant.employeeName}</div>
-                            <div className="text-sm text-gray-500">{participant.employeeCode}</div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-center">
-                        {hasValidResult(participant.result) ? (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            Đã hoàn thành
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
-                            Chờ cập nhật
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-center">
-                        {getPerformanceBadge(participant.performance)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <button
-                          onClick={() => handleOpenModal(participant)}
-                          className="text-blue-600 hover:text-blue-900 inline-flex items-center gap-1 font-semibold hover:bg-blue-50 px-3 py-1.5 rounded transition-colors"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                          {hasValidResult(participant.result) ? 'Chỉnh sửa' : 'Nhập kết quả'}
-                        </button>
-                      </td>
+          filteredParticipants.length > 0 ? (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col">
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Nhân viên
+                      </th>
+                      <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Trạng thái
+                      </th>
+                      <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Đánh giá
+                      </th>
+                      <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Thao tác
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {paginatedParticipants.map((participant) => (
+                      <tr key={participant.employeeId} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <div className="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                              <span className="text-blue-600 font-bold text-sm">
+                                {participant.employeeName.charAt(0)}
+                              </span>
+                            </div>
+                            <div className="ml-4">
+                              <div className="text-sm font-medium text-gray-900">{participant.employeeName}</div>
+                              <div className="text-sm text-gray-500">{participant.employeeCode}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-center">
+                          {hasValidResult(participant.result) ? (
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                              Đã hoàn thành
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                              Chờ cập nhật
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-center">
+                          {getPerformanceBadge(participant.performance)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                          <button
+                            onClick={() => handleOpenModal(participant)}
+                            className="text-blue-600 hover:text-blue-900 inline-flex items-center gap-1 font-semibold hover:bg-blue-50 px-3 py-1.5 rounded transition-colors"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                            {hasValidResult(participant.result) ? 'Chỉnh sửa' : 'Nhập kết quả'}
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* --- PAGINATION FOOTER --- */}
+              <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between bg-gray-50">
+                <div className="text-sm text-gray-500">
+                  Hiển thị <span className="font-medium">{startIndex + 1}</span> đến <span className="font-medium">{Math.min(startIndex + ITEMS_PER_PAGE, filteredParticipants.length)}</span> trong tổng số <span className="font-medium">{filteredParticipants.length}</span> kết quả
+                </div>
+                
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                    className="p-2 border border-gray-300 rounded-lg bg-white text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  
+                  <span className="text-sm font-medium text-gray-700">
+                    Trang {currentPage} / {totalPages || 1}
+                  </span>
+
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage === totalPages || totalPages === 0}
+                    className="p-2 border border-gray-300 rounded-lg bg-white text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
             </div>
           ) : (
             <div className="bg-white rounded-lg shadow-sm p-12 text-center border border-gray-200">
               <XCircle className="w-12 h-12 text-gray-300 mx-auto mb-3" />
               <h3 className="text-lg font-medium text-gray-900">Không tìm thấy dữ liệu</h3>
-              <p className="text-gray-500 mt-1">Không có nhân viên nào trong danh sách này.</p>
+              <p className="text-gray-500 mt-1">
+                {searchQuery ? `Không có kết quả nào khớp với "${searchQuery}"` : 'Danh sách trống'}
+              </p>
             </div>
           )
         ) : (
@@ -374,7 +429,6 @@ export default function RecordActivityResultPage() {
         )}
       </div>
 
-      {/* Render Modal */}
       <ResultModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
