@@ -77,10 +77,10 @@ public interface RequestRepository extends JpaRepository<Request,Long>, JpaSpeci
        AND r.status IN :statuses
        AND r.startTime BETWEEN :from AND :to
     """)
-    List<Request> findByEmployeeIdAndStatusInAndTimeOverlap(
+    double findByEmployeeIdAndStatusInAndTimeOverlap(
               @Param("employeeId") Long employeeId,
               @Param("statuses") List<String> statuses,
-              @Param("type") String type
+              @Param("type") String type,
               @Param("from") LocalDateTime start,
-              @Param("to") LocalDateTime end,
-);
+              @Param("to") LocalDateTime end);
+}

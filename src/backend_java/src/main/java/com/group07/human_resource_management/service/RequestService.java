@@ -28,6 +28,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -225,10 +226,10 @@ public class RequestService implements IRequestService {
         int monthsWorked = today.getMonthValue();
         double accruedLeave = totalLeavePerYear * monthsWorked / 12.0;
 
-        double usedLeave = requestRepository.sumLeaveDays(
+        double usedLeave = requestRepository.findByEmployeeIdAndStatusInAndTimeOverlap(
             employeeId,
-            "LEAVE_ANNUAL",
             List.of("approved", "pending"),
+            "leave",
             startOfYear.atStartOfDay(),
             endOfYear.atTime(23,59,59)
         );

@@ -12,5 +12,5 @@ public interface IRequestService {
     void createLeaveRequest(Long employeeId, CreateLeaveRequest req);
     void cancelRequest(Long employeeId, Long requestId);
     Page<RequestListResponse> getMyRequests(Long employeeId, RequestSearchCriteria criteria);
-    Long countAnnualLeave(Long employeeId);
+    double countAnnualLeave(Long employeeId);
 }
