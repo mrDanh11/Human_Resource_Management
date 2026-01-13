@@ -13,7 +13,7 @@ interface StatCardProps {
 }
 
 const variantStyles = {
-  primary: 'bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 text-white shadow-2xl border-2 border-white hover:scale-105',
+  primary: 'bg-blue-600 text-white shadow-2xl border-2 border-white hover:scale-105',
   success: 'bg-white border-2 border-green-200 text-gray-800 shadow-lg hover:shadow-xl hover:border-green-300',
   danger: 'bg-white border-2 border-red-200 text-gray-800 shadow-lg hover:shadow-xl hover:border-red-300',
 };

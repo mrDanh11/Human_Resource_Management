@@ -9,6 +9,8 @@ import ProfileContent from "../../components/profile/ProfileContent";
 import ProfileSkeleton from "../../components/profile/ProfileSkeleton";
 import UpdateEmployeePersonalInformation from "../../components/profile/UpdateProfileEmployee";
 import { useState } from "react";
+import { motion } from "framer-motion";
+import { AlertCircle } from "lucide-react";
 
 export default function ProfilePage() {
   const { id } = useParams();
@@ -44,9 +46,35 @@ export default function ProfilePage() {
   if (err || !data) {
     return (
       <Layout>
-        <div className="flex-1 flex items-center justify-center">
-          {err || "Không tìm thấy dữ liệu"}
-        </div>
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="flex-1 flex flex-col items-center justify-center gap-4 p-8 w-full"
+        >
+          <div className="relative">
+            <motion.div
+              animate={{ 
+                rotate: [0, 10, -10, 10, 0],
+              }}
+              transition={{ 
+                duration: 0.5,
+                repeat: Infinity,
+                repeatDelay: 3
+              }}
+            >
+              <AlertCircle className="w-20 h-20 text-red-500" />
+            </motion.div>
+            <motion.div
+              className="absolute inset-0 bg-red-500 rounded-full blur-xl opacity-20"
+              animate={{ scale: [1, 1.2, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
+          </div>
+          <div className="text-center">
+            <h3 className="text-xl font-bold text-gray-900 mb-2">Có lỗi xảy ra</h3>
+            <p className="text-gray-600">{err || "Không tìm thấy dữ liệu"}</p>
+          </div>
+        </motion.div>
       </Layout>
     );
   }
@@ -54,16 +82,23 @@ export default function ProfilePage() {
   // Success state
   return (
     <Layout>
-      <ProfileContent
-        data={data}
-        showCccd={isVisible("cccd")}
-        showBank={isVisible("bank")}
-        showTax={isVisible("tax")}
-        onToggleCccd={() => toggle("cccd")}
-        onToggleBank={() => toggle("bank")}
-        onToggleTax={() => toggle("tax")}
-        onUpdateClick={() => setShowUpdateForm(true)}
-      />
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        className="w-full"
+      >
+        <ProfileContent
+          data={data}
+          showCccd={isVisible("cccd")}
+          showBank={isVisible("bank")}
+          showTax={isVisible("tax")}
+          onToggleCccd={() => toggle("cccd")}
+          onToggleBank={() => toggle("bank")}
+          onToggleTax={() => toggle("tax")}
+          onUpdateClick={() => setShowUpdateForm(true)}
+        />
+      </motion.div>
 
       {showUpdateForm && (
         <UpdateEmployeePersonalInformation

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Home, User, FileText, Activity, Award, ChevronDown } from "lucide-react";
+import { Home, User, FileText, Activity, Award, ChevronDown, TrendingUp } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import UserInfo from "./UserInfo";
 
@@ -12,7 +12,7 @@ const HRSidebar: React.FC = () => {
 
   const menuItems = [
     { label: "Trang chủ", icon: Home, to: "/landing" },
-    { label: "Dashboard", icon: FileText, to: "/hr/dashboard" },
+    { label: "Dashboard", icon: TrendingUp, to: "/hr/dashboard" },
     { label: "Hồ sơ cá nhân", icon: User, to: `/hr/employee/profile/${userId}` },
     { label: "Yêu cầu", icon: FileText, to: "/hr/requests" },
     {

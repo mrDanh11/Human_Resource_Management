@@ -1,17 +1,7 @@
-/**
- * Utility functions for point exchange calculations
- */
-
-/**
- * Calculate money value from points
- */
 export function calculateMoneyFromPoints(points: number, rate: number): number {
   return (points / 100) * rate;
 }
 
-/**
- * Validate point value
- */
 export function validatePointValue(value: number, max: number): string {
   if (isNaN(value)) return "Không hợp lệ";
   if (value < 100) return "Tối thiểu 100 điểm";
@@ -20,9 +10,6 @@ export function validatePointValue(value: number, max: number): string {
   return "";
 }
 
-/**
- * Generate smart tick marks for slider
- */
 export function generateSmartTicks(min: number, max: number): number[] {
   if (max - min <= 0) return [min];
   
@@ -45,20 +32,15 @@ export function generateSmartTicks(min: number, max: number): number[] {
   return Array.from(new Set(ticks)).sort((a, b) => a - b);
 }
 
-/**
- * Calculate thumb position percentage
- */
 export function calculateThumbPosition(value: number, ticks: number[]): number {
   const idx = ticks.findIndex((t) => t === value);
   
   if (idx === -1) {
-    // fallback: linear
     const min = ticks[0];
     const max = ticks[ticks.length - 1];
     return ((value - min) / (max - min)) * 100;
   }
   
-  // Position thumb at tick
   if (ticks.length === 1) return 0;
   return (idx / (ticks.length - 1)) * 100;
 }

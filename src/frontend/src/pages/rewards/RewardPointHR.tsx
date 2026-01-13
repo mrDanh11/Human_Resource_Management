@@ -132,7 +132,7 @@ export default function RewardPointHR() {
         <div className="min-h-screen w-full mx-auto bg-linear-to-br from-blue-50 via-purple-50 to-pink-50 p-6">
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
-                <div className="relative rounded-2xl p-8 mb-8 bg-linear-to-r from-blue-600 via-purple-600 to-pink-600 overflow-hidden shadow-2xl">
+                <div className="relative rounded-2xl p-8 mb-8 bg-blue-600 overflow-hidden shadow-2xl">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full -mr-32 -mt-32"></div>
                     <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-10 rounded-full -ml-24 -mb-24"></div>
                     
@@ -156,44 +156,6 @@ export default function RewardPointHR() {
                             </div>
                         </div>
                     </div>
-                </div>
-
-                {/* Tabs */}
-                <div className="flex gap-6 mb-6 border-b">
-                    <button
-                        onClick={() => setActiveTab('increase')}
-                        className={`pb-3 px-1 font-medium transition-colors relative ${activeTab === 'increase'
-                            ? 'text-blue-700'
-                            : 'text-gray-500 hover:text-gray-700'
-                            }`}
-                    >
-                        <div className="flex items-center gap-2">
-                            <div className="w-5 h-5 rounded-full bg-blue-100 flex items-left justify-center">
-                                <span className="text-xs">↑</span>
-                            </div>
-                            <span className="text-left">Tặng điểm thưởng</span>
-                        </div>
-                        {activeTab === 'increase' && (
-                            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-700"></div>
-                        )}
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('history')}
-                        className={`pb-3 px-1 font-medium transition-colors relative ${activeTab === 'history'
-                            ? 'text-blue-700'
-                            : 'text-gray-500 hover:text-gray-700'
-                            }`}
-                    >
-                        <div className="flex items-center gap-2">
-                            <div className="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center">
-                                <span className="text-xs">⟲</span>
-                            </div>
-                            Lịch sử tặng điểm
-                        </div>
-                        {activeTab === 'history' && (
-                            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-700"></div>
-                        )}
-                    </button>
                 </div>
 
                 {/* Employee Selection */}
@@ -363,10 +325,6 @@ export default function RewardPointHR() {
                         </div>
                         <div className="pt-4 border-t-2 border-gray-100 space-y-2">
                             <div className="flex justify-between items-center">
-                                <span className="text-gray-600">Dư âm dùng</span>
-                                <span className="font-bold text-gray-800">{remainingPoints - totalPointReward}</span>
-                            </div>
-                            <div className="flex justify-between items-center">
                                 <span className="text-gray-600">Còn lại</span>
                                 <span className="font-bold text-green-600">{(pointOfHR?.pointTotal || 0) - totalPointReward}</span>
                             </div>
@@ -377,7 +335,7 @@ export default function RewardPointHR() {
                 {/* Submit Button */}
                 <button
                     disabled={selectedEmployees.length === 0 || pointsPerPerson <= 0 || totalPointReward > (pointOfHR?.pointTotal || 0)}
-                    className="w-full bg-linear-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 disabled:from-gray-300 disabled:via-gray-300 disabled:to-gray-300 disabled:cursor-not-allowed text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl hover:scale-105 disabled:hover:scale-100 disabled:shadow-none"
+                    className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl hover:scale-105 disabled:hover:scale-100 disabled:shadow-none"
                     onClick={() => {handleRewardPoints(selectedEmployees)}}
                     >
                     <span className="text-2xl">📤</span>

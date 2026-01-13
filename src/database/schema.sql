@@ -151,7 +151,7 @@ CREATE TABLE point_to_money_history (
     id SERIAL PRIMARY KEY,
     employee_id INTEGER NOT NULL,
     point_requested INTEGER NOT NULL,
-    money_received DECIMAL(15,2) NOT NULL,
+    money_received NUMERIC NOT NULL,
     status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected', 'completed')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     processed_at TIMESTAMP,
