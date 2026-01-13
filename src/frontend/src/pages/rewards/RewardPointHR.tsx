@@ -158,44 +158,6 @@ export default function RewardPointHR() {
                     </div>
                 </div>
 
-                {/* Tabs */}
-                <div className="flex gap-6 mb-6 border-b">
-                    <button
-                        onClick={() => setActiveTab('increase')}
-                        className={`pb-3 px-1 font-medium transition-colors relative ${activeTab === 'increase'
-                            ? 'text-blue-700'
-                            : 'text-gray-500 hover:text-gray-700'
-                            }`}
-                    >
-                        <div className="flex items-center gap-2">
-                            <div className="w-5 h-5 rounded-full bg-blue-100 flex items-left justify-center">
-                                <span className="text-xs">↑</span>
-                            </div>
-                            <span className="text-left">Tặng điểm thưởng</span>
-                        </div>
-                        {activeTab === 'increase' && (
-                            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-700"></div>
-                        )}
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('history')}
-                        className={`pb-3 px-1 font-medium transition-colors relative ${activeTab === 'history'
-                            ? 'text-blue-700'
-                            : 'text-gray-500 hover:text-gray-700'
-                            }`}
-                    >
-                        <div className="flex items-center gap-2">
-                            <div className="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center">
-                                <span className="text-xs">⟲</span>
-                            </div>
-                            Lịch sử tặng điểm
-                        </div>
-                        {activeTab === 'history' && (
-                            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-700"></div>
-                        )}
-                    </button>
-                </div>
-
                 {/* Employee Selection */}
                 <div className="bg-white rounded-2xl shadow-lg border border-gray-100 mb-8 overflow-hidden hover:shadow-xl transition-shadow duration-300">
                     <div className="p-6 bg-linear-to-r from-blue-50 to-purple-50 border-b border-gray-100 flex items-center justify-between">
@@ -362,10 +324,6 @@ export default function RewardPointHR() {
                             <span className="text-gray-900 font-semibold">{selectedEmployees.length} người × {pointsPerPerson} điểm</span>
                         </div>
                         <div className="pt-4 border-t-2 border-gray-100 space-y-2">
-                            <div className="flex justify-between items-center">
-                                <span className="text-gray-600">Dư âm dùng</span>
-                                <span className="font-bold text-gray-800">{remainingPoints - totalPointReward}</span>
-                            </div>
                             <div className="flex justify-between items-center">
                                 <span className="text-gray-600">Còn lại</span>
                                 <span className="font-bold text-green-600">{(pointOfHR?.pointTotal || 0) - totalPointReward}</span>
