@@ -68,4 +68,19 @@ public interface RequestRepository extends JpaRepository<Request,Long>, JpaSpeci
     boolean existsOverlappingRequest(@Param("employeeId") Long employeeId,
                                      @Param("startTime") LocalDateTime startTime,
                                      @Param("endTime") LocalDateTime endTime);
-}
+
+    @Query("""
+       SELECT COALESCE(SUM(r.duration), 0)
+       FROM Request r
+       WHERE r.employee.id = :employeeId
+       AND r.type = :type
+       AND r.status IN :statuses
+       AND r.startTime BETWEEN :from AND :to
+    """)
+    List<Request> findByEmployeeIdAndStatusInAndTimeOverlap(
+              @Param("employeeId") Long employeeId,
+              @Param("statuses") List<String> statuses,
+              @Param("type") String type
+              @Param("from") LocalDateTime start,
+              @Param("to") LocalDateTime end,
+);

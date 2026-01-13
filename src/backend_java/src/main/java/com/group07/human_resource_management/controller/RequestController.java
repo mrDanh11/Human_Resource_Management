@@ -91,4 +91,16 @@ public class RequestController {
                 .data(response)
                 .build();
     }
+
+    @GetMapping("/annual-leave/count")
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    public ApiResponse<Long> countAnnualLeave(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long count = requestService.countAnnualLeave(userDetails.getEmployeeId());
+        return ApiResponse.<Long>builder()
+                .code(HttpStatus.OK.value())
+                .success(true)
+                .message("Annual leave count retrieved successfully")
+                .data(count)
+                .build();
+        }
 }

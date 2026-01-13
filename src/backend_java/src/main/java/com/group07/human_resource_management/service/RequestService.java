@@ -165,6 +165,8 @@ public class RequestService implements IRequestService {
                 .type(req.getType())
                 .status(req.getStatus())
                 .createdDate(req.getCreatedAt())
+                .startTime(req.getStartTime())
+                .endTime(req.getEndTime())
                 .build());
 
     }
@@ -205,5 +207,32 @@ public class RequestService implements IRequestService {
                 .status(req.getStatus())
                 .createdDate(req.getCreatedAt())
                 .build());
+    }
+
+    public double countAnnualLeave(Long employeeId) {
+        Employee emp = employeeRepository.findById(employeeId)
+            .orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
+
+        LocalDate today = LocalDate.now();
+        LocalDate startOfYear = today.withDayOfYear(1);
+        LocalDate endOfYear = today.withDayOfYear(today.lengthOfYear());
+
+        int baseLeave = 12;
+        int yearsWorked = (int) ChronoUnit.YEARS.between(emp.getJoinDate(), today);
+        int bonusLeave = yearsWorked / 5;
+        int totalLeavePerYear = baseLeave + bonusLeave;
+
+        int monthsWorked = today.getMonthValue();
+        double accruedLeave = totalLeavePerYear * monthsWorked / 12.0;
+
+        double usedLeave = requestRepository.sumLeaveDays(
+            employeeId,
+            "LEAVE_ANNUAL",
+            List.of("approved", "pending"),
+            startOfYear.atStartOfDay(),
+            endOfYear.atTime(23,59,59)
+        );
+
+        return Math.max(accruedLeave - usedLeave, 0);
     }
 }

@@ -74,6 +74,16 @@ export default function RequestSelectionPage() {
       bgColor: "bg-indigo-50",
       enabled: true,
       route: "/requests/create/shift-change"
+    },
+    {
+      id: "on-leave",
+      title: "Nghỉ phép",
+      description: "Yêu cầu nghỉ phép theo quy định công ty",
+      icon: RefreshCw,
+      color: "text-indigo-600",
+      bgColor: "bg-indigo-50",
+      enabled: true,
+      route: "/requests/create/on-leave"
     }
   ];
 

@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import EmployeeList from "./pages/profile/EmployeeList";
 import CreateEmployee from "./pages/profile/CreateEmployee";
 import ProfilePage from "./pages/profile/ProfilePage";
-import LandingPage from "./pages/landingPage/landingPage";
+import LandingPage from "./pages/LandingPage/LandingPage";
 import PointExchange from "./pages/rewards/PointExchange";
 import RewardDashboard from "./pages/rewards/RewardDashboard";
 import RewardPointHR from "./pages/rewards/RewardPointHR";
@@ -55,6 +55,7 @@ const App = () => {
           {/* Employee Layout Routes */}
           <Route element={<Layout />}>
             <Route path="/employee/profile/:id" element={<ProfilePage />} />
+
             
             <Route path="rewards">
               <Route path="exchange" element={<PointExchange />} />
@@ -81,17 +82,16 @@ const App = () => {
 
             <Route path="/attendance" element={<AttendancePage />} />
           </Route>
-
+        </Route>
           {/* Manager Routes */}
-          <Route element={<ProtectedRoute allowedRoles={['MANAGER']} />}>
-            <Route path="/employee/profile/:id" element={<ProfilePage />} />
-            <Route path="/manager" element={<ManagerLayout />}>
-              <Route path="on-leave-requests" element={<LeaveRequestPage />} />
-              <Route path="rewards">
-                <Route path="exchange" element={<PointExchange />} />
-                <Route path="history" element={<RewardHistory />} />
-                <Route path="points" element={<RewardDashboard />} />
-              </Route>
+        <Route element={<ProtectedRoute allowedRoles={['MANAGER']} />}>
+          <Route path="/employee/profile/:id" element={<ProfilePage />} />
+          <Route path="/manager" element={<ManagerLayout />}>
+            <Route path="requests" element={<LeaveRequestPage />} />
+            <Route path="rewards">
+              <Route path="exchange" element={<PointExchange />} />
+              <Route path="history" element={<RewardHistory />} />
+              <Route path="points" element={<RewardDashboard />} />
             </Route>
           </Route>
 

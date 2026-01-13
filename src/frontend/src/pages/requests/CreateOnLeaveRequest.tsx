@@ -1,26 +1,50 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Calendar, Upload, FilePenLine } from 'lucide-react';
-
-interface FormLeaveRequestData {
-  employeeId: number;
-  startDate: string;
-  endDate: string;
-  description: string;
-  attachment: File | null;
-}
+import { createOnLeaveRequest } from '../../store/requestSlice';
+import type { CreateRequestFormData } from '../../types/request';
+import { useAppDispatch } from '../../store/hooks';
+import { countAnnualLeaveUsed } from '../../store/requestSlice';
 
 const CreateLeaveRequest = () => {
   const employee = Number(localStorage.getItem('userId'));
 
-  const [formData, setFormData] = useState<FormLeaveRequestData>({
+  const [formData, setFormData] = useState<CreateRequestFormData>({
     employeeId: employee,
     startDate: '',
     endDate: '',
     description: '',
+    type: "leave",
+    leaveMode: undefined,
+    session: undefined,
     attachment: null
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [fileName, setFileName] = useState('');
+  const [annualLeaveUsed, setAnnualLeaveUsed] = useState(0);
+
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+  const load = async () => {
+    if (employee) {
+      const used = await dispatch(
+        countAnnualLeaveUsed(employee)
+      ).unwrap();
+
+      setAnnualLeaveUsed(used);
+    }
+  };
+  load();
+}, [employee]);
+
+  const isFormValid = useMemo(() => {
+    if (!formData.startDate || !formData.endDate) return false;
+    if (new Date(formData.startDate) > new Date(formData.endDate)) return false;
+    if (!formData.description || formData.description.trim().length < 10) return false;
+
+    return true;
+  }, [formData]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -29,9 +53,29 @@ const CreateLeaveRequest = () => {
       setFormData({ ...formData, attachment: file });
     }
   };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  const handleSubmit = () => {
-    console.log('Form submitted:', formData);
+    setIsSubmitting(true);
+    try {
+
+      await dispatch(createOnLeaveRequest(formData)).unwrap();
+      alert('Đơn xin nghỉ phép đã được gửi thành công!');
+      
+      setFormData({
+        employeeId: employee,
+        startDate: '',
+        endDate: '',
+        description: '',
+        type: "leave",
+        leaveMode: undefined,
+        session: undefined,
+        attachment: null
+      });
+
+    } catch (error) {
+      alert('Đã có lỗi xảy ra khi gửi đơn xin nghỉ phép.');
+    } 
   };
 
   const handleCancel = () => {
@@ -40,12 +84,22 @@ const CreateLeaveRequest = () => {
       startDate: '',
       endDate: '',
       description: '',
+      type: "leave",
+      leaveMode: undefined,
+      session: undefined,
       attachment: null
     });
     setFileName('');
   };
 
-  const remainingDays = 0;
+  const calculateDays = () => {
+    if (!formData.startDate || !formData.endDate) return 0;
+    const start = new Date(formData.startDate);
+    const end = new Date(formData.endDate);
+    const diffTime = Math.abs(end.getTime() - start.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+    return diffDays;
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
@@ -102,9 +156,45 @@ const CreateLeaveRequest = () => {
                   <label className="block text-sm font-medium text-gray-700">
                     Thời gian nghỉ
                   </label>
-                  <span className="text-sm font-medium text-gray-800">{remainingDays} ngày</span>
+                  <span className="text-sm font-medium text-gray-800">{calculateDays()} ngày</span>
                 </div>
                 <p className="text-xs text-gray-500">Tính thêm phí vào nghỉ lễ ngày thường trừ cuối tuần và ngày lễ</p>
+              </div>
+
+              {/* Loại nghỉ phép */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Loại nghỉ phép <span className="text-red-500">*</span>
+                </label>
+                <select
+                  value={formData.leaveMode}
+                  onChange={(e) => setFormData({ ...formData, leaveMode: e.target.value as any })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">Chọn loại nghỉ phép</option>
+                  <option value="annual">Nghỉ hàng năm</option>
+                  <option value="sick">Nghỉ ốm</option>
+                  <option value="personal">Nghỉ cá nhân</option>
+                  <option value="maternity">Nghỉ sinh con</option>
+                  <option value="emergency">Nghỉ khẩn cấp</option>
+                </select>
+              </div>
+
+              {/* Buổi nghỉ */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">  
+                  Buổi nghỉ <span className="text-red-500">*</span>
+                </label>
+                <select
+                  value={formData.session}
+                  onChange={(e) => setFormData({ ...formData, session: e.target.value as any })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">Chọn buổi nghỉ</option>
+                  <option value="morning">Buổi sáng</option>
+                  <option value="afternoon">Buổi chiều</option>
+                  <option value="full_day">Cả ngày</option>
+                </select>
               </div>
 
               {/* Lý do nghỉ phép */}
@@ -153,8 +243,9 @@ const CreateLeaveRequest = () => {
                 <button
                   onClick={handleSubmit}
                   className="flex-1 bg-blue-600 text-white py-3 rounded-md font-medium hover:bg-blue-700 transition-colors"
+                  disabled={!isFormValid || isSubmitting}
                 >
-                  Gửi đơn xin nghỉ
+                  {isSubmitting ? "Đang gửi..." : "Gửi yêu cầu"}
                 </button>
                 <button
                   onClick={handleCancel}
@@ -174,15 +265,15 @@ const CreateLeaveRequest = () => {
               <div className="space-y-3 mb-4">
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">Tổng số ngày nghỉ trong năm</span>
-                  <span className="font-semibold text-gray-800">10 ngày</span>
+                  <span className="font-semibold text-gray-800">12 ngày</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">Đã sử dụng</span>
-                  <span className="font-semibold text-gray-800">5 ngày</span>
+                  <span className="font-semibold text-gray-800">{annualLeaveUsed} ngày</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">Còn lại</span>
-                  <span className="font-semibold text-gray-800">5 ngày</span>
+                  <span className="font-semibold text-gray-800">{12 - annualLeaveUsed} ngày</span>
                 </div>
               </div>
 

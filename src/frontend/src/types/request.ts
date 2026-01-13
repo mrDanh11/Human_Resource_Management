@@ -84,6 +84,8 @@ export interface DetailRequest {
   type: 'leave' | 'wfh' | 'checkin' | 'checkout';
   description?: string;
   status: 'pending' | 'approved' | 'rejected';
+  leaveMode?: 'annual' | 'sick' | 'personal' | 'maternity' | 'emergency';
+  session?: 'morning' | 'afternoon' | 'full_day';
   attachment?: string;
   startTime?: string;
   endTime?: string;
@@ -99,6 +101,20 @@ export interface ListRequests {
     type: 'leave' | 'wfh' | 'checkin' | 'checkout';
     status: 'pending' | 'approved' | 'rejected';
     createdDate: string;
+    startTime: string;
+    endTime: string;
 } 
+
+//Tao yeu cau moi
+export interface CreateRequestFormData {
+  employeeId: number;
+  description: string;
+  startDate: string;
+  endDate: string;
+  type: "wfh" | "leave" | "overtime" | "attendance_correction" | "equipment" | "other";
+  leaveMode?: "annual" | "sick" | "personal" | "maternity" | "emergency";
+  session?: "morning" | "afternoon" | "full_day";
+  attachment?: File | null;
+}
 
 export type EmployeeRequest = LeaveRequest | TimesheetUpdateRequest | CheckInOutRequest | WFHRequest;

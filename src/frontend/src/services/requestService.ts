@@ -13,16 +13,18 @@ import { apiSpring } from './api';
 import type { PaginationRequestParams } from '../types/pagination';
 import type { DetailRequest } from '../types/request';
 import type { ListRequests, PageResponse, ApiResponse } from '../types/request';
+import type { CreateRequestFormData } from '../types/request';
 
 export const requestService = {
   // Lấy danh sách yêu cầu
   getListrequests: async (params: PaginationRequestParams): Promise<PageResponse<ListRequests>> => {
-    const response = await apiSpring.get<ApiResponse<PageResponse<ListRequests>>>('/manager/request', {
+    const response = await apiSpring.get<ApiResponse<PageResponse<ListRequests>>>('/requests', {
       params: {
         ...params,
       }
     });
     if (response.data) {
+      console.log("Response Data:", response.data);
       return response.data.data;
     } else {
       throw new Error('Failed to fetch requests list');
@@ -31,13 +33,36 @@ export const requestService = {
 
   //Lấy chi tiết yêu cầu
   getDetailRequest: async (id: number): Promise<DetailRequest> => { 
-    const response = await apiSpring.get<ApiResponse<DetailRequest>>(`/manager/request/${id}`);
+    const response = await apiSpring.get<ApiResponse<DetailRequest>>(`/requests/${id}`);
     if (response.data) {
+      console.log("Response Data:", response.data);
       return response.data.data;
     } else {
       throw new Error('Failed to fetch request detail');
     }
-  }
+  },
+
+  //Tạo yêu cầu xin nghỉ phép mới - moved to createRequest function below
+  createLeaveRequest: async (data: CreateRequestFormData): Promise<DetailRequest> => {
+    const response = await apiSpring.post<ApiResponse<DetailRequest>>('/requests', data);
+    if (response.data) {
+      return response.data.data;
+    } else {
+      throw new Error('Failed to create leave request');
+    }
+  },
+
+  //Tính tổng số ngày nghỉ phép năm đã sử dụng
+  getTotalAnnualLeaveUsed: async (employeeId: number): Promise<number> => {
+    const response = await apiSpring.get<ApiResponse<number>>(`/requests/annual-leave/count`, {
+      params: { employeeId }
+    });
+    if (response.data) {
+      return response.data.data;
+    } else {
+      throw new Error('Failed to fetch total annual leave used');
+    }
+  },
 }
 
 export interface CreateRequestDto {
