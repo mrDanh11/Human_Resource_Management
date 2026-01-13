@@ -462,8 +462,8 @@ public class PointService : IPointService
 
             // 4. TÍNH TIỀN
             // Công thức: (Điểm yêu cầu / Mốc điểm rule) * Giá tiền rule
-            // Lưu ý ép kiểu (decimal) để tránh phép chia số nguyên bị làm tròn sai
-            decimal moneyReceived = ((decimal)dto.PointRequested / matchedRule.PointValue) * matchedRule.MoneyValue;
+            // Lưu ý ép kiểu (double) để tránh phép chia số nguyên bị làm tròn sai
+            double moneyReceived = ((double)dto.PointRequested / matchedRule.PointValue) * (double)matchedRule.MoneyValue;
 
             // 5. LƯU VÀO DB
             var history = new PointToMoneyHistory
