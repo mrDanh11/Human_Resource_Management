@@ -1,5 +1,3 @@
-import React from 'react';
-import { Award } from 'lucide-react';
 // FILE: components/ActivityForms.tsx
 import { Star, ThumbsUp, AlertTriangle } from 'lucide-react';
 // --- INTERFACES ---

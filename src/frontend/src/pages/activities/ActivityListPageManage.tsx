@@ -3,21 +3,20 @@ import { Search, Filter, Calendar } from 'lucide-react';
 import { motion } from 'framer-motion';
 import ActivityListCard from '../../components/activities/ActivityListCard';
 import ActivityDetailModal from '../../components/activities/ActivityDetailModal';
-import ConfirmRegistrationModal from '../../components/activities/ConfirmRegistrationModal';
-import { getAllActivities, registerActivity, unregisterActivity, getMyParticipations } from '../../services/activityService';
-import type { Activity } from '../../types/activity';
+import ActivityFormModal from '../../components/activities/ActivityFormModal';
+import { getAllActivities, deleteActivity, updateActivity } from '../../services/activityService';
+import type { Activity, CreateActivityRequest } from '../../types/activity';
 
-export default function ActivityListPage() {
+export default function ActivityListPageManage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedType, setSelectedType] = useState<Activity['activityType'] | 'all'>('all');
   const [selectedStatus, setSelectedStatus] = useState<'all' | 'open' | 'closed'>('all');
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-  const [activityToRegister, setActivityToRegister] = useState<Activity | null>(null);
-
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
+  
   const [activities, setActivities] = useState<Activity[]>([]);
-  const [myParticipations, setMyParticipations] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
   
   // Pagination
@@ -25,7 +24,7 @@ export default function ActivityListPage() {
   const itemsPerPage = 9;
 
   useEffect(() => {
-      if (isModalOpen || isConfirmModalOpen) {
+      if (isModalOpen || isEditModalOpen) {
         document.body.style.overflow = 'hidden';
       } else {
         document.body.style.overflow = 'unset';
@@ -34,21 +33,11 @@ export default function ActivityListPage() {
       return () => {
         document.body.style.overflow = 'unset';
       };
-    }, [isModalOpen, isConfirmModalOpen]);
+    }, [isModalOpen, isEditModalOpen]);
   
   useEffect(() => {
     fetchActivities();
-    fetchMyParticipations();
   }, []);
-
-  const fetchMyParticipations = async () => {
-    try {
-      const data = await getMyParticipations();
-      setMyParticipations(data.map((p: any) => p.activityId));
-    } catch (error) {
-      console.error("Failed to fetch participations", error);
-    }
-  };
 
   const fetchActivities = async () => {
     try {
@@ -89,46 +78,38 @@ export default function ActivityListPage() {
     }
   };
 
-  const handleRegister = (activityId: string) => {
-    const activity = activities.find(a => a.id === +activityId);
-    if (activity) {
-      setActivityToRegister(activity);
-      setIsConfirmModalOpen(true);
-    }
-  };
-
-  const handleConfirmRegister = async () => {
-    if (activityToRegister) {
+  const handleDeleteActivity = async (activityId: string) => {
+    if (window.confirm("Bạn có chắc chắn muốn xóa hoạt động này không? Hành động này không thể hoàn tác.")) {
       try {
-        await registerActivity(Number(activityToRegister.id));
-        alert(`Đăng ký thành công: ${activityToRegister.name}`);
-        setIsConfirmModalOpen(false);
-        setActivityToRegister(null);
-        // Refresh data
+        await deleteActivity(Number(activityId));
+        alert("Xóa hoạt động thành công");
         fetchActivities();
-        fetchMyParticipations();
       } catch (error) {
-        console.error("Registration failed", error);
-        alert("Đăng ký thất bại. Vui lòng thử lại.");
+        console.error("Delete failed", error);
+        alert("Xóa hoạt động thất bại. Vui lòng thử lại.");
       }
     }
   };
 
-  const handleUnregister = async (activityId: string) => {
-    if (window.confirm("Bạn có chắc chắn muốn hủy đăng ký hoạt động này không?")) {
+  const handleEditClick = (activity: Activity) => {
+    setEditingActivity(activity);
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdateActivity = async (data: CreateActivityRequest) => {
+    if (editingActivity) {
       try {
-        await unregisterActivity(Number(activityId));
-        alert("Hủy đăng ký thành công");
+        await updateActivity(Number(editingActivity.id), data);
+        alert("Cập nhật hoạt động thành công");
+        setIsEditModalOpen(false);
+        setEditingActivity(null);
         fetchActivities();
-        fetchMyParticipations();
       } catch (error) {
-        console.error("Unregistration failed", error);
-        alert("Hủy đăng ký thất bại. Vui lòng thử lại.");
+        console.error("Update failed", error);
+        alert("Cập nhật hoạt động thất bại. Vui lòng thử lại.");
       }
     }
   };
-
-
 
   // Filter activities
   const filteredActivities = activities.filter(activity => {
@@ -166,13 +147,11 @@ export default function ActivityListPage() {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    // Scroll to top of the page
     window.scrollTo({
       top: 0,
       left: 0,
       behavior: 'auto'
     });
-    // Also try scrolling the document element
     document.documentElement.scrollTop = 0;
   };
 
@@ -201,10 +180,10 @@ export default function ActivityListPage() {
                   <Calendar className="w-8 h-8" />
                 </div>
                 <h1 className="text-4xl font-bold tracking-tight">
-                  Danh sách hoạt động
+                  Quản lý hoạt động
                 </h1>
               </div>
-              <p className="text-white/90 text-lg font-light ml-16">Khám phá và tham gia các hoạt động thú vị</p>
+              <p className="text-white/90 text-lg font-light ml-16">Chỉnh sửa và quản lý các hoạt động</p>
             </div>
           </div>
 
@@ -284,7 +263,6 @@ export default function ActivityListPage() {
 
         {/* Activity Grid */}
         <div className="mt-6 space-y-8">
-          {/* Available Activities Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -325,10 +303,11 @@ export default function ActivityListPage() {
                     <ActivityListCard
                       activity={activity}
                       onViewDetails={handleViewDetails}
-                      onRegister={handleRegister}
-                      onUnregister={handleUnregister}
-                      isRegistered={myParticipations.includes(Number(activity.id))}
-                      userRole="EMPLOYEE"
+                      onRegister={() => {}}
+                      onDelete={handleDeleteActivity}
+                      onEdit={handleEditClick}
+                      isRegistered={false}
+                      userRole="ADMIN"
                     />
                   </motion.div>
                 ))}
@@ -357,7 +336,6 @@ export default function ActivityListPage() {
                   </motion.button>
                   
                   {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
-                    // Show first page, last page, current page, and pages around current
                     const showPage = page === 1 || 
                                    page === totalPages || 
                                    (page >= currentPage - 1 && page <= currentPage + 1);
@@ -453,23 +431,24 @@ export default function ActivityListPage() {
             setIsModalOpen(false);
             setSelectedActivity(null);
           }}
-          onRegister={handleRegister}
-          onUnregister={handleUnregister}
-          isRegistered={myParticipations.includes(Number(selectedActivity.id))}
-          userRole="EMPLOYEE"
+          onRegister={() => {}}
+          onUnregister={() => {}}
+          isRegistered={false}
+          userRole="ADMIN"
         />
       )}
 
-      {/* Confirm Registration Modal */}
-      {activityToRegister && (
-        <ConfirmRegistrationModal
-          isOpen={isConfirmModalOpen}
-          activityName={activityToRegister.name}
-          onConfirm={handleConfirmRegister}
-          onCancel={() => {
-            setIsConfirmModalOpen(false);
-            setActivityToRegister(null);
+      {/* Edit Activity Modal */}
+      {editingActivity && (
+        <ActivityFormModal
+          isOpen={isEditModalOpen}
+          onClose={() => {
+            setIsEditModalOpen(false);
+            setEditingActivity(null);
           }}
+          onSubmit={handleUpdateActivity}
+          initialData={editingActivity}
+          title="Chỉnh sửa hoạt động"
         />
       )}
     </div>
