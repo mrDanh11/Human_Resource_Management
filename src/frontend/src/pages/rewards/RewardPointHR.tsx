@@ -129,20 +129,32 @@ export default function RewardPointHR() {
     const remainingPoints = (pointOfHR?.pointTotal || 0) - totalPointReward; {/* Điểm còn lại của quản lý = điểm hiện tại - điểm đã tặng*/ }
 
     return (
-        <div className="min-h-screen max-w-7xl mx-auto bg-gray-50 p-6">
-            <div className="max-w-7xl mx-auto rounded-2xl overflow-hidden shadow-xl">
+        <div className="min-h-screen w-full mx-auto bg-linear-to-br from-blue-50 via-purple-50 to-pink-50 p-6">
+            <div className="max-w-7xl mx-auto">
                 {/* Header */}
-                <div className="rounded-lg p-6 mb-6 bg-blue-600">
-                    <div className="flex items-center justify-center gap-2 mb-2">
-                        <h1 className="text-3xl font-semibold text-center text-white">Tặng điểm thưởng</h1>
-                    </div>
-                    <p className="text-xl mb-4 text-center text-white">Khích lệ và khen thưởng nhân viên xuất sắc</p>
-                    <div className="text-right">
-                        {/* Điểm còn lại của quản lý = điểm hiện tại - điểm đã tặng*/}
-                        <div className="text-3xl font-bold text-white">{remainingPoints}</div>
-                        {/* Điểm hiện tại của quản lý - lấy từ API */}
-                        <div className="text-sm text-white">/ {pointOfHR?.pointTotal || 0} điểm</div>
-                        <div className="text-xs text-white">Điểm thưởng của bạn</div>
+                <div className="relative rounded-2xl p-8 mb-8 bg-linear-to-r from-blue-600 via-purple-600 to-pink-600 overflow-hidden shadow-2xl">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full -mr-32 -mt-32"></div>
+                    <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-10 rounded-full -ml-24 -mb-24"></div>
+                    
+                    <div className="relative z-10">
+                        <div className="flex items-center justify-center gap-3 mb-3">
+                            <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                                <span className="text-3xl">🎁</span>
+                            </div>
+                            <h1 className="text-4xl font-bold text-center text-white tracking-tight">Tặng điểm thưởng</h1>
+                        </div>
+                        <p className="text-xl mb-6 text-center text-white/90 font-light">Khích lệ và khen thưởng nhân viên xuất sắc</p>
+                        <div className="flex justify-center">
+                            <div className="bg-white/20 backdrop-blur-md rounded-2xl px-8 py-4 border border-white/30">
+                                <div className="text-center">
+                                    <div className="text-sm text-white/80 mb-1">Điểm thưởng của bạn</div>
+                                    <div className="flex items-baseline justify-center gap-2">
+                                        <span className="text-5xl font-bold text-white">{remainingPoints}</span>
+                                        <span className="text-2xl text-white/70">/ {pointOfHR?.pointTotal || 0}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -185,23 +197,28 @@ export default function RewardPointHR() {
                 </div>
 
                 {/* Employee Selection */}
-                <div className="bg-white rounded-lg shadow-sm mb-6">
-                    <div className="p-4 border-b flex items-left justify-between">
-                        <h2 className="font-medium">Chọn nhân viên</h2>
-                        <button className="text-sm text-blue-600 hover:text-blue-700">
-                            0 người được chọn
-                        </button>
+                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 mb-8 overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                    <div className="p-6 bg-linear-to-r from-blue-50 to-purple-50 border-b border-gray-100 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-linear-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center text-white">
+                                <span className="text-xl">👥</span>
+                            </div>
+                            <h2 className="font-bold text-lg text-gray-800">Chọn nhân viên</h2>
+                        </div>
+                        <div className="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-semibold">
+                            {selectedEmployees.length} người được chọn
+                        </div>
                     </div>
 
-                    <div className="p-4">
-                        <div className="relative mb-4">
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <div className="p-6">
+                        <div className="relative mb-6">
+                            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                             <input
                                 type="text"
                                 placeholder="Tìm kiếm nhân viên..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
                             />
                         </div>
                         {loadingEmployees ? (
@@ -221,25 +238,25 @@ export default function RewardPointHR() {
                                     </button>
                                 </div>
                             ) : (
-                            <div className="space-y-2 max-h-64 overflow-y-auto">
+                            <div className="space-y-3 max-h-96 overflow-y-auto pr-2">
                             {filteredEmployees.map((employee) => (
                                 <div
                                     key={employee.id}
                                     onClick={() => toggleEmployee(employee)}
-                                    className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors"
+                                    className="flex items-center justify-between p-4 hover:bg-linear-to-r hover:from-blue-50 hover:to-purple-50 rounded-xl cursor-pointer transition-all duration-300 border-2 border-transparent hover:border-blue-200 hover:shadow-md group"
                                 >
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-medium">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-12 h-12 rounded-xl bg-linear-to-br from-blue-600 to-purple-600 text-white flex items-center justify-center font-bold text-sm shadow-md group-hover:scale-110 transition-transform duration-300">
                                             {getInitials(employee.employeeName)}
                                         </div>
                                         <div>
-                                            <div className="font-medium text-gray-900">{employee.employeeName}</div>
-                                            <div className="text-sm text-gray-500">Mã nhân viên: {employee.employeeId}</div>
+                                            <div className="font-semibold text-gray-900">{employee.employeeName}</div>
+                                            <div className="text-sm text-gray-500">Mã NV: {employee.employeeId}</div>
                                         </div>
                                     </div>
                                     <div className="text-right">
-                                        <div className="text-sm text-gray-600">Điểm hiện tại</div>
-                                        <div className="font-semibold text-blue-600">{employee.pointTotal}</div>
+                                        <div className="text-xs text-gray-500 mb-1">Điểm hiện tại</div>
+                                        <div className="font-bold text-xl bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">{employee.pointTotal}</div>
                                     </div>
                                 </div>
                             ))}
@@ -247,13 +264,13 @@ export default function RewardPointHR() {
                         )}
 
                         {selectedEmployees.length > 0 && (
-                            <div className="mt-4 pt-4 border-t">
-                                <div className="text-sm text-gray-600 mb-2">Đã chọn: {selectedEmployees.length} nhân viên</div>
+                            <div className="mt-6 pt-6 border-t-2 border-gray-100">
+                                <div className="text-sm font-semibold text-gray-700 mb-3">Đã chọn: {selectedEmployees.length} nhân viên</div>
                                 <div className="flex flex-wrap gap-2">
                                     {selectedEmployees.map((emp) => (
                                         <div
                                             key={emp.id}
-                                            className="flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm"
+                                            className="flex items-center gap-2 bg-linear-to-r from-blue-100 to-purple-100 text-blue-700 px-4 py-2 rounded-full text-sm font-medium shadow-sm hover:shadow-md transition-shadow"
                                         >
                                             <span>{emp.employeeName}</span>
                                             <button
@@ -261,7 +278,7 @@ export default function RewardPointHR() {
                                                     e.stopPropagation();
                                                     toggleEmployee(emp);
                                                 }}
-                                                className="hover:bg-blue-100 rounded-full p-0.5"
+                                                className="hover:bg-white/50 rounded-full p-1 transition-colors"
                                             >
                                                 <X className="w-4 h-4" />
                                             </button>
@@ -274,14 +291,19 @@ export default function RewardPointHR() {
                 </div>
 
                 {/* Points Configuration */}
-                <div className="bg-white rounded-lg shadow-sm mb-6">
-                    <div className="p-4 border-b">
-                        <h2 className="font-medium">Thông tin tặng điểm</h2>
+                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 mb-8 overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                    <div className="p-6 bg-linear-to-r from-purple-50 to-pink-50 border-b border-gray-100">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-linear-to-r from-purple-600 to-pink-600 rounded-xl flex items-center justify-center text-white">
+                                <span className="text-xl">⚙️</span>
+                            </div>
+                            <h2 className="font-bold text-lg text-gray-800">Thông tin tặng điểm</h2>
+                        </div>
                     </div>
 
-                    <div className="p-4 space-y-4">
+                    <div className="p-6 space-y-6">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-bold text-gray-700 mb-3">
                                 Số điểm tặng (mỗi người)
                             </label>
                             <div className="relative">
@@ -294,7 +316,7 @@ export default function RewardPointHR() {
                                             setPointsPerPerson(val);
                                         }
                                     }}
-                                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 font-semibold text-lg"
                                     style={{
                                         appearance: "textfield",
                                         WebkitAppearance: "none",
@@ -305,43 +327,48 @@ export default function RewardPointHR() {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-bold text-gray-700 mb-3">
                                 Lý do tặng điểm *
                             </label>
                             <textarea
                                 value={note}
                                 onChange={(e) => setNote(e.target.value)}
                                 placeholder="Nhận xét về thành điểm đặt thuật, sự tối lợi..."
-                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-24 resize-none"
+                                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 min-h-32 resize-none"
                             />
-                            <div className="text-xs text-gray-500 mt-1">0-25 ký tự tối thiểu</div>
+                            <div className="text-xs text-gray-500 mt-2">0-25 ký tự tối thiểu</div>
                         </div>
                     </div>
                 </div>
 
                 {/* Summary */}
-                <div className="bg-white rounded-lg shadow-sm mb-6">
-                    <div className="p-4 border-b">
-                        <h2 className="font-medium">Tổng quan</h2>
+                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 mb-8 overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                    <div className="p-6 bg-linear-to-r from-green-50 to-teal-50 border-b border-gray-100">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-linear-to-r from-green-600 to-teal-600 rounded-xl flex items-center justify-center text-white">
+                                <span className="text-xl">📊</span>
+                            </div>
+                            <h2 className="font-bold text-lg text-gray-800">Tổng quan</h2>
+                        </div>
                     </div>
 
-                    <div className="p-4 space-y-3">
-                        <div className="flex justify-between items-center ">
-                            <span className="text-gray-600">Tổng điểm sẽ tặng</span>
-                            <span className="font-semibold text-xl text-blue-600">{totalPointReward}</span>
+                    <div className="p-6 space-y-4">
+                        <div className="flex justify-between items-center p-4 bg-linear-to-r from-blue-50 to-purple-50 rounded-xl">
+                            <span className="text-gray-700 font-semibold">Tổng điểm sẽ tặng</span>
+                            <span className="font-bold text-3xl bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">{totalPointReward}</span>
                         </div>
-                        <div className="flex justify-between items-center text-sm">
+                        <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                             <span className="text-gray-600">Số người</span>
-                            <span className="text-gray-900">{selectedEmployees.length} người × {pointsPerPerson} điểm</span>
+                            <span className="text-gray-900 font-semibold">{selectedEmployees.length} người × {pointsPerPerson} điểm</span>
                         </div>
-                        <div className="pt-3 border-t">
+                        <div className="pt-4 border-t-2 border-gray-100 space-y-2">
                             <div className="flex justify-between items-center">
                                 <span className="text-gray-600">Dư âm dùng</span>
-                                <span className="font-semibold">{remainingPoints - totalPointReward}</span>
+                                <span className="font-bold text-gray-800">{remainingPoints - totalPointReward}</span>
                             </div>
-                            <div className="flex justify-between items-center text-sm mt-1">
+                            <div className="flex justify-between items-center">
                                 <span className="text-gray-600">Còn lại</span>
-                                <span className="font-semibold">{(pointOfHR?.pointTotal || 0) - totalPointReward}</span>
+                                <span className="font-bold text-green-600">{(pointOfHR?.pointTotal || 0) - totalPointReward}</span>
                             </div>
                         </div>
                     </div>
@@ -350,20 +377,20 @@ export default function RewardPointHR() {
                 {/* Submit Button */}
                 <button
                     disabled={selectedEmployees.length === 0 || pointsPerPerson <= 0 || totalPointReward > (pointOfHR?.pointTotal || 0)}
-                    className="w-full bg-blue-700 hover:bg-blue-800 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
+                    className="w-full bg-linear-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 disabled:from-gray-300 disabled:via-gray-300 disabled:to-gray-300 disabled:cursor-not-allowed text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl hover:scale-105 disabled:hover:scale-100 disabled:shadow-none"
                     onClick={() => {handleRewardPoints(selectedEmployees)}}
                     >
-                    <span>📤</span>
-                    <span>Tặng điểm ngay</span>
+                    <span className="text-2xl">📤</span>
+                    <span className="text-lg">Tặng điểm ngay</span>
                 </button>
 
                 {showToast && (
-                <div className="fixed bottom-6 right-6 bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-3 animate-slide-up z-50">
-                    <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-                        <span className="text-green-500 text-xl">✓</span>
+                <div className="fixed bottom-8 right-8 bg-linear-to-r from-green-500 to-emerald-500 text-white px-8 py-5 rounded-2xl shadow-2xl flex items-center gap-4 animate-slide-up z-50 border-2 border-white">
+                    <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg">
+                        <span className="text-green-500 text-3xl font-bold">✓</span>
                     </div>
                     <div>
-                        <div className="font-semibold">Thành công!</div>
+                        <div className="font-bold text-lg">Thành công!</div>
                         <div className="text-sm text-green-50">Đã cấp điểm hằng tháng</div>
                     </div>
                 </div>

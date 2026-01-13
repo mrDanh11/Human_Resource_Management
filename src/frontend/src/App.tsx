@@ -48,17 +48,17 @@ const App = () => {
         {/* Protected Routes - Require Login */}
         <Route element={<ProtectedRoute />}>
           <Route path="/activities/results" element={<ActivityResultPage />} />
-          <Route path="/employee/profile/:id" element={<ProfilePage />} />
-
+          
           {/* Employee Layout Routes */}
           <Route element={<EmployeeLayout />}>
+            <Route path="/employee/profile/:id" element={<ProfilePage />} />
             <Route path="/rewards/hr-reward" element={<RewardPointHR />} />
             <Route path="rewards">
               <Route path="exchange" element={<PointExchange />} />
               <Route path="history" element={<RewardHistory />} />
               <Route path="points" element={<RewardDashboard />} />
             </Route>
-            <Route path="/requests" element={<AttendancePage />} />
+            
             <Route
               path="/requests/create"
               element={<RequestSelectionPage />}
@@ -109,17 +109,29 @@ const App = () => {
               </Route>
             </Route>
           </Route>
-          
+
           {/* HR Routes */}
           <Route element={<ProtectedRoute allowedRoles={["HR"]} />}>
             <Route path="/hr" element={<HRLayout />}>
               <Route path="dashboard" element={<HRDashboard />} />
-              <Route path="rewards/hr-reward" element={<RewardPointHR />} />
-              <Route path="activities" element={<AdminActivityListPage />} />
-              <Route path="activities/record-result" element={<RecordActivityResultPage />} />
+              <Route path="employee/profile/:id" element={<ProfilePage />} />
+              <Route path="requests" element={<AttendancePage />} />
+              <Route path="activities" element={<ActivityListPage />} />
+              <Route path="activities">
+                <Route path="create" element={<CreateActivityPage />} />
+                <Route path="cancel" element={<CancelActivityPage />} />
+                <Route path="history" element={<HistoryActivitiesPage />} />
+                <Route path="result" element={<RecordActivityResultPage />} />
+              </Route>
               <Route path="employee">
                 <Route path="list" element={<EmployeeList />} />
                 <Route path="create" element={<CreateEmployee />} />
+              </Route>
+              <Route path="rewards">             
+                <Route path="points" element={<RewardDashboard />} />
+                <Route path="hr-reward" element={<RewardPointHR />} />
+                <Route path="history" element={<RewardHistory />} />
+                <Route path="exchange" element={<PointExchange />} />
               </Route>
             </Route>
           </Route>
@@ -137,10 +149,7 @@ const App = () => {
                 <Route path="statistics" element={<AdminActivityListPage />} />
                 <Route path="create" element={<CreateActivityPage />} />
                 <Route path="cancel" element={<CancelActivityPage />} />
-                <Route
-                  path="record-result"
-                  element={<RecordActivityResultPage />}
-                />
+                <Route path="record-result" element={<RecordActivityResultPage />} />
                 <Route path="attendance" element={<AttendanceActivityPage />} />
               </Route>
             </Route>

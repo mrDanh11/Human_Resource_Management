@@ -70,10 +70,11 @@ export default function TickSelector({
       <MoneyDisplay money={money} />
 
       <button
-        className="w-full mt-5 py-3 rounded-xl bg-blue-600 text-white text-lg font-semibold shadow hover:bg-blue-700"
+        className="w-full mt-6 py-4 rounded-xl bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 text-white text-lg font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
         onClick={handleExchange}
       >
-        Quy đổi ngay
+        <span className="text-xl">💰</span>
+        <span>Quy đổi ngay</span>
       </button>
     </div>
   );
