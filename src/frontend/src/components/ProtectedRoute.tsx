@@ -1,45 +1,31 @@
-import React from 'react';
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
+import { jwtDecode } from "jwt-decode";
 
 interface ProtectedRouteProps {
   allowedRoles?: string[];
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles }) => {
-  const location = useLocation();
+const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
   const token = localStorage.getItem('accessToken');
-  const userRole = localStorage.getItem('role');
-
-  // LOG ĐỂ DEBUG
-  console.log("ProtectedRoute Checking:", { 
-    path: location.pathname, 
-    hasToken: !!token, 
-    role: userRole 
-  });
 
   if (!token) {
-    console.warn("No token found -> Redirecting to Login");
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return <Navigate to="/login" replace />;
   }
 
-  if (allowedRoles && allowedRoles.length > 0) {
-    if (!userRole) {
-       console.warn("Token exists but No Role found -> Redirecting");
-       return <Navigate to="/login" replace />;
-    }
-    
-    // So sánh role (Case-insensitive)
-    const hasPermission = allowedRoles.some(
-      (role) => role.toUpperCase() === userRole.toUpperCase()
-    );
+  try {
+    const decoded: any = jwtDecode(token);
+    // Ensure role is uppercase for comparison
+    const userRole = (decoded.role || '').toUpperCase();
 
-    if (!hasPermission) {
-      console.warn(`Role mismatch (Required: ${allowedRoles}, Current: ${userRole}) -> Forbidden`);
+    if (allowedRoles && !allowedRoles.includes(userRole)) {
       return <Navigate to="/forbidden" replace />;
     }
-  }
 
-  return <Outlet />;
+    return <Outlet />;
+  } catch (error) {
+    console.error("Invalid token:", error);
+    return <Navigate to="/login" replace />;
+  }
 };
 
 export default ProtectedRoute;

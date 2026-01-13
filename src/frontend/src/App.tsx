@@ -35,6 +35,7 @@ import ManagerLayout from './layouts/ManagerLayout';
 import CreateOnLeaveRequest from './pages/requests/CreateOnLeaveRequest';
 
 const App = () => {
+  console.log("App component is rendering");
   return (
     <BrowserRouter>
       <Routes>

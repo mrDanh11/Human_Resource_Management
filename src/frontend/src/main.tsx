@@ -5,6 +5,8 @@ import { store } from './store/appStore'
 import './index.css'
 import App from './App.tsx'
 
+console.log("main.tsx is running");
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Provider store={store}>
