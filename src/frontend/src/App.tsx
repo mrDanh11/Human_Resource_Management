@@ -84,8 +84,7 @@ const App = () => {
 
           {/* Manager Routes */}
           <Route element={<ProtectedRoute allowedRoles={['MANAGER']} />}>
-            <Route path="/employee/profile/:id" element={<ProfilePage />} />
-            <Route path="/manager" element={<ManagerLayout />}>
+            <Route path="/manager" element={<Layout />}>
               <Route path="requests" element={<LeaveRequestPage />} />
               <Route path="rewards">
                 <Route path="exchange" element={<PointExchange />} />
