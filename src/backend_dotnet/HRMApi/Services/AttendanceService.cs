@@ -52,7 +52,7 @@ public class AttendanceService : IAttendanceService
         {
             EmployeeId = employeeId,
             EmployeeName = employee.Fullname,
-            FromDate = fromDate ?? DateOnly.MinValue, // Giá trị hiển thị mặc định nếu null
+            FromDate = fromDate ?? DateOnly.MinValue,
             ToDate = toDate ?? DateOnly.MaxValue,
             TotalWorkingDays = attendances.Count,
             PresentDays = attendances.Count(a => a.Status == "present"),
@@ -91,10 +91,8 @@ public class AttendanceService : IAttendanceService
         if (employee == null)
             throw new KeyNotFoundException("Employee not found");
 
-        // Gọi Repository (đã hỗ trợ null date)
         var attendances = await _attendanceRepository.GetByEmployeeIdAsync(employeeId, fromDate, toDate);
 
-        // Map sang DTO
         return attendances.Select(a => MapToResponseDto(a, employee)).ToList();
     }
 
@@ -156,13 +154,11 @@ public class AttendanceService : IAttendanceService
         int employeeId, 
         CreateAttendanceCorrectionRequestDto dto)
     {
-        // Kiểm tra attendance có tồn tại không
         var existingAttendance = await _attendanceRepository.GetByEmployeeAndDateAsync(employeeId, dto.Date);
 
         if (existingAttendance == null)
             throw new InvalidOperationException("Attendance record not found for this date");
 
-        // Tạo request
         var request = new Request
         {
             EmployeeId = employeeId,
@@ -212,7 +208,6 @@ public class AttendanceService : IAttendanceService
 
     public async Task<AttendanceResponseDto> CreateAttendanceAsync(CreateAttendanceDto dto, int createdBy)
     {
-        // Kiểm tra duplicate
         var exists = await _attendanceRepository.ExistsAsync(dto.EmployeeId, dto.Date);
         if (exists)
             throw new InvalidOperationException($"Attendance already exists for employee {dto.EmployeeId} on {dto.Date}");
@@ -223,10 +218,15 @@ public class AttendanceService : IAttendanceService
 
         var attendance = _mapper.Map<Attendance>(dto);
         
-        // Calculate work hours if not provided
-        if (!attendance.WorkHours.HasValue && attendance.CheckinTime.HasValue && attendance.CheckoutTime.HasValue)
+        // Tự động tính toán WorkHours và Overtime nếu có Checkin/Checkout và user không nhập tay
+        if (attendance.CheckinTime.HasValue && attendance.CheckoutTime.HasValue)
         {
-            attendance.WorkHours = CalculateWorkHours(attendance.CheckinTime, attendance.CheckoutTime);
+            if (!dto.WorkHours.HasValue) 
+            {
+                var metrics = CalculateAttendanceMetrics(attendance.CheckinTime, attendance.CheckoutTime);
+                attendance.WorkHours = metrics.WorkHours;
+                attendance.OvertimeHours = metrics.OvertimeHours;
+            }
         }
 
         var created = await _attendanceRepository.AddAsync(attendance);
@@ -245,13 +245,23 @@ public class AttendanceService : IAttendanceService
         if (attendance == null)
             throw new KeyNotFoundException("Attendance not found");
 
-        // Map updates
         _mapper.Map(dto, attendance);
 
-        // Recalculate work hours if times changed
+        // Tính lại WorkHours và Overtime nếu thời gian thay đổi VÀ không nhập cứng WorkHours
         if ((dto.CheckinTime.HasValue || dto.CheckoutTime.HasValue) && !dto.WorkHours.HasValue)
         {
-            attendance.WorkHours = CalculateWorkHours(attendance.CheckinTime, attendance.CheckoutTime);
+            if (attendance.CheckinTime.HasValue && attendance.CheckoutTime.HasValue)
+            {
+                var metrics = CalculateAttendanceMetrics(attendance.CheckinTime, attendance.CheckoutTime);
+                attendance.WorkHours = metrics.WorkHours;
+                attendance.OvertimeHours = metrics.OvertimeHours;
+            }
+            else 
+            {
+                // Nếu thiếu 1 trong 2 đầu thì reset về 0
+                attendance.WorkHours = 0;
+                attendance.OvertimeHours = 0;
+            }
         }
 
         attendance.UpdatedAt = DateTime.UtcNow;
@@ -291,7 +301,6 @@ public class AttendanceService : IAttendanceService
         {
             try
             {
-                // Kiểm tra duplicate
                 var exists = await CheckAttendanceExistsAsync(dto.EmployeeId, dto.Date);
                 if (exists)
                 {
@@ -330,15 +339,20 @@ public class AttendanceService : IAttendanceService
         if (employee == null)
             throw new KeyNotFoundException("Employee not found");
 
-        // Kiểm tra xem đã có attendance cho ngày này chưa
         var existingAttendance = await _attendanceRepository.GetByEmployeeAndDateAsync(dto.EmployeeId, dto.Date);
+
+        // Tính toán Metrics (CalculateAttendanceMetrics đã được update để nhận nullable)
+        var metrics = CalculateAttendanceMetrics(dto.CheckinTime, dto.CheckoutTime);
 
         if (existingAttendance != null)
         {
-            // Cập nhật nếu đã tồn tại
             existingAttendance.CheckinTime = dto.CheckinTime;
             existingAttendance.CheckoutTime = dto.CheckoutTime;
-            existingAttendance.WorkHours = CalculateWorkHours(dto.CheckinTime, dto.CheckoutTime);
+            
+            // Cập nhật cả 2 trường
+            existingAttendance.WorkHours = metrics.WorkHours;
+            existingAttendance.OvertimeHours = metrics.OvertimeHours;
+            
             existingAttendance.Status = DetermineStatus(dto.CheckinTime);
             existingAttendance.UpdatedAt = DateTime.UtcNow;
             
@@ -351,9 +365,12 @@ public class AttendanceService : IAttendanceService
             return MapToResponseDto(existingAttendance, employee);
         }
 
-        // Tạo mới
         var attendance = _mapper.Map<Attendance>(dto);
-        attendance.WorkHours = CalculateWorkHours(dto.CheckinTime, dto.CheckoutTime);
+        
+        // Set cả 2 trường
+        attendance.WorkHours = metrics.WorkHours;
+        attendance.OvertimeHours = metrics.OvertimeHours;
+        
         attendance.Status = DetermineStatus(dto.CheckinTime);
 
         var created = await _attendanceRepository.AddAsync(attendance);
@@ -432,20 +449,53 @@ public class AttendanceService : IAttendanceService
         };
     }
 
-    private decimal CalculateWorkHours(DateTime? checkinTime, DateTime? checkoutTime)
+    /// <summary>
+    /// Tính WorkHours và OvertimeHours.
+    /// Update: Chấp nhận nullable DateTime để tương thích với dữ liệu từ thiết bị.
+    /// </summary>
+    private (decimal WorkHours, decimal OvertimeHours) CalculateAttendanceMetrics(DateTime? checkin, DateTime? checkout)
     {
-        if (!checkinTime.HasValue || !checkoutTime.HasValue)
-            return 0;
-
-        var duration = checkoutTime.Value - checkinTime.Value;
-        
-        // Trừ đi giờ nghỉ trưa (1 giờ nếu làm việc > 4 giờ)
-        if (duration.TotalHours > 4)
+        // Nếu thiếu 1 trong 2 thì trả về 0
+        if (!checkin.HasValue || !checkout.HasValue)
         {
-            duration = duration.Subtract(TimeSpan.FromHours(1));
+            return (0, 0);
         }
 
-        return (decimal)Math.Max(0, duration.TotalHours);
+        var checkinVal = checkin.Value;
+        var checkoutVal = checkout.Value;
+        var date = checkinVal.Date;
+
+        var standardStart = date.Add(_standardCheckinTime); // 08:30
+        var standardEnd = date.Add(_standardCheckoutTime);   // 17:30
+
+        // 1. TÍNH WORK HOURS (Cắt đầu cắt đuôi theo giờ hành chính)
+        var effectiveStart = checkinVal < standardStart ? standardStart : checkinVal;
+        var effectiveEnd = checkoutVal > standardEnd ? standardEnd : checkoutVal;
+
+        double workHours = 0;
+        
+        if (effectiveEnd > effectiveStart)
+        {
+            var duration = effectiveEnd - effectiveStart;
+            
+            // Trừ 1h nghỉ trưa nếu làm > 4h
+            if (duration.TotalHours > 4)
+            {
+                duration = duration.Subtract(TimeSpan.FromHours(1));
+            }
+            
+            workHours = Math.Max(0, duration.TotalHours);
+        }
+
+        // 2. TÍNH OVERTIME (Chỉ phần dư ra sau 17:30)
+        double overtimeHours = 0;
+        if (checkoutVal > standardEnd)
+        {
+            var otDuration = checkoutVal - standardEnd;
+            overtimeHours = otDuration.TotalHours;
+        }
+
+        return ((decimal)Math.Round(workHours, 2), (decimal)Math.Round(overtimeHours, 2));
     }
 
     private string DetermineStatus(DateTime checkinTime)

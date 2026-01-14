@@ -15,6 +15,11 @@ public class RequestService : IRequestService
     private readonly IMapper _mapper;
     private readonly ILogger<RequestService> _logger;
 
+    // Company policy - PHẢI GIỐNG AttendanceService
+    private readonly TimeSpan _standardCheckinTime = new TimeSpan(8, 30, 0);
+    private readonly TimeSpan _standardCheckoutTime = new TimeSpan(17, 30, 0);
+    private readonly int _lateThresholdMinutes = 15;
+
     public RequestService(
         IRequestRepository requestRepository,
         IAttendanceRepository attendanceRepository,
@@ -76,7 +81,6 @@ public class RequestService : IRequestService
 
     public async Task<bool> CancelRequestAsync(int requestId, int employeeId)
     {
-        // 1. Lấy request từ DB
         var request = await _requestRepository.GetByIdAsync(requestId);
 
         if (request == null)
@@ -84,20 +88,17 @@ public class RequestService : IRequestService
             throw new KeyNotFoundException("Không tìm thấy yêu cầu này.");
         }
 
-        // 2. Kiểm tra quyền sở hữu (Chỉ chủ nhân mới được hủy)
         if (request.EmployeeId != employeeId)
         {
             throw new UnauthorizedAccessException("Bạn không có quyền hủy yêu cầu này.");
         }
 
-        // 3. LOGIC QUAN TRỌNG: Chỉ 'pending' mới được hủy
         if (request.Status != "pending")
         {
             throw new InvalidOperationException($"Không thể hủy yêu cầu đang ở trạng thái '{request.Status}'. Chỉ có thể hủy khi đang chờ duyệt.");
         }
 
-        // 4. Cập nhật trạng thái
-        request.Status = "cancelled"; // Trạng thái mới trong DB
+        request.Status = "cancelled";
         request.UpdatedAt = DateTime.UtcNow;
 
         await _requestRepository.UpdateAsync(request);
@@ -120,7 +121,6 @@ public class RequestService : IRequestService
         if (request.Status != "pending")
             throw new InvalidOperationException($"Request is already {request.Status}");
 
-        // Bắt đầu transaction
         await using var transaction = await _context.Database.BeginTransactionAsync();
 
         try
@@ -156,7 +156,6 @@ public class RequestService : IRequestService
                 "Request processed. RequestId: {RequestId}, Status: {Status}, ApproverId: {ApproverId}",
                 requestId, dto.Status, approverId);
 
-            // Reload with details
             request = await _requestRepository.GetByIdWithDetailsAsync(requestId);
             return MapToResponseDto(request!);
         }
@@ -252,7 +251,6 @@ public class RequestService : IRequestService
         if (request.StartTime == null || request.EndTime == null)
             return;
 
-        // Parse date from StartTime
         var date = DateOnly.FromDateTime(request.StartTime.Value);
         
         var attendance = await _attendanceRepository.GetByEmployeeAndDateAsync(
@@ -266,26 +264,23 @@ public class RequestService : IRequestService
             return;
         }
 
-        // Update attendance
+        // Cập nhật check-in/out time
         attendance.CheckinTime = request.StartTime;
         attendance.CheckoutTime = request.EndTime;
         
-        // Recalculate work hours
-        if (attendance.CheckinTime.HasValue && attendance.CheckoutTime.HasValue)
-        {
-            var duration = attendance.CheckoutTime.Value - attendance.CheckinTime.Value;
-            if (duration.TotalHours > 4)
-                duration = duration.Subtract(TimeSpan.FromHours(1)); // Lunch break
-            
-            attendance.WorkHours = (decimal)Math.Max(0, duration.TotalHours);
-        }
+        // Tính work_hours VÀ overtime_hours theo logic mới
+        var (workHours, overtimeHours) = CalculateAttendanceMetrics(
+            request.StartTime.Value, 
+            request.EndTime.Value);
+        
+        attendance.WorkHours = workHours;
+        attendance.OvertimeHours = overtimeHours;
 
         // Update status
         if (attendance.CheckinTime.HasValue)
         {
             var checkinTime = attendance.CheckinTime.Value.TimeOfDay;
-            var standardTime = new TimeSpan(8, 30, 0);
-            attendance.Status = checkinTime > standardTime.Add(TimeSpan.FromMinutes(15)) 
+            attendance.Status = checkinTime > _standardCheckinTime.Add(TimeSpan.FromMinutes(_lateThresholdMinutes)) 
                 ? "late" 
                 : "present";
         }
@@ -296,8 +291,53 @@ public class RequestService : IRequestService
         await _attendanceRepository.UpdateAsync(attendance);
 
         _logger.LogInformation(
-            "Attendance updated from request. AttendanceId: {AttendanceId}, RequestId: {RequestId}",
-            attendance.Id, request.Id);
+            "Attendance updated from request. AttendanceId: {AttendanceId}, RequestId: {RequestId}, WorkHours: {WorkHours}, OvertimeHours: {OvertimeHours}",
+            attendance.Id, request.Id, workHours, overtimeHours);
+    }
+
+    /// <summary>
+    /// Tính WorkHours và OvertimeHours theo quy tắc:
+    /// - WorkHours: Giao của [CheckIn, CheckOut] và [08:30, 17:30].
+    /// - OvertimeHours: Phần dư sau 17:30.
+    /// </summary>
+    private (decimal WorkHours, decimal OvertimeHours) CalculateAttendanceMetrics(DateTime checkin, DateTime checkout)
+    {
+        var date = checkin.Date;
+        var standardStart = date.Add(_standardCheckinTime); // 08:30
+        var standardEnd = date.Add(_standardCheckoutTime);   // 17:30
+
+        // 1. TÍNH WORK HOURS (Chỉ tính trong khung giờ hành chính)
+        // Nếu checkin sớm hơn 8:30, lấy 8:30. Nếu trễ hơn, lấy giờ thực tế.
+        var effectiveStart = checkin < standardStart ? standardStart : checkin;
+        
+        // Nếu checkout trễ hơn 17:30, chỉ tính đến 17:30 cho WorkHours.
+        var effectiveEnd = checkout > standardEnd ? standardEnd : checkout;
+
+        double workHours = 0;
+        
+        // Chỉ tính nếu thời gian check-out sau thời gian check-in hợp lệ
+        if (effectiveEnd > effectiveStart)
+        {
+            var duration = effectiveEnd - effectiveStart;
+            
+            // Trừ giờ nghỉ trưa (1 tiếng) nếu làm việc trên 4 tiếng
+            if (duration.TotalHours > 4)
+            {
+                duration = duration.Subtract(TimeSpan.FromHours(1));
+            }
+            
+            workHours = Math.Max(0, duration.TotalHours);
+        }
+
+        // 2. TÍNH OVERTIME (Chỉ tính thời gian làm sau 17:30)
+        double overtimeHours = 0;
+        if (checkout > standardEnd)
+        {
+            var otDuration = checkout - standardEnd;
+            overtimeHours = otDuration.TotalHours;
+        }
+
+        return ((decimal)Math.Round(workHours, 2), (decimal)Math.Round(overtimeHours, 2));
     }
 
     private RequestResponseDto MapToResponseDto(Request request)
@@ -344,7 +384,6 @@ public class RequestService : IRequestService
                 RequestedCheckoutTime = request.EndTime
             };
 
-            // Try to get current attendance values
             var date = DateOnly.FromDateTime(request.StartTime.Value);
             var attendance = _attendanceRepository.GetByEmployeeAndDateAsync(
                 request.EmployeeId, date).Result;
