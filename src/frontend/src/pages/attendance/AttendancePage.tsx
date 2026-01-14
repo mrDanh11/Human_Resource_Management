@@ -113,6 +113,7 @@ const AttendancePage: React.FC = () => {
   };
 
   // Xử lý submit form
+// Xử lý submit form
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -123,26 +124,43 @@ const AttendancePage: React.FC = () => {
     }
 
     try {
+      // 1. Hàm helper để format thời gian chuẩn ISO 8601 (UTC) có đuôi 'Z'
+      // Input: date="2026-01-04", time="07:30" -> Output: "2026-01-04T07:30:00Z"
+      const formatToIso = (date: string, time: string) => {
+        if (!time) return null;
+        return `${date}T${time}:00Z`; 
+      };
+
+      // 2. Tạo payload đúng chuẩn Backend yêu cầu
       const payload = {
         date: formData.date,
-        requestedCheckinTime: formData.checkinTime ? `${formData.date}T${formData.checkinTime}:00` : null,
-        requestedCheckoutTime: formData.checkoutTime ? `${formData.date}T${formData.checkoutTime}:00` : null,
+        // Thêm Z vào cuối để đánh dấu là giờ UTC (hoặc giờ chuẩn hệ thống)
+        requestedCheckinTime: formData.checkinTime ? formatToIso(formData.date, formData.checkinTime) : null,
+        requestedCheckoutTime: formData.checkoutTime ? formatToIso(formData.date, formData.checkoutTime) : null,
         reason: formData.reason,
-        attachment: null // File sẽ được xử lý riêng nếu cần
+        
+        // 3. Xử lý Attachment:
+        // API nhận JSON nên không thể gửi File object trực tiếp.
+        // Tạm thời gửi tên file (string) hoặc null.
+        // (Để gửi file thật, bạn cần API upload ảnh riêng để lấy URL rồi điền vào đây)
+        attachment: formData.attachment ? formData.attachment.name : null 
       };
       
+      console.log('Sending payload:', payload); // Debug xem dữ liệu gửi đi
+
       await dispatch(createCorrectionRequest(payload)).unwrap();
       
       alert('Gửi yêu cầu cập nhật chấm công thành công!');
       setIsModalOpen(false);
       
-      // Refresh timesheet data
+      // Refresh dữ liệu timesheet
       if (selectedMonth === 'all') {
         dispatch(fetchMyTimesheet({}));
       } else {
         const [month, year] = selectedMonth.split('/');
         const monthNum = parseInt(month);
         const yearNum = parseInt(year);
+        // Tính ngày đầu và cuối tháng để reload đúng dữ liệu
         const fromDate = `${yearNum}-${monthNum.toString().padStart(2, '0')}-01`;
         const lastDay = new Date(yearNum, monthNum, 0).getDate();
         const toDate = `${yearNum}-${monthNum.toString().padStart(2, '0')}-${lastDay.toString().padStart(2, '0')}`;
@@ -158,8 +176,12 @@ const AttendancePage: React.FC = () => {
         attachment: null
       });
     } catch (error: any) {
-      console.error('Error:', error);
-      alert(error || 'Có lỗi xảy ra khi gửi yêu cầu!');
+      console.error('Error submitting request:', error);
+      // Hiển thị thông báo lỗi chi tiết từ Backend nếu có
+      const errorMessage = typeof error === 'string' 
+        ? error 
+        : (error?.message || 'Có lỗi xảy ra khi gửi yêu cầu!');
+      alert(errorMessage);
     }
   };
 
