@@ -44,7 +44,9 @@ export default function RewardPointHR() {
             dispatch(fetchAllEmployeePoints({ pageNumber: 1, pageSize: 100 }));
         }, [dispatch]);
 
-    const filteredEmployees = employees.filter(emp =>
+    const employeeNotIncludeHR = employees.filter(emp => emp.employeeId !== employeeId)
+
+    const filteredEmployees = employeeNotIncludeHR.filter(emp =>
         emp.employeeName.toLowerCase().includes(searchTerm.toLowerCase()) &&
         !selectedEmployees.find(se => se.id === emp.employeeId)
     );
