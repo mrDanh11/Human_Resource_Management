@@ -36,7 +36,7 @@ public class AttendanceService : IAttendanceService
     // EMPLOYEE METHODS
     // ============================================
 
-    public async Task<TimesheetSummaryDto> GetMyTimesheetAsync(int employeeId, DateOnly fromDate, DateOnly toDate)
+    public async Task<TimesheetSummaryDto> GetMyTimesheetAsync(int employeeId, DateOnly? fromDate, DateOnly? toDate)
     {
         var employee = await _context.Employees
             .FirstOrDefaultAsync(e => e.Id == employeeId);
@@ -52,8 +52,8 @@ public class AttendanceService : IAttendanceService
         {
             EmployeeId = employeeId,
             EmployeeName = employee.Fullname,
-            FromDate = fromDate,
-            ToDate = toDate,
+            FromDate = fromDate ?? DateOnly.MinValue, // Giá trị hiển thị mặc định nếu null
+            ToDate = toDate ?? DateOnly.MaxValue,
             TotalWorkingDays = attendances.Count,
             PresentDays = attendances.Count(a => a.Status == "present"),
             AbsentDays = attendances.Count(a => a.Status == "absent"),
@@ -81,6 +81,21 @@ public class AttendanceService : IAttendanceService
             return null;
 
         return MapToResponseDto(attendance, attendance.Employee);
+    }
+
+    public async Task<List<AttendanceResponseDto>> GetMyAttendanceHistoryAsync(int employeeId, DateOnly? fromDate, DateOnly? toDate)
+    {
+        var employee = await _context.Employees
+            .FirstOrDefaultAsync(e => e.Id == employeeId);
+
+        if (employee == null)
+            throw new KeyNotFoundException("Employee not found");
+
+        // Gọi Repository (đã hỗ trợ null date)
+        var attendances = await _attendanceRepository.GetByEmployeeIdAsync(employeeId, fromDate, toDate);
+
+        // Map sang DTO
+        return attendances.Select(a => MapToResponseDto(a, employee)).ToList();
     }
 
     public async Task<AttendanceStatisticsDto> GetMyAttendanceStatisticsAsync(int employeeId, int year, int month)

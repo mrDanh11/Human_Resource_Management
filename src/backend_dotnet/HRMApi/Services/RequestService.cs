@@ -74,6 +74,39 @@ public class RequestService : IRequestService
         return requests.Select(MapToResponseDto).ToList();
     }
 
+    public async Task<bool> CancelRequestAsync(int requestId, int employeeId)
+    {
+        // 1. Lấy request từ DB
+        var request = await _requestRepository.GetByIdAsync(requestId);
+
+        if (request == null)
+        {
+            throw new KeyNotFoundException("Không tìm thấy yêu cầu này.");
+        }
+
+        // 2. Kiểm tra quyền sở hữu (Chỉ chủ nhân mới được hủy)
+        if (request.EmployeeId != employeeId)
+        {
+            throw new UnauthorizedAccessException("Bạn không có quyền hủy yêu cầu này.");
+        }
+
+        // 3. LOGIC QUAN TRỌNG: Chỉ 'pending' mới được hủy
+        if (request.Status != "pending")
+        {
+            throw new InvalidOperationException($"Không thể hủy yêu cầu đang ở trạng thái '{request.Status}'. Chỉ có thể hủy khi đang chờ duyệt.");
+        }
+
+        // 4. Cập nhật trạng thái
+        request.Status = "cancelled"; // Trạng thái mới trong DB
+        request.UpdatedAt = DateTime.UtcNow;
+
+        await _requestRepository.UpdateAsync(request);
+
+        _logger.LogInformation("Request {RequestId} cancelled by employee {EmployeeId}", requestId, employeeId);
+
+        return true;
+    }
+
     public async Task<RequestResponseDto> ProcessRequestAsync(
         int requestId, 
         ProcessRequestDto dto, 

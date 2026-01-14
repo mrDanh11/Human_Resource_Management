@@ -21,6 +21,12 @@ public partial class Request
 
     public string? Status { get; set; }
 
+    public double? Duration { get; set; } 
+    // Số ngày nghỉ (0.5, 1.0...)
+    public string? LeaveMode { get; set; } 
+    // DAY, HALF_DAY, SHORT_HOUR
+    public string? Session { get; set; } 
+      // MORNING, AFTERNOON
     public DateTime? CreatedAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }

@@ -87,6 +87,52 @@ public class RequestController : ControllerBase
         }
     }
 
+
+    /// <summary>
+    /// [EMPLOYEE] Hủy yêu cầu của mình (Chỉ khi đang Pending)
+    /// </summary>
+    [HttpPut("{id}/cancel")]
+    [Authorize] // Bắt buộc đăng nhập
+    [ProducesResponseType(200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(403)]
+    [ProducesResponseType(404)]
+    public async Task<IActionResult> CancelRequest(int id)
+    {
+        try
+        {
+            // Lấy ID nhân viên từ Token
+            var employeeIdClaim = User.Claims.FirstOrDefault(c => c.Type == "employeeId")?.Value;
+            
+            if (string.IsNullOrEmpty(employeeIdClaim) || !int.TryParse(employeeIdClaim, out int employeeId))
+            {
+                return Unauthorized("Không tìm thấy thông tin nhân viên trong token");
+            }
+
+            // Gọi Service xử lý
+            await _requestService.CancelRequestAsync(id, employeeId);
+
+            return Ok(new { message = "Đã hủy yêu cầu thành công." });
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return StatusCode(403, new { message = ex.Message }); // 403 Forbidden
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message }); // 400 Bad Request (Ví dụ: đã Approved rồi mà cố hủy)
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Lỗi khi hủy request {RequestId}", id);
+            return StatusCode(500, new { message = "Lỗi hệ thống", error = ex.Message });
+        }
+    }
+    
     // ============================================
     // HR/MANAGER ENDPOINTS
     // ============================================

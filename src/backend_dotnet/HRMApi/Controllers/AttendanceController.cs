@@ -31,8 +31,8 @@ public class AttendanceController : ControllerBase
     [Authorize(Policy = "attendance:view-own")]
     [ProducesResponseType(typeof(TimesheetSummaryDto), 200)]
     public async Task<ActionResult<TimesheetSummaryDto>> GetMyTimesheet(
-        [FromQuery] DateOnly fromDate,
-        [FromQuery] DateOnly toDate)
+        [FromQuery] DateOnly? fromDate,
+        [FromQuery] DateOnly? toDate)
     {
         try
         {
@@ -54,6 +54,37 @@ public class AttendanceController : ControllerBase
         {
             _logger.LogError(ex, "Error getting employee timesheet");
             return StatusCode(500, new { message = "Lỗi khi lấy bảng công", error = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// [EMPLOYEE] Xem lịch sử chấm công (Danh sách)
+    /// - Không truyền ngày -> Lấy TẤT CẢ
+    /// - Có truyền fromDate/toDate -> Lọc theo khoảng
+    /// </summary>
+    [HttpGet("my-attendance")]
+    [Authorize(Policy = "attendance:view-own")]
+    [ProducesResponseType(typeof(List<AttendanceResponseDto>), 200)]
+    public async Task<ActionResult<List<AttendanceResponseDto>>> GetMyAttendanceHistory(
+        [FromQuery] DateOnly? fromDate,
+        [FromQuery] DateOnly? toDate)
+    {
+        try
+        {
+            var employeeIdClaim = User.Claims.FirstOrDefault(c => c.Type == "employeeId")?.Value;
+            
+            if (string.IsNullOrEmpty(employeeIdClaim) || !int.TryParse(employeeIdClaim, out int employeeId))
+            {
+                return Unauthorized("Employee ID not found in token");
+            }
+
+            var result = await _attendanceService.GetMyAttendanceHistoryAsync(employeeId, fromDate, toDate);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting attendance history");
+            return StatusCode(500, new { message = "Lỗi khi lấy lịch sử chấm công", error = ex.Message });
         }
     }
 
