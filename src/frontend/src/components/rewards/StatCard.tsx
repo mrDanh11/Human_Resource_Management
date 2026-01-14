@@ -28,8 +28,8 @@ export default function StatCard({
   const styles = variantStyles[variant];
   const isPrimary = variant === 'primary';
   const titleColor = isPrimary ? 'text-white/80' : 'text-slate-500';
-  const valueSize = isPrimary ? 'text-5xl' : 'text-4xl';
-  const padding = isPrimary ? 'p-8' : 'p-6';
+  const valueSize = 'text-3xl'; // Uniform smaller size for all cards
+  const padding = 'p-5'; // Uniform smaller padding for all cards
 
   return (
     <div className={`rounded-2xl ${padding} ${styles} font-['Open_Sans'] transition-all duration-300 overflow-hidden relative`}>
@@ -41,7 +41,7 @@ export default function StatCard({
       )}
       
       <div className="relative z-10">
-        <div className="flex items-start justify-between mb-4">
+        <div className="flex items-start justify-between mb-3">
           <p className={`text-xs font-bold uppercase tracking-wider ${titleColor}`}>
             {title}
           </p>
@@ -52,12 +52,12 @@ export default function StatCard({
           )}
         </div>
         
-        <p className={`${valueSize} font-bold leading-none mt-4 mb-3`}>
+        <p className={`${valueSize} font-bold leading-none mt-2 mb-2`}>
           {typeof value === 'number' ? value.toLocaleString('vi-VN') : value}
         </p>
         
         {subtitle && (
-          <p className={`text-sm mt-3 font-semibold ${isPrimary ? 'text-white/90' : 'text-slate-600'}`}>
+          <p className={`text-xs mt-2 font-semibold ${isPrimary ? 'text-white/90' : 'text-slate-600'}`}>
             {subtitle}
           </p>
         )}

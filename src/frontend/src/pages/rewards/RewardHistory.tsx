@@ -1,21 +1,25 @@
 import { useEffect, useState } from 'react';
-import { Award, TrendingUp, TrendingDown } from 'lucide-react';
+import { Award, TrendingUp, TrendingDown, FileDown } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { usePointSummary } from '../../hooks/usePointSummary';
 import { useRewardHistory } from '../../hooks/useRewardHistory';
 import StatCard from '../../components/rewards/StatCard';
 import FilterPanel from '../../components/rewards/FilterPanel';
 import TransactionList from '../../components/rewards/TransactionList';
+import { exportToPDF } from '../../utils/exportUtils';
 import type { TransactionFilter } from '../../types/reward';
 
 export default function RewardHistory() {
   const [employeeId, setEmployeeId] = useState<number>(0);
+  const [employeeName, setEmployeeName] = useState<string>('');
   
-  // Fetch employee ID from localStorage or auth context
+  // Fetch employee ID and name from localStorage or auth context
   useEffect(() => {
     const id = localStorage.getItem('userId');
+    const name = localStorage.getItem('name') || 'Nhân viên';
     if (id) {
       setEmployeeId(Number(id));
+      setEmployeeName(name);
     }
   }, []);
 
@@ -24,19 +28,30 @@ export default function RewardHistory() {
     transactions, 
     loading: transactionsLoading, 
     error, 
+    filters,
     setFilters,
     refresh 
   } = useRewardHistory(employeeId);
 
+  // Client-side filtering for status (since backend doesn't support it yet)
+  const filteredTransactions = transactions.filter(t => {
+    if (filters.status && t.status !== filters.status) {
+      return false;
+    }
+    return true;
+  });
+
   const handleFilterChange = (filters: TransactionFilter) => {
     setFilters(filters);
-    // TODO: Implement backend filtering when API supports it
-    console.log('Filters applied:', filters);
   };
 
   const handleClearFilters = () => {
     setFilters({});
     refresh();
+  };
+
+  const handleExportPDF = () => {
+    exportToPDF(filteredTransactions, employeeName, summary || undefined);
   };
 
   if (!employeeId) {
@@ -69,13 +84,24 @@ export default function RewardHistory() {
                 <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-10 rounded-full -ml-24 -mb-24"></div>
                 
                 <div className="relative z-10">
-                  <div className="flex items-center gap-4 mb-3">
-                    <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                      <Award className="text-white" size={32} />
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-4">
+                      <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                        <Award className="text-white" size={32} />
+                      </div>
+                      <h1 className="text-4xl font-bold text-white tracking-tight">
+                        Lịch sử điểm thưởng
+                      </h1>
                     </div>
-                    <h1 className="text-4xl font-bold text-white tracking-tight">
-                      Lịch sử điểm thưởng
-                    </h1>
+                    
+                    {/* Export PDF Button */}
+                    <button
+                      onClick={handleExportPDF}
+                      className="flex items-center gap-2 px-6 py-3 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
+                    >
+                      <FileDown size={20} />
+                      Xuất PDF
+                    </button>
                   </div>
                   <p className="text-white/90 text-lg font-light">
                     Theo dõi toàn bộ lịch sử nhận và đổi điểm thưởng của bạn
@@ -167,7 +193,7 @@ export default function RewardHistory() {
 
               <div className="lg:col-span-3">
                 <TransactionList
-                  transactions={transactions}
+                  transactions={filteredTransactions}
                   loading={transactionsLoading}
                   error={error}
                 />
