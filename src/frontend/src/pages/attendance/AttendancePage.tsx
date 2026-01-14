@@ -31,7 +31,6 @@ const AttendancePage: React.FC = () => {
     date: '',
     checkinTime: '',
     checkoutTime: '',
-    overtimeHours: 0,
     reason: '',
     attachment: null as File | null
   });
@@ -126,11 +125,10 @@ const AttendancePage: React.FC = () => {
     try {
       const payload = {
         date: formData.date,
-        checkinTime: formData.checkinTime ? `${formData.date}T${formData.checkinTime}:00` : undefined,
-        checkoutTime: formData.checkoutTime ? `${formData.date}T${formData.checkoutTime}:00` : undefined,
-        overtimeHours: formData.overtimeHours,
-        reason: formData.reason
-        // TODO: Handle file upload for attachment
+        requestedCheckinTime: formData.checkinTime ? `${formData.date}T${formData.checkinTime}:00` : null,
+        requestedCheckoutTime: formData.checkoutTime ? `${formData.date}T${formData.checkoutTime}:00` : null,
+        reason: formData.reason,
+        attachment: null // File sẽ được xử lý riêng nếu cần
       };
       
       await dispatch(createCorrectionRequest(payload)).unwrap();
@@ -156,7 +154,6 @@ const AttendancePage: React.FC = () => {
         date: '',
         checkinTime: '',
         checkoutTime: '',
-        overtimeHours: 0,
         reason: '',
         attachment: null
       });
@@ -185,7 +182,7 @@ const AttendancePage: React.FC = () => {
     } else {
       setFormData(prev => ({
         ...prev,
-        [name]: name === 'overtimeHours' ? Number(value) : value
+        [name]: value
       }));
     }
   };
