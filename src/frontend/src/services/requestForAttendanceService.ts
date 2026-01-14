@@ -119,6 +119,16 @@ export const requestService = {
     return response.data;
   },
 
+  /**
+   * [EMPLOYEE] Hủy yêu cầu của mình (Chỉ khi status là Pending)
+   * PUT /api/v1/Request/{id}/cancel
+   */
+  cancelRequest: async (id: number): Promise<{ message: string }> => {
+    const response = await apiDotNet.put<{ message: string }>(
+      `/Request/${id}/cancel`
+    );
+    return response.data;
+  },
   // ============================================
   // HR/MANAGER METHODS
   // ============================================
