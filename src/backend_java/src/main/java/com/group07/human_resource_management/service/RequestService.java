@@ -10,7 +10,6 @@ import com.group07.human_resource_management.entity.Request;
 import com.group07.human_resource_management.exception.ResourceNotFoundException;
 import com.group07.human_resource_management.mapper.RequestMapper;
 import com.group07.human_resource_management.repository.ApprovalHistoryRepository;
-// import com.group07.human_resource_management.repository.ApproveHistoryRepository;
 import com.group07.human_resource_management.repository.EmployeeRepository;
 import com.group07.human_resource_management.repository.RequestRepository;
 import com.group07.human_resource_management.repository.specification.RequestSpecification;
@@ -22,12 +21,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.group07.human_resource_management.dto.response.AnnualLeaveSummaryResponse;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -165,6 +166,8 @@ public class RequestService implements IRequestService {
                 .type(req.getType())
                 .status(req.getStatus())
                 .createdDate(req.getCreatedAt())
+                .startTime(req.getStartTime())
+                .endTime(req.getEndTime())
                 .build());
 
     }
@@ -205,5 +208,54 @@ public class RequestService implements IRequestService {
                 .status(req.getStatus())
                 .createdDate(req.getCreatedAt())
                 .build());
+    }
+
+    public AnnualLeaveSummaryResponse countAnnualLeave(Long employeeId) {
+        Employee emp = employeeRepository.findById(employeeId)
+            .orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
+
+        LocalDate today = LocalDate.now();
+        LocalDate startOfYear = today.withDayOfYear(1);
+        LocalDate endOfYear = today.withDayOfYear(today.lengthOfYear());
+
+        // ===== 1. Tổng phép năm theo thâm niên =====
+        int baseLeave = 12;
+        int yearsWorked = (int) ChronoUnit.YEARS.between(emp.getJoinDate(), today);
+        int bonusLeave = yearsWorked / 5;
+        int totalLeavePerYear = baseLeave + bonusLeave;
+
+        // ===== 2. Thời điểm bắt đầu tính phép trong năm =====
+        LocalDate effectiveStart = emp.getJoinDate().isAfter(startOfYear)
+                ? emp.getJoinDate()
+                : startOfYear;
+
+        // ===== 3. Số tháng làm việc trong năm =====
+        int monthsWorked = (int) ChronoUnit.MONTHS.between(
+                effectiveStart.withDayOfMonth(1),
+                today.withDayOfMonth(1)
+        ) + 1;
+
+        monthsWorked = Math.min(monthsWorked, 12);
+
+        // ===== 4. Phép được hưởng (tích lũy) =====
+        double accruedLeave = totalLeavePerYear + ( monthsWorked / 12.0);
+
+        // Làm tròn 0.5 ngày (thực tế rất hay dùng)
+        accruedLeave = Math.floor(accruedLeave * 2) / 2;
+
+        // ===== 5. Phép đã dùng =====
+        double usedLeave = requestRepository.findByEmployeeIdAndStatusInAndTimeOverlap(
+                employeeId,
+                List.of("approved", "pending"),
+                "leave",
+                effectiveStart.atStartOfDay(),
+                endOfYear.plusDays(1).atStartOfDay()
+        );
+
+        System.out.println("Accrued Leave: " + accruedLeave);
+        System.out.println("Used Leave: " + usedLeave);
+
+        // ===== 6. Trả về 2 giá trị =====
+        return new AnnualLeaveSummaryResponse(accruedLeave, usedLeave);
     }
 }

@@ -15,4 +15,7 @@ public class RequestListResponse {
     private String type;
     private String status;
     private LocalDateTime createdDate;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
+
 }

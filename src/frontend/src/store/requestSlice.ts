@@ -3,6 +3,7 @@ import type { PaginationRequestParams } from '../types/pagination';
 import type { DetailRequest } from '../types/request';
 import type { ListRequests } from '../types/request';
 import { requestService } from '../services/requestService';
+import type { CreateLeaveRequestFormData } from '../types/request';
 
 interface RequestState {
   requestsList: ListRequests[] | null;
@@ -38,6 +39,30 @@ export const fetchRequestDetail = createAsyncThunk(
       return response;
     } catch (error: any) {
       return rejectWithValue('Failed to fetch request detail: ' + error.response?.data);
+    }
+  }
+);
+
+export const createOnLeaveRequest = createAsyncThunk(
+  'requests/createOnLeaveRequest',
+  async (data: CreateLeaveRequestFormData, { rejectWithValue }) => {
+    try {
+      const response = await requestService.createLeaveRequest(data);
+      return response;
+    } catch (error: any) {
+      return rejectWithValue('Failed to create on-leave request: ' + error.response?.data);
+    }
+  }
+);
+
+export const countAnnualLeaveUsed = createAsyncThunk(
+  'requests/countAnnualLeaveUsed',
+  async (employeeId: number, { rejectWithValue }) => {
+    try {
+      const response = await requestService.getTotalAnnualLeaveUsed(employeeId);
+      return response;
+    } catch (error: any) {
+      return rejectWithValue('Failed to count annual leave used: ' + error.response?.data);
     }
   }
 );

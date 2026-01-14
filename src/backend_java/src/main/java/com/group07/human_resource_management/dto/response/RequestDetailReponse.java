@@ -18,6 +18,8 @@ public class RequestDetailReponse {
     private String description;
     private String status;
     private String attachment;
+    private String leaveMode;
+    private String session;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 

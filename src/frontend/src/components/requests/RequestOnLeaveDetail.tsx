@@ -58,6 +58,26 @@ const LeaveRequestDetail = ({ requestId, isOpen, onClose } : LeaveRequestDetailP
     return typeMap[type] || type;
   };
 
+  const getLeaveModeDisplay = (leaveMode: string) => {
+    const leaveModeMap: Record<string, string> = {
+      annual: 'Nghỉ phép năm',
+      sick: 'Nghỉ ốm',
+      personal: 'Nghỉ cá nhân',
+      maternity: 'Nghỉ thai sản',
+      emergency: 'Nghỉ khẩn cấp'
+    };
+    return leaveModeMap[leaveMode] || leaveMode;
+  }
+
+  const getSessionDisplay = (session: string) => {
+    const sessionMap: Record<string, string> = {
+      morning: 'Buổi sáng',
+      afternoon: 'Buổi chiều',
+      full_day: 'Cả ngày'
+    };
+    return sessionMap[session] || session;
+  }
+
   const getStatusDisplay = (status: string) => {
     const statusMap: Record<string, { label: string; color: string }> = {
       pending: { label: 'Chờ duyệt', color: 'bg-yellow-100 text-yellow-700' },
@@ -152,6 +172,22 @@ const LeaveRequestDetail = ({ requestId, isOpen, onClose } : LeaveRequestDetailP
                   )}
                 </div>
               )}
+
+              <div className="grid grid-cols-2 gap-4">
+                {requestDetail.leaveMode && (
+                  <div>
+                    <p className="text-base text-blue-400">Loại nghỉ phép</p>
+                    <p className="text-sm text-gray-600">{getLeaveModeDisplay(requestDetail.leaveMode)}</p>
+                  </div>
+                )}
+
+                {requestDetail.session && (
+                  <div>
+                    <p className="text-base text-blue-400">Buổi nghỉ</p>
+                    <p className="text-sm text-gray-600">{getSessionDisplay(requestDetail.session)}</p>
+                  </div>
+                )}
+              </div>
 
               {requestDetail.description && (
                 <div>

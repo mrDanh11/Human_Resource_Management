@@ -112,7 +112,6 @@ const BaseSidebar: React.FC = () => {
         submenu: [
           { label: "Tạo yêu cầu mới", to: "/hr/requests/create" },
           { label: "Yêu cầu của tôi", to: "/hr/requests/my-requests" },
-          { label: "Tạo yêu cầu nghỉ phép", to: "/hr/requests/create/on-leave" },
         ]
       });
     } else if (userRole === 'employee') {
@@ -123,7 +122,6 @@ const BaseSidebar: React.FC = () => {
         submenu: [
           { label: "Tạo yêu cầu mới", to: "/requests/create" },
           { label: "Yêu cầu của tôi", to: "/requests/my-requests" },
-          { label: "Tạo yêu cầu nghỉ phép", to: "/requests/create/on-leave" },
         ]
       });
     }
