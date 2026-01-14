@@ -51,15 +51,17 @@ export interface CreateRequestDto {
 
 export interface RequestResponse {
   id: number;
-  employeeId: number;
-  description: string;
-  startTime: string;
-  endTime: string;
+  employeeId?: number;
+  employeeName?: string;
+  description?: string;
+  startTime?: string;
+  endTime?: string;
   type: string;
   attachment?: string;
-  status: "pending" | "approved" | "rejected";
-  createdAt: string;
-  updatedAt: string;
+  status: "pending" | "approved" | "rejected" | "cancelled";
+  createdAt?: string;
+  createdDate?: string; // Backend uses this field name
+  updatedAt?: string;
 }
 
 /**
@@ -169,14 +171,33 @@ export interface RequestListResponse {
  * Lấy danh sách yêu cầu của nhân viên với filter và pagination
  */
 export async function getMyRequests(
-  params: RequestFilterParams
+  params: any
 ): Promise<RequestListResponse> {
   try {
-    const response = await apiSpring.get<RequestListResponse>(
+    console.log("getMyRequests called with params:", params);
+    const response = await apiSpring.get<any>(
       `/api/v1/requests/my-requests`,
       { params }
     );
-    return response.data;
+    console.log("getMyRequests raw response:", response.data);
+    
+    // Backend trả về ApiResponse wrapper, cần extract data
+    const pageData = response.data.data;
+    console.log("Extracted page data:", pageData);
+    
+    // Transform Spring Page to our format
+    const result: RequestListResponse = {
+      items: pageData.content || [],
+      totalCount: pageData.totalElements || 0,
+      pageNumber: (pageData.number || 0) + 1, // Spring uses 0-based index
+      pageSize: pageData.size || 10,
+      totalPages: pageData.totalPages || 0,
+      hasPreviousPage: !pageData.first,
+      hasNextPage: !pageData.last
+    };
+    
+    console.log("Transformed result:", result);
+    return result;
   } catch (error) {
     console.error("Error fetching my requests:", error);
     throw error;

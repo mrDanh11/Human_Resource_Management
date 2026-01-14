@@ -81,7 +81,7 @@ export default function FilterPanel({ onFilterChange, onClearFilters }: FilterPa
             <option value="">Tất cả</option>
             <option value="earn">Nhận điểm</option>
             <option value="redeem">Đổi thưởng</option>
-            <option value="adjust">Điều chỉnh</option>
+            <option value="adjustment">Điều chỉnh</option>
           </select>
         </div>
 

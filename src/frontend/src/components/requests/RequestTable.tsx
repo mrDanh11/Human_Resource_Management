@@ -126,17 +126,17 @@ export default function RequestTable({ requests, loading, onViewDetail, onCancel
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm text-gray-900">
-                    {new Date(request.startTime).toLocaleDateString("vi-VN")}
+                    {request.startTime ? new Date(request.startTime).toLocaleDateString("vi-VN") : "—"}
                   </div>
                   <div className="text-xs text-gray-500">
-                    đến {new Date(request.endTime).toLocaleDateString("vi-VN")}
+                    {request.endTime ? `đến ${new Date(request.endTime).toLocaleDateString("vi-VN")}` : ""}
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   {getStatusBadge(request.status)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {formatDateTime(request.createdAt)}
+                  {formatDateTime(request.createdAt || request.createdDate)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <div className="flex items-center gap-2">
