@@ -27,26 +27,6 @@ export default function RequestSelectionPage() {
 
   const requestTypes: RequestType[] = [
     {
-      id: "attendance",
-      title: "Cập nhật giờ vào/ra",
-      description: "Chỉnh sửa thời gian check-in/check-out khi quên chấm công",
-      icon: Clock,
-      color: "text-blue-600",
-      bgColor: "bg-blue-50",
-      enabled: true,
-      route: "/requests/create/attendance"
-    },
-    {
-      id: "overtime",
-      title: "Đăng ký OT",
-      description: "Đăng ký làm thêm giờ ngoài giờ hành chính",
-      icon: Briefcase,
-      color: "text-purple-600",
-      bgColor: "bg-purple-50",
-      enabled: true,
-      route: "/requests/create/overtime"
-    },
-    {
       id: "wfh",
       title: "Làm việc từ xa (WFH)",
       description: "Đăng ký làm việc tại nhà hoặc địa điểm khác",

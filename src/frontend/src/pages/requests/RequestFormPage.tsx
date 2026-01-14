@@ -24,16 +24,6 @@ export default function RequestFormPage() {
   });
 
   const requestConfig = {
-    attendance: {
-      title: "Cập nhật giờ vào/ra",
-      description: "Chỉnh sửa thời gian check-in/check-out",
-      fields: ["description", "startTime", "endTime", "attachment"]
-    },
-    overtime: {
-      title: "Đăng ký OT",
-      description: "Đăng ký làm thêm giờ",
-      fields: ["description", "startTime", "endTime"]
-    },
     wfh: {
       title: "Làm việc từ xa (WFH)",
       description: "Đăng ký làm việc tại nhà",
