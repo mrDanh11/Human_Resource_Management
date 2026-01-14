@@ -11,6 +11,7 @@ import participationReducer from './participationSlice';
 import completedActivityReducer from './completedActivitySlice';
 import requestReducer from './requestSlice';
 import attendanceReducer from './attendanceSlice';
+import approvalReducer from './approvalSlice';
 
 export const store = configureStore({
   reducer: {
@@ -21,6 +22,7 @@ export const store = configureStore({
     completedActivity: completedActivityReducer,
     requests: requestReducer,
     attendance: attendanceReducer,
+    approval: approvalReducer,
   },
 });
 
