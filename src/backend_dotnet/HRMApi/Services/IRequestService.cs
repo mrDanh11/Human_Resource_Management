@@ -30,6 +30,11 @@ public interface IRequestService
     
     // Delete
     Task<bool> DeleteRequestAsync(int id);
+
+    /// <summary>
+    /// Hủy request (Chỉ áp dụng khi status là pending)
+    /// </summary>
+    Task<bool> CancelRequestAsync(int requestId, int employeeId);
 }
 
 // ============================================
