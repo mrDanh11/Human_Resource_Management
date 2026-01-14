@@ -3,7 +3,7 @@ import type { PaginationRequestParams } from '../types/pagination';
 import type { DetailRequest } from '../types/request';
 import type { ListRequests } from '../types/request';
 import { requestService } from '../services/requestService';
-import type { CreateRequestFormData } from '../types/request';
+import type { CreateLeaveRequestFormData } from '../types/request';
 
 interface RequestState {
   requestsList: ListRequests[] | null;
@@ -45,7 +45,7 @@ export const fetchRequestDetail = createAsyncThunk(
 
 export const createOnLeaveRequest = createAsyncThunk(
   'requests/createOnLeaveRequest',
-  async (data: CreateRequestFormData, { rejectWithValue }) => {
+  async (data: CreateLeaveRequestFormData, { rejectWithValue }) => {
     try {
       const response = await requestService.createLeaveRequest(data);
       return response;

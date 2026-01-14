@@ -75,7 +75,8 @@ public interface RequestRepository extends JpaRepository<Request,Long>, JpaSpeci
        WHERE r.employee.id = :employeeId
        AND r.type = :type
        AND r.status IN :statuses
-       AND r.startTime BETWEEN :from AND :to
+       AND r.startTime < :to
+       AND r.endTime > :from
     """)
     double findByEmployeeIdAndStatusInAndTimeOverlap(
               @Param("employeeId") Long employeeId,

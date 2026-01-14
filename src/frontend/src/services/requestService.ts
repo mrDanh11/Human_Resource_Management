@@ -11,7 +11,7 @@
 
 import { apiSpring } from './api';
 import type { PaginationRequestParams } from '../types/pagination';
-import type { DetailRequest } from '../types/request';
+import type { CreateLeaveRequestFormData, DetailRequest, LeaveSummary } from '../types/request';
 import type { ListRequests, PageResponse, ApiResponse } from '../types/request';
 import type { CreateRequestFormData } from '../types/request';
 
@@ -43,8 +43,44 @@ export const requestService = {
   },
 
   //Tạo yêu cầu xin nghỉ phép mới - moved to createRequest function below
-  createLeaveRequest: async (data: CreateRequestFormData): Promise<DetailRequest> => {
-    const response = await apiSpring.post<ApiResponse<DetailRequest>>('/requests', data);
+  createLeaveRequest: async (data: CreateLeaveRequestFormData): Promise<DetailRequest> => {
+    const formData = new FormData();
+
+      formData.append('mode', data.mode);
+      if (data.mode === 'DAY' && data.startDate && data.endDate) {
+        formData.append('fromDate', data.startDate);  
+        formData.append('toDate', data.endDate);
+      } else if (data.mode === 'HALF_DAY' && data.startDate) {
+        formData.append('date', data.startDate);
+      } else if (data.mode === 'SHORT_HOUR' && data.startDate) {
+        formData.append('date', data.startDate);
+      }
+      if (data.fromTime)
+        formData.append('fromTime', data.fromTime);
+      if (data.toTime)
+        formData.append('toTime', data.toTime);
+
+      formData.append('reason', data.description);
+
+      if (data.leaveMode)
+        formData.append('leaveType', data.leaveMode);
+
+      if (data.session)
+        formData.append('session', data.session);
+
+      if (data.attachment)
+        formData.append('attachment', data.attachment);
+
+      console.log("Form Data:", Array.from(formData.entries()));
+
+      const response = await apiSpring.post<ApiResponse<DetailRequest>>('/requests', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+    
+    //const response = await apiSpring.post<ApiResponse<DetailRequest>>('/requests', data);
     if (response.data) {
       return response.data.data;
     } else {
@@ -53,11 +89,12 @@ export const requestService = {
   },
 
   //Tính tổng số ngày nghỉ phép năm đã sử dụng
-  getTotalAnnualLeaveUsed: async (employeeId: number): Promise<number> => {
-    const response = await apiSpring.get<ApiResponse<number>>(`/requests/annual-leave/count`, {
+  getTotalAnnualLeaveUsed: async (employeeId: number): Promise<LeaveSummary> => {
+    const response = await apiSpring.get<ApiResponse<LeaveSummary>>(`/requests/annual-leave/count`, {
       params: { employeeId }
     });
     if (response.data) {
+      console.log("Response Data:", response.data);
       return response.data.data;
     } else {
       throw new Error('Failed to fetch total annual leave used');

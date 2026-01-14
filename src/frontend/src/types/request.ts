@@ -117,4 +117,22 @@ export interface CreateRequestFormData {
   attachment?: File | null;
 }
 
+export interface CreateLeaveRequestFormData {
+  employeeId: number;
+  description: string;
+  startDate?: string;
+  endDate?: string;
+  mode: "DAY" | "HALF_DAY" | "SHORT_HOUR";
+  fromTime?: string;
+  toTime?: string;
+  leaveMode: "leave";
+  session?: "MORNING" | "AFTERNOON" | "FULL_DAY";
+  attachment?: File | null;
+}
+
+export interface LeaveSummary {
+  totalAnnualLeave: number;
+  usedAnnualLeave: number;
+}
+
 export type EmployeeRequest = LeaveRequest | TimesheetUpdateRequest | CheckInOutRequest | WFHRequest;
