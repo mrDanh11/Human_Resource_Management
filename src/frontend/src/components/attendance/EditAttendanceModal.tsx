@@ -35,7 +35,7 @@ const EditAttendanceModal: React.FC<EditAttendanceModalProps> = ({
       onClick={onClose}
     >
       <motion.div
-        className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex col"
+        className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col"
         initial={{ scale: 0.9, y: 20 }}
         animate={{ scale: 1, y: 0 }}
         exit={{ scale: 0.9, y: 20 }}
@@ -67,7 +67,7 @@ const EditAttendanceModal: React.FC<EditAttendanceModalProps> = ({
         </div>
 
         {/* Modal Body - Scrollable */}
-        <div className="p-6 overflow-y-auto 1 custom-scrollbar">
+        <div className="p-6 overflow-y-auto flex-1 custom-scrollbar">
           {/* Thông tin nhân viên */}
           <div className="bg-linear-to-r from-purple-50 to-blue-50 rounded-xl p-4 mb-6 border-2 border-purple-100">
             <div className="grid grid-cols-1 gap-4 text-sm">

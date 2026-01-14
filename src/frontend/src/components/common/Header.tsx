@@ -73,7 +73,7 @@ export default function Header() {
               to={dashboardLink}
               className="text-base hover:text-gray-900 transition"
             >
-              {role === "employee" ? "Hồ sơ" : "Dashboard"}
+              {role === "employee" || role === "manager"? "Hồ sơ" : "Dashboard"}
             </Link>
           );
         })()}
