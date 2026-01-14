@@ -121,6 +121,8 @@ export const fetchMyAttendanceByDate = createAsyncThunk(
 /**
  * Gửi yêu cầu chỉnh sửa chấm công
  */
+// src/store/attendanceSlice.ts
+
 export const createCorrectionRequest = createAsyncThunk(
   'attendance/createCorrectionRequest',
   async (data: CreateAttendanceCorrectionRequestDto, { rejectWithValue }) => {
@@ -128,7 +130,14 @@ export const createCorrectionRequest = createAsyncThunk(
       const result = await attendanceService.createCorrectionRequest(data);
       return result;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Không thể gửi yêu cầu chỉnh sửa');
+      // --- THÊM LOG TẠI ĐÂY ---
+      console.error("🔥 CHI TIẾT LỖI TỪ API:", error.response?.data);
+      
+      // Trả về toàn bộ data lỗi (bao gồm message và errors list) thay vì chỉ message string
+      if (error.response && error.response.data) {
+        return rejectWithValue(error.response.data);
+      }
+      return rejectWithValue({ message: 'Không thể gửi yêu cầu chỉnh sửa (Lỗi không xác định)' });
     }
   }
 );
