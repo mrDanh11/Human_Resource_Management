@@ -15,7 +15,12 @@ import {
   Plus,
   XCircle,
   CheckCircle,
-  UserCheck
+  UserCheck,
+  Users,
+  TrendingUp,
+  ArrowLeftRight,
+  DollarSign,
+  Calendar as CalendarIcon
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import UserInfo from "./UserInfo";
@@ -101,12 +106,13 @@ const BaseSidebar: React.FC = () => {
 
     // Hoạt động
     if (userRole === 'admin') {
-      // Admin: Có nhưng không có "Đã đăng ký" và "Kết quả"
+      // Admin: Có "Quản lý điểm danh" và các chức năng quản lý
       items.push({
         label: "Quản lý Hoạt động",
         icon: Activity,
         key: "activities",
         submenu: [
+          { label: "Quản lý điểm danh", to: "/admin/activities/attendance", icon: UserCheck },
           { label: "Danh sách hoạt động", to: "/admin/activities", icon: ClipboardList },
           { label: "Thống kê hoạt động", to: "/admin/activities/statistics", icon: BarChart },
           { label: "Thêm hoạt động", to: "/admin/activities/create", icon: Plus },
@@ -145,11 +151,19 @@ const BaseSidebar: React.FC = () => {
 
     // Điểm thưởng
     if (userRole === 'admin') {
-      // Admin: Có nhưng không có "Thưởng điểm HR"
-      items.push({ 
-        label: "Quản lý điểm thưởng", 
-        icon: Award, 
-        to: "/admin/point" 
+      // Admin: Tất cả các tab quản lý điểm thưởng
+      items.push({
+        label: "Quản lý điểm thưởng",
+        icon: Award,
+        key: "rewards",
+        submenu: [
+          { label: "Vai trò & định mức", to: "/admin/point/roles", icon: Users },
+          { label: "Danh sách nhân viên", to: "/admin/point/employees", icon: TrendingUp },
+          { label: "Bảng quy đổi", to: "/admin/point/conversion", icon: ArrowLeftRight },
+          { label: "Duyệt yêu cầu", to: "/admin/point/requests", icon: CheckCircle },
+          { label: "Lịch sử đổi điểm", to: "/admin/point/conversion-history", icon: DollarSign },
+          { label: "Lịch sử giao dịch", to: "/admin/point/history", icon: CalendarIcon },
+        ]
       });
     } else if (userRole === 'hr') {
       // HR: Có hết
@@ -174,18 +188,6 @@ const BaseSidebar: React.FC = () => {
           { label: "Tổng quan", to: "/rewards/points" },
           { label: "Lịch sử giao dịch", to: "/rewards/history" },
           { label: "Đổi thưởng", to: "/rewards/exchange" }
-        ]
-      });
-    }
-
-    // Bảng công - Chỉ Admin có
-    if (userRole === 'admin') {
-      items.push({
-        label: "Bảng công",
-        icon: ClipboardList,
-        key: "timesheet",
-        submenu: [
-          { label: "Quản lý điểm danh", to: "/admin/activities/attendance", icon: UserCheck },
         ]
       });
     }

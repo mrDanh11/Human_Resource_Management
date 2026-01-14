@@ -27,8 +27,10 @@ public class PointMappingProfile : Profile
 
         // PointToMoneyHistory -> PointToMoneyHistoryDto
         CreateMap<PointToMoneyHistory, PointToMoneyHistoryDto>()
-            .ForMember(dest => dest.EmployeeName, opt => opt.MapFrom(src => src.Employee.Fullname))
-            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Employee.Email))
+            .ForMember(dest => dest.EmployeeName, opt => opt.MapFrom(src => 
+                src.Employee != null ? src.Employee.Fullname : "N/A"))
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => 
+                src.Employee != null ? src.Employee.Email : "N/A"))
             .ForMember(dest => dest.StatusDisplay, opt => opt.MapFrom(src => GetStatusDisplay(src.Status)));
     }
 

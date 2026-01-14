@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Search, Plus, Edit2, Save, X, Users, Calendar, TrendingUp, Award, Loader2, AlertCircle, ArrowLeftRight, CheckCircle, Clock, Check, Ban, Filter, RefreshCcw } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { fetchAllEmployeePoints } from '../../store/pointSlice';
@@ -15,7 +16,26 @@ interface RoleUI extends MonthlyPointRuleDto {
 }
 
 export default function PointsAdmin() {
-    const [activeTab, setActiveTab] = useState<'roles' | 'employees' | 'history' | 'conversion' | 'requests' | 'conversion-history'>('roles');
+    const location = useLocation();
+    
+    // Xác định tab từ URL path
+    const getTabFromPath = () => {
+        const path = location.pathname;
+        if (path.includes('/roles')) return 'roles';
+        if (path.includes('/employees')) return 'employees';
+        if (path.includes('/conversion-history')) return 'conversion-history';
+        if (path.includes('/conversion')) return 'conversion';
+        if (path.includes('/requests')) return 'requests';
+        if (path.includes('/history')) return 'history';
+        return 'roles'; // default tab
+    };
+
+    const [activeTab, setActiveTab] = useState<'roles' | 'employees' | 'history' | 'conversion' | 'requests' | 'conversion-history'>(getTabFromPath());
+    
+    // Cập nhật tab khi URL thay đổi
+    useEffect(() => {
+        setActiveTab(getTabFromPath());
+    }, [location.pathname]);
     
     // --- STATES ROLES ---
     const [roles, setRoles] = useState<RoleUI[]>([]);
@@ -247,62 +267,42 @@ export default function PointsAdmin() {
     return (
         <div className="min-h-screen bg-gray-50 p-6">
             <div className="max-w-7xl mx-auto">
-                {/* Header & Stats */}
-                <div className="bg-blue-600 rounded-lg p-6 mb-6 text-white shadow-lg">
-                    <div className="flex justify-between items-center">
-                        <div>
-                            <h1 className="text-2xl font-bold flex items-center gap-2">
-                                <Award className="w-6 h-6" /> Quản lý điểm thưởng
-                            </h1>
-                            <p className="text-blue-100 mt-1">Hệ thống quản lý và phân phối điểm thưởng</p>
+                {/* Header & Stats - Chỉ hiển thị ở tab Vai trò & Định mức */}
+                {activeTab === 'roles' && (
+                    <div className="bg-blue-600 rounded-lg p-6 mb-6 text-white shadow-lg">
+                        <div className="flex justify-between items-center">
+                            <div>
+                                <h1 className="text-2xl font-bold flex items-center gap-2">
+                                    <Award className="w-6 h-6" /> Quản lý điểm thưởng
+                                </h1>
+                                <p className="text-blue-100 mt-1">Hệ thống quản lý và phân phối điểm thưởng</p>
+                            </div>
+                            <button onClick={handleDistributePoints} className="bg-white text-blue-600 px-4 py-2 rounded-lg font-bold flex items-center gap-2 shadow hover:bg-blue-50 active:scale-95 transition-transform">
+                                <Calendar className="w-5 h-5" /> Phân phối ngay
+                            </button>
                         </div>
-                        <button onClick={handleDistributePoints} className="bg-white text-blue-600 px-4 py-2 rounded-lg font-bold flex items-center gap-2 shadow hover:bg-blue-50 active:scale-95 transition-transform">
-                            <Calendar className="w-5 h-5" /> Phân phối ngay
-                        </button>
+                        {/* Stats Grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+                            <div className="bg-white/10 p-4 rounded-xl border border-white/10">
+                                <div className="text-xs text-blue-100 uppercase">Ngân sách/tháng</div>
+                                <div className="text-2xl font-bold">{totalMonthlyBudget.toLocaleString()}</div>
+                            </div>
+                            <div className="bg-white/10 p-4 rounded-xl border border-white/10">
+                                <div className="text-xs text-blue-100 uppercase">Tổng nhân viên</div>
+                                <div className="text-2xl font-bold">{totalCount}</div>
+                            </div>
+                            <div className="bg-white/10 p-4 rounded-xl border border-white/10">
+                                <div className="text-xs text-blue-100 uppercase">Trung bình/người</div>
+                                <div className="text-2xl font-bold">{totalCount > 0 ? Math.round(totalMonthlyBudget / totalCount).toLocaleString() : 0}</div>
+                            </div>
+                            <div className="bg-orange-500/20 p-4 rounded-xl border border-orange-200/30 relative overflow-hidden">
+                                <div className="absolute top-0 right-0 p-2 opacity-10"><Clock size={48} color="white"/></div>
+                                <div className="text-xs text-orange-100 uppercase font-semibold">Yêu cầu chờ duyệt</div>
+                                <div className="text-2xl font-bold text-white">{pendingRequests.length}</div>
+                            </div>
+                        </div>
                     </div>
-                    {/* Stats Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
-                        <div className="bg-white/10 p-4 rounded-xl border border-white/10">
-                            <div className="text-xs text-blue-100 uppercase">Ngân sách/tháng</div>
-                            <div className="text-2xl font-bold">{totalMonthlyBudget.toLocaleString()}</div>
-                        </div>
-                        <div className="bg-white/10 p-4 rounded-xl border border-white/10">
-                            <div className="text-xs text-blue-100 uppercase">Tổng nhân viên</div>
-                            <div className="text-2xl font-bold">{totalCount}</div>
-                        </div>
-                        <div className="bg-white/10 p-4 rounded-xl border border-white/10">
-                            <div className="text-xs text-blue-100 uppercase">Trung bình/người</div>
-                            <div className="text-2xl font-bold">{totalCount > 0 ? Math.round(totalMonthlyBudget / totalCount).toLocaleString() : 0}</div>
-                        </div>
-                        <div className="bg-orange-500/20 p-4 rounded-xl border border-orange-200/30 relative overflow-hidden">
-                            <div className="absolute top-0 right-0 p-2 opacity-10"><Clock size={48} color="white"/></div>
-                            <div className="text-xs text-orange-100 uppercase font-semibold">Yêu cầu chờ duyệt</div>
-                            <div className="text-2xl font-bold text-white">{pendingRequests.length}</div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Tabs Navigation */}
-                <div className="flex mb-6 border-b bg-white rounded-t-xl px-2 shadow-sm overflow-x-auto">
-                    {[
-                        { id: 'roles', label: 'Vai trò & Định mức', icon: Users },
-                        { id: 'employees', label: 'DS Nhân viên', icon: TrendingUp },
-                        { id: 'conversion', label: 'Bảng quy đổi', icon: ArrowLeftRight },
-                        { id: 'requests', label: `Duyệt yêu cầu`, icon: CheckCircle, badge: pendingRequests.length > 0 ? pendingRequests.length : 0 },
-                        { id: 'conversion-history', label: 'Lịch sử đổi điểm', icon: ArrowLeftRight },
-                        { id: 'history', label: 'Lịch sử giao dịch', icon: Calendar }
-                    ].map((tab) => (
-                        <button key={tab.id} onClick={() => setActiveTab(tab.id as any)} className={`flex-1 py-4 px-4 font-medium flex justify-center items-center gap-2 whitespace-nowrap relative ${activeTab === tab.id ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:bg-gray-50'}`}>
-                            <tab.icon className="w-5 h-5" /> 
-                            {tab.label}
-                            {tab.badge && tab.badge > 0 ? (
-                                <span className="absolute top-2 right-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
-                                    {tab.badge}
-                                </span>
-                            ) : null}
-                        </button>
-                    ))}
-                </div>
+                )}
 
                 {/* --- TAB CONTENT --- */}
 
@@ -350,7 +350,17 @@ export default function PointsAdmin() {
 
                 {/* TAB 2: EMPLOYEES */}
                 {activeTab === 'employees' && (
-                    <div className="bg-white rounded-b-xl shadow-sm p-6 border border-gray-100">
+                    <>
+                        <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg p-6 mb-6 text-white shadow-lg">
+                            <div className="flex items-center gap-3">
+                                <TrendingUp className="w-8 h-8" />
+                                <div>
+                                    <h1 className="text-2xl font-bold">Danh sách nhân viên</h1>
+                                    <p className="text-blue-100 mt-1">Quản lý điểm thưởng của từng nhân viên</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
                         <div className="mb-4 relative max-w-sm">
                             <Search className="absolute left-3 top-2.5 text-gray-400 w-5 h-5" />
                             <input type="text" placeholder="Tìm nhân viên..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
@@ -387,12 +397,23 @@ export default function PointsAdmin() {
                                 <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)} className="px-3 py-1 border rounded disabled:opacity-50 hover:bg-gray-50">Sau</button>
                             </div>
                         </div>
-                    </div>
+                        </div>
+                    </>
                 )}
 
                 {/* TAB 3: CONVERSION */}
                 {activeTab === 'conversion' && (
-                    <div className="bg-white rounded-b-xl shadow-sm p-6 border border-gray-100">
+                    <>
+                        <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg p-6 mb-6 text-white shadow-lg">
+                            <div className="flex items-center gap-3">
+                                <ArrowLeftRight className="w-8 h-8" />
+                                <div>
+                                    <h1 className="text-2xl font-bold">Bảng quy đổi điểm</h1>
+                                    <p className="text-blue-100 mt-1">Quản lý tỷ giá quy đổi điểm sang tiền mặt</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
                         <div className="flex justify-between mb-4">
                             <h2 className="font-bold text-lg">Quy tắc đổi điểm</h2>
                             <button onClick={() => setIsAddingRule(true)} className="bg-blue-600 text-white px-3 py-1 rounded flex items-center gap-1 hover:bg-blue-700"><Plus className="w-4 h-4"/> Thêm</button>
@@ -435,12 +456,23 @@ export default function PointsAdmin() {
                                 );
                             })}
                         </div>
-                    </div>
+                        </div>
+                    </>
                 )}
 
                 {/* TAB 4: REQUESTS */}
                 {activeTab === 'requests' && (
-                    <div className="bg-white rounded-b-xl shadow-sm p-6 border border-gray-100">
+                    <>
+                        <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg p-6 mb-6 text-white shadow-lg">
+                            <div className="flex items-center gap-3">
+                                <CheckCircle className="w-8 h-8" />
+                                <div>
+                                    <h1 className="text-2xl font-bold">Duyệt yêu cầu đổi điểm</h1>
+                                    <p className="text-blue-100 mt-1">Xử lý các yêu cầu đổi điểm thưởng sang tiền mặt</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
                         <div className="flex items-center justify-between mb-6">
                             <div>
                                 <h2 className="text-lg font-bold text-gray-800">Yêu cầu đổi điểm chờ duyệt</h2>
@@ -502,15 +534,39 @@ export default function PointsAdmin() {
                                 ))}
                             </div>
                         )}
-                    </div>
+                        </div>
+                    </>
                 )}
 
                 {/* TAB 5: CONVERSION HISTORY - Component riêng */}
-                {activeTab === 'conversion-history' && <ConversionHistoryTab />}
+                {activeTab === 'conversion-history' && (
+                    <>
+                        <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg p-6 mb-6 text-white shadow-lg">
+                            <div className="flex items-center gap-3">
+                                <Clock className="w-8 h-8" />
+                                <div>
+                                    <h1 className="text-2xl font-bold">Lịch sử đổi điểm</h1>
+                                    <p className="text-blue-100 mt-1">Theo dõi các giao dịch đổi điểm đã được duyệt</p>
+                                </div>
+                            </div>
+                        </div>
+                        <ConversionHistoryTab />
+                    </>
+                )}
 
                 {/* TAB 6: HISTORY */}
                 {activeTab === 'history' && (
-                    <div className="bg-white rounded-b-xl shadow-sm p-6 border border-gray-100">
+                    <>
+                        <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg p-6 mb-6 text-white shadow-lg">
+                            <div className="flex items-center gap-3">
+                                <Calendar className="w-8 h-8" />
+                                <div>
+                                    <h1 className="text-2xl font-bold">Lịch sử giao dịch điểm</h1>
+                                    <p className="text-blue-100 mt-1">Nhật ký biến động điểm thưởng trong hệ thống</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
                         <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-4">
                             <div>
                                 <h2 className="text-lg font-bold text-gray-800">Nhật ký giao dịch điểm</h2>
@@ -606,7 +662,8 @@ export default function PointsAdmin() {
                                 )}
                             </>
                         )}
-                    </div>
+                        </div>
+                    </>
                 )}
             </div>
 
