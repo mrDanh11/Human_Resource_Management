@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import com.group07.human_resource_management.dto.response.AnnualLeaveSummaryResponse;
 
 @RestController
 @RequestMapping("/api/v1/requests")
@@ -91,4 +92,16 @@ public class RequestController {
                 .data(response)
                 .build();
     }
+
+    @GetMapping("/annual-leave/count")
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    public ApiResponse<AnnualLeaveSummaryResponse> countAnnualLeave(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        AnnualLeaveSummaryResponse count = requestService.countAnnualLeave(userDetails.getEmployeeId());
+        return ApiResponse.<AnnualLeaveSummaryResponse>builder()
+                .code(HttpStatus.OK.value())
+                .success(true)
+                .message("Annual leave count retrieved successfully")
+                .data(count)
+                .build();
+        }
 }

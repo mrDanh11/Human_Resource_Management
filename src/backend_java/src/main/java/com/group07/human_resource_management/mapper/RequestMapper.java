@@ -16,6 +16,8 @@ public interface RequestMapper {
     @Mapping(source = "request.status", target = "status")
     @Mapping(source = "request.employee.fullname", target = "employeeName")
     @Mapping(source = "request.employee.id", target = "employeeId")
+    @Mapping(source = "request.leaveMode", target = "leaveMode")
+    @Mapping(source = "request.session", target = "session")
 
     // map from ApprovalHistory
     @Mapping(source = "history", target = "actionDate", qualifiedByName = "mapActionDate")

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HRMApi.Models;
 
@@ -23,6 +24,7 @@ public partial class Employee
 
     public string? Status { get; set; }
 
+    [Column("annual_leave_balance")]
     public double AnnualLeaveBalance { get; set; } = 12.0;
 
     public DateOnly? Birthday { get; set; }

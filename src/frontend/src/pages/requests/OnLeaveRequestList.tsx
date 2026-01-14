@@ -17,8 +17,9 @@ const LeaveRequestPage = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState('');
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-
-    const selectType = 'leave';
+    const [startDate, setStartDate] = useState<string>('');
+    const [endDate, setEndDate] = useState<string>('');
+    const [typeFilter, setTypeFilter] = useState('All');
 
     const dispatch = useAppDispatch();
     const { requestsList, loading, error } = useAppSelector((state) => state.requests);
@@ -28,6 +29,8 @@ const LeaveRequestPage = () => {
         dispatch(fetchRequestsList({ page: currentPage, size: 10 }));
     }, [dispatch, currentPage]);
         
+
+    console.log("Requests List:", requestsList);
     const filteredRequests = useMemo(() => {
         if (!requestsList) return [];
 
@@ -35,14 +38,22 @@ const LeaveRequestPage = () => {
             const searchMatch = !searchTerm || request.employeeName.toLowerCase().includes(searchTerm.toLowerCase());
             if (!searchMatch) return false;
             const statusMatch = selectedStatus === 'All' || request.status === selectedStatus;
-            const typeMatch = request.type === selectType;
-            return statusMatch && typeMatch && searchMatch;
+            const typeMatch = request.type === typeFilter || typeFilter === 'All';
+            const requestStartDate = request.startTime.slice(0, 10); // YYYY-MM-DD
+            const requestEndDate = request.endTime.slice(0, 10);
+            const startDateMatch = !startDate || requestStartDate >= startDate;
+            const endDateMatch = !endDate || requestEndDate <= endDate;
+
+            console.log("Date Filters:", { startDate, endDate });
+            console.log("Request Dates:", { requestStart: request.startTime, requestEnd: request.endTime });
+            console.log("Date Matches:", { startDateMatch, endDateMatch });
+            return statusMatch && typeMatch && searchMatch && startDateMatch && endDateMatch;
         }).sort((a, b) => {
             const dateA = new Date(a.createdDate).getTime();
             const dateB = new Date(b.createdDate).getTime();
             return sortOrder === 'Newest' ? dateB - dateA : dateA - dateB;
         });
-    }, [requestsList, selectedStatus, searchTerm, sortOrder, selectType]);
+    }, [requestsList, selectedStatus, searchTerm, sortOrder, typeFilter, startDate, endDate]);
 
     const itemsPerPage = 5;
     const totalFilteredPages = Math.ceil(filteredRequests.length / itemsPerPage);
@@ -53,7 +64,7 @@ const LeaveRequestPage = () => {
     // Reset về trang 1 khi filter thay đổi
     useEffect(() => {
         setCurrentPage(1);
-    }, [searchTerm, selectedStatus, selectType, sortOrder]);
+    }, [searchTerm, selectedStatus, typeFilter, sortOrder, startDate, endDate]);
 
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + currentRequests.length;
@@ -68,12 +79,14 @@ const LeaveRequestPage = () => {
         setSelectedRequest(null);
     };
 
+    console.log("Filtered Requests:", filteredRequests);
+
     const getTypeDisplay = (type: string) => {
         const typeMap: Record<string, { label: string; badge: string }> = {
             leave: { label: 'Nghỉ phép', badge: 'blue' },
-            // wfh: { label: 'Làm từ xa', badge: 'purple' },
-            // checkin: { label: 'Check-in', badge: 'green' },
-            // checkout: { label: 'Check-out', badge: 'orange' }
+            wfh: { label: 'Làm từ xa', badge: 'purple' },
+            checkin: { label: 'Check-in', badge: 'green' },
+            checkout: { label: 'Check-out', badge: 'orange' }
         };
         return typeMap[type] || { label: type, badge: 'gray' };
     };
@@ -161,21 +174,35 @@ const LeaveRequestPage = () => {
 
                 {/* Search and Filters */}
                 <div className="bg-white px-6 py-4 border-b">
+                    <div>
+                        <label className="block text-sm text-gray-600 mb-2">Tìm kiếm</label>
+                        <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <Search className="h-5 w-5 text-gray-400" />
+                            </div>
+                            <input
+                                type="text"
+                                placeholder="Tìm kiếm theo tên nhân viên..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                            />
+                        </div>
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
-                            <label className="block text-sm text-gray-600 mb-2">Tìm kiếm</label>
-                            <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Search className="h-5 w-5 text-gray-400" />
-                                </div>
-                                <input
-                                    type="text"
-                                    placeholder="Tìm kiếm theo tên nhân viên..."
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:outline-none"
-                                />
-                            </div>
+                            <label className="block text-sm text-gray-600 mb-2">Loại yêu cầu</label>
+                            <select 
+                                value={typeFilter}
+                                onChange={(e) => setTypeFilter(e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            >
+                                <option value="wfh">Làm việc tại nhà</option>
+                                <option value="All">Tất cả</option>
+                                <option value="leave">Nghỉ phép</option>
+                                <option value="overtime">Làm thêm giờ</option>
+                                <option value="attendance_correction">Sửa chấm công</option>
+                            </select>
                         </div>
                         <div>
                             <label className="block text-sm text-gray-600 mb-2">Trạng thái</label>
@@ -200,6 +227,26 @@ const LeaveRequestPage = () => {
                                 <option value="Newest">Mới nhất</option>
                                 <option value="Oldest">Cũ nhất</option>
                             </select>
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm text-gray-600 mb-2">Ngày bắt đầu</label>
+                            <input
+                                type="date"
+                                value={startDate}
+                                onChange={(e) => setStartDate(e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm text-gray-600 mb-2">Ngày kết thúc</label>
+                            <input
+                                type="date"
+                                value={endDate}
+                                onChange={(e) => setEndDate(e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            />
                         </div>
                     </div>
                 </div>

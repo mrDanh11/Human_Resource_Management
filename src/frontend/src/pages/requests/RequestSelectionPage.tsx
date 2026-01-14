@@ -6,7 +6,8 @@ import {
   Briefcase, 
   Calendar, 
   RefreshCw,
-  AlertCircle
+  AlertCircle,
+  CalendarClock
 } from "lucide-react";
 
 interface RequestType {
@@ -74,6 +75,16 @@ export default function RequestSelectionPage() {
       bgColor: "bg-indigo-50",
       enabled: true,
       route: "/requests/create/shift-change"
+    },
+    {
+      id: "leave",
+      title: "Nghỉ phép",
+      description: "Yêu cầu nghỉ phép theo quy định công ty",
+      icon: CalendarClock,
+      color: "text-yellow-600",
+      bgColor: "yellow-50",
+      enabled: true,
+      route: "/requests/create/on-leave"
     }
   ];
 

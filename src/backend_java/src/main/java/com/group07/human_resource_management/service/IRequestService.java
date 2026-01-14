@@ -5,6 +5,7 @@ import com.group07.human_resource_management.dto.request.RequestSearchCriteria;
 import com.group07.human_resource_management.dto.response.RequestDetailReponse;
 import com.group07.human_resource_management.dto.response.RequestListResponse;
 import org.springframework.data.domain.Page;
+import com.group07.human_resource_management.dto.response.AnnualLeaveSummaryResponse;
 
 public interface IRequestService {
     RequestDetailReponse getRequestDetail(Long managerId, Long requestId);
@@ -12,4 +13,5 @@ public interface IRequestService {
     void createLeaveRequest(Long employeeId, CreateLeaveRequest req);
     void cancelRequest(Long employeeId, Long requestId);
     Page<RequestListResponse> getMyRequests(Long employeeId, RequestSearchCriteria criteria);
+    AnnualLeaveSummaryResponse countAnnualLeave(Long employeeId);
 }
