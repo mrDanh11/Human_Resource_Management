@@ -7,7 +7,7 @@ import type { CompletedActivityData } from '../../types/activity';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { fetchCompletedActivities } from '../../store/completedActivitySlice';
 
-export default function AdminActivityListPage() {
+export default function AnalysisActivityListPage() {
   const dispatch = useAppDispatch();
   const { activities, loading, error } = useAppSelector((state) => state.completedActivity);
   

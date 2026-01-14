@@ -1,13 +1,10 @@
 import { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import { Search, Plus, Edit2, Save, X, Users, Calendar, TrendingUp, Award, Loader2, AlertCircle, ArrowLeftRight, CheckCircle, Clock, Check, Ban, Filter, RefreshCcw } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Edit2, Save, X, Award, Calendar, Clock, Loader2, AlertCircle, CheckCircle } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { fetchAllEmployeePoints } from '../../store/pointSlice';
-import { fetchAllConversionRules } from '../../store/conversionRuleSlice';
 import { pointService } from '../../services/pointService';
-import type { MonthlyPointRuleDto, PointTransactionDto, PointToMoneyHistoryDto } from '../../services/pointService';
-import CreateExchangePointRule from '../../components/rewards/CreateExchangePointRule';
-import ConversionHistoryTab from '../../components/rewards/ConversionHistoryTab';
+import type { MonthlyPointRuleDto, PointToMoneyHistoryDto } from '../../services/pointService';
 
 interface RoleUI extends MonthlyPointRuleDto {
     color: string;
@@ -16,77 +13,25 @@ interface RoleUI extends MonthlyPointRuleDto {
 }
 
 export default function PointsAdmin() {
-    const location = useLocation();
-    
-    // Xác định tab từ URL path
-    const getTabFromPath = () => {
-        const path = location.pathname;
-        if (path.includes('/roles')) return 'roles';
-        if (path.includes('/employees')) return 'employees';
-        if (path.includes('/conversion-history')) return 'conversion-history';
-        if (path.includes('/conversion')) return 'conversion';
-        if (path.includes('/requests')) return 'requests';
-        if (path.includes('/history')) return 'history';
-        return 'roles'; // default tab
-    };
-
-    const [activeTab, setActiveTab] = useState<'roles' | 'employees' | 'history' | 'conversion' | 'requests' | 'conversion-history'>(getTabFromPath());
-    
-    // Cập nhật tab khi URL thay đổi
-    useEffect(() => {
-        setActiveTab(getTabFromPath());
-    }, [location.pathname]);
-    
-    // --- STATES ROLES ---
     const [roles, setRoles] = useState<RoleUI[]>([]);
     const [loadingRoles, setLoadingRoles] = useState(false);
     const [editingRole, setEditingRole] = useState<number | null>(null);
     const [editPointsValue, setEditPointsValue] = useState<number>(0);
-
-    // --- STATES HISTORY (Filter & Pagination) ---
-    const [history, setHistory] = useState<PointTransactionDto[]>([]);
-    const [loadingHistory, setLoadingHistory] = useState(false);
-    const [historyPage, setHistoryPage] = useState(1);
-    const [historyTotalCount, setHistoryTotalCount] = useState(0);
-    const [historyFilter, setHistoryFilter] = useState<string>(''); 
-    const historyItemsPerPage = 5;
-
-    // --- STATES PENDING REQUESTS ---
     const [pendingRequests, setPendingRequests] = useState<PointToMoneyHistoryDto[]>([]);
-    const [loadingRequests, setLoadingRequests] = useState(false);
-    const [processingId, setProcessingId] = useState<number | null>(null);
-    
-    // --- STATES CONVERSION ---
-    const [editingRuleId, setEditingRuleId] = useState<number | null>(null);
-    const [editRuleData, setEditRuleData] = useState<{point: number, money: number, active: boolean}>({ point: 0, money: 0, active: true });
-    const [isAddingRule, setIsAddingRule] = useState(false);
-
-    // --- COMMON ---
-    const [searchTerm, setSearchTerm] = useState('');
-    const [showToast, setShowToast] = useState<{show: boolean, message: string, type: 'success' | 'error'}>({ show: false, message: '', type: 'success' });
-    const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 5; 
+    const [showToast, setShowToast] = useState<{show: boolean, message: string, type: 'success' | 'error'}>({ 
+        show: false, 
+        message: '', 
+        type: 'success' 
+    });
 
     const dispatch = useAppDispatch();
-    const { employees, totalCount, loading: loadingEmployees } = useAppSelector((state) => state.point);
-    const { rules } = useAppSelector((state) => state.conversionRule);
+    const { employees, totalCount } = useAppSelector((state) => state.point);
 
-    // Initial Load
     useEffect(() => {
         dispatch(fetchAllEmployeePoints({ pageNumber: 1, pageSize: 1000 }));
-        dispatch(fetchAllConversionRules());
         fetchRoles();
+        fetchPendingRequests();
     }, [dispatch]);
-
-    // Fetch data khi chuyển tab
-    useEffect(() => {
-        if (activeTab === 'history') {
-            fetchHistory();
-        }
-        if (activeTab === 'requests') {
-            fetchPendingRequests();
-        }
-    }, [activeTab, historyPage, historyFilter]);
 
     const fetchRoles = async () => {
         try {
@@ -106,33 +51,12 @@ export default function PointsAdmin() {
         }
     };
 
-    const fetchHistory = async () => {
-        try {
-            setLoadingHistory(true);
-            const response = await pointService.getPointTransactions(
-                historyPage, 
-                historyItemsPerPage, 
-                undefined, 
-                historyFilter || undefined
-            ); 
-            setHistory(response.items);
-            setHistoryTotalCount(response.totalCount);
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setLoadingHistory(false);
-        }
-    };
-
     const fetchPendingRequests = async () => {
         try {
-            setLoadingRequests(true);
             const response = await pointService.getPointToMoneyHistory(1, 100, undefined, 'pending');
             setPendingRequests(response.items);
         } catch (error) {
             console.error("Lỗi lấy danh sách yêu cầu:", error);
-        } finally {
-            setLoadingRequests(false);
         }
     };
 
@@ -150,24 +74,6 @@ export default function PointsAdmin() {
 
     const totalMonthlyBudget = roles.reduce((sum, role) => sum + (role.pointValue * (role.employeeCount || 0)), 0);
 
-    // --- HANDLERS ---
-
-    const handleProcessRequest = async (requestId: number, status: 'approved' | 'rejected') => {
-        if (!window.confirm(`Bạn có chắc chắn muốn ${status === 'approved' ? 'DUYỆT' : 'TỪ CHỐI'} yêu cầu này?`)) return;
-
-        try {
-            setProcessingId(requestId);
-            await pointService.processConversionRequest(requestId, status);
-            showNotification(`Đã ${status === 'approved' ? 'duyệt' : 'từ chối'} yêu cầu thành công`, 'success');
-            setPendingRequests(prev => prev.filter(r => r.id !== requestId));
-            dispatch(fetchAllEmployeePoints({ pageNumber: 1, pageSize: 1000 }));
-        } catch (error: any) {
-            showNotification(error.message || "Lỗi xử lý", 'error');
-        } finally {
-            setProcessingId(null);
-        }
-    };
-
     const handleUpdateRolePoints = async (roleId: number, roleDbId: number) => {
         try {
             await pointService.upsertMonthlyPointRule({ roleId: roleDbId, pointValue: editPointsValue });
@@ -179,28 +85,10 @@ export default function PointsAdmin() {
         }
     };
 
-    const handleUpdateConversionRule = async () => {
-        if (!editingRuleId) return;
-        try {
-            await pointService.updateConversionRule(editingRuleId, {
-                pointValue: editRuleData.point,
-                moneyValue: editRuleData.money,
-                isActive: editRuleData.active
-            });
-            dispatch(fetchAllConversionRules());
-            setEditingRuleId(null);
-            showNotification("Cập nhật thành công", 'success');
-        } catch (error: any) {
-            showNotification(error.message, 'error');
-        }
-    };
-
     const handleDistributePoints = async () => {
         try {
-            const result = await pointService.allocateMonthlyPoints();
+            await pointService.allocateMonthlyPoints();
             showNotification(`Đã phân phối thành công`, 'success');
-            setHistoryPage(1);
-            if (activeTab === 'history') fetchHistory();
         } catch (error: any) {
             showNotification(error.message, 'error');
         }
@@ -211,7 +99,6 @@ export default function PointsAdmin() {
         setTimeout(() => setShowToast(prev => ({ ...prev, show: false })), 3000);
     };
 
-    // --- HELPERS DISPLAY ---
     const getRoleColor = (name: string) => { 
         const n = name?.toLowerCase() || '';
         if (n.includes('admin')) return 'blue';
@@ -219,6 +106,7 @@ export default function PointsAdmin() {
         if (n.includes('hr')) return 'yellow';
         return 'purple';
     };
+
     const getRoleDescription = (name: string) => { 
         const n = name?.toLowerCase() || '';
         if (n.includes('admin')) return 'Quản trị hệ thống';
@@ -226,6 +114,7 @@ export default function PointsAdmin() {
         if (n.includes('hr')) return 'Nhân sự & Hành chính';
         return 'Nhân viên chính thức';
     };
+
     const getColorClasses = (color: string) => {
         const map: any = {
             blue: { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200' },
@@ -236,452 +125,206 @@ export default function PointsAdmin() {
         return map[color] || map.purple;
     };
 
-    const getTransactionStyle = (type: string) => {
-        switch(type) {
-            case 'earn':
-                return { color: 'text-green-600', bg: 'bg-green-100', sign: '+', label: 'Cộng điểm' };
-            case 'redeem':
-                return { color: 'text-orange-600', bg: 'bg-orange-100', sign: '-', label: 'Đổi thưởng/Bị phạt' };
-            case 'adjustment':
-                return { color: 'text-blue-600', bg: 'bg-blue-100', sign: '~', label: 'Điều chỉnh' };
-            case 'transfer':
-                return { color: 'text-purple-600', bg: 'bg-purple-100', sign: '->', label: 'Chuyển điểm' };
-            default:
-                return { color: 'text-gray-600', bg: 'bg-gray-100', sign: '', label: type };
-        }
-    };
-
-    // Filter Logic
-    const filteredEmployees = employees.filter(emp =>
-        emp.employeeName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        emp.email?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    const totalPages = Math.ceil(filteredEmployees.length / itemsPerPage);
-    const startIdx = (currentPage - 1) * itemsPerPage;
-    const currentEmployees = filteredEmployees.slice(startIdx, startIdx + itemsPerPage);
-    
-    // Pagination History
-    const totalHistoryPages = Math.ceil(historyTotalCount / historyItemsPerPage);
-    const startHistoryIdx = (historyPage - 1) * historyItemsPerPage;
-
     return (
-        <div className="min-h-screen bg-gray-50 p-6">
-            <div className="max-w-7xl mx-auto">
-                {/* Header & Stats - Chỉ hiển thị ở tab Vai trò & Định mức */}
-                {activeTab === 'roles' && (
-                    <div className="bg-blue-600 rounded-lg p-6 mb-6 text-white shadow-lg">
-                        <div className="flex justify-between items-center">
+        <motion.div 
+            className="min-h-screen bg-linear-to-br from-blue-50 via-indigo-50 to-purple-50 p-6 relative overflow-hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+        >
+            <div className="absolute top-0 right-0 w-96 h-96 bg-blue-400 rounded-full blur-3xl opacity-10 pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-400 rounded-full blur-3xl opacity-10 pointer-events-none" />
+            
+            <div className="max-w-7xl mx-auto relative z-10">
+                <motion.div 
+                    className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 mb-6 text-white shadow-2xl overflow-hidden border border-white/20"
+                    initial={{ y: -20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.1 }}
+                >
+                    <div className="bg-linear-to-r from-blue-600 via-purple-600 to-blue-700 rounded-xl p-6 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full -mr-32 -mt-32" />
+                        <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-10 rounded-full -ml-24 -mb-24" />
+                        <div className="flex justify-between items-center relative z-10">
                             <div>
-                                <h1 className="text-2xl font-bold flex items-center gap-2">
-                                    <Award className="w-6 h-6" /> Quản lý điểm thưởng
+                                <h1 className="text-3xl font-bold flex items-center gap-3 mb-2">
+                                    <motion.div
+                                        className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center"
+                                        whileHover={{ scale: 1.1, rotate: 5 }}
+                                        transition={{ type: "spring", stiffness: 400 }}
+                                    >
+                                        <Award className="w-7 h-7" />
+                                    </motion.div>
+                                    Quản lý điểm thưởng
                                 </h1>
-                                <p className="text-blue-100 mt-1">Hệ thống quản lý và phân phối điểm thưởng</p>
+                                <p className="text-white/90 text-lg font-light ml-16">Hệ thống quản lý và phân phối điểm thưởng</p>
                             </div>
-                            <button onClick={handleDistributePoints} className="bg-white text-blue-600 px-4 py-2 rounded-lg font-bold flex items-center gap-2 shadow hover:bg-blue-50 active:scale-95 transition-transform">
+                            <motion.button 
+                                onClick={handleDistributePoints} 
+                                className="bg-white text-blue-600 px-6 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg hover:shadow-xl"
+                                whileHover={{ scale: 1.05, y: -2 }}
+                                whileTap={{ scale: 0.95 }}
+                            >
                                 <Calendar className="w-5 h-5" /> Phân phối ngay
-                            </button>
-                        </div>
-                        {/* Stats Grid */}
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
-                            <div className="bg-white/10 p-4 rounded-xl border border-white/10">
-                                <div className="text-xs text-blue-100 uppercase">Ngân sách/tháng</div>
-                                <div className="text-2xl font-bold">{totalMonthlyBudget.toLocaleString()}</div>
-                            </div>
-                            <div className="bg-white/10 p-4 rounded-xl border border-white/10">
-                                <div className="text-xs text-blue-100 uppercase">Tổng nhân viên</div>
-                                <div className="text-2xl font-bold">{totalCount}</div>
-                            </div>
-                            <div className="bg-white/10 p-4 rounded-xl border border-white/10">
-                                <div className="text-xs text-blue-100 uppercase">Trung bình/người</div>
-                                <div className="text-2xl font-bold">{totalCount > 0 ? Math.round(totalMonthlyBudget / totalCount).toLocaleString() : 0}</div>
-                            </div>
-                            <div className="bg-orange-500/20 p-4 rounded-xl border border-orange-200/30 relative overflow-hidden">
-                                <div className="absolute top-0 right-0 p-2 opacity-10"><Clock size={48} color="white"/></div>
-                                <div className="text-xs text-orange-100 uppercase font-semibold">Yêu cầu chờ duyệt</div>
-                                <div className="text-2xl font-bold text-white">{pendingRequests.length}</div>
-                            </div>
+                            </motion.button>
                         </div>
                     </div>
-                )}
-
-                {/* --- TAB CONTENT --- */}
-
-                {/* TAB 1: ROLES */}
-                {activeTab === 'roles' && (
-                    <div className="bg-white rounded-b-xl shadow-sm p-6 border border-gray-100">
-                        {loadingRoles ? <div className="text-center py-10"><Loader2 className="animate-spin inline text-blue-600"/></div> : 
-                        <div className="grid md:grid-cols-2 gap-4">
-                            {roles.map((role) => {
-                                const colors = getColorClasses(role.color);
-                                const isEditing = editingRole === role.id;
-                                return (
-                                    <div key={role.id} className={`border-2 ${colors.border} rounded-xl p-5 ${colors.bg}`}>
-                                        <div className="flex justify-between items-center">
-                                            <div className="flex items-center gap-4">
-                                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold text-lg border-2 ${colors.border} ${colors.text} bg-white`}>
-                                                    {role.roleName.substring(0, 2).toUpperCase()}
-                                                </div>
-                                                <div>
-                                                    <h3 className="font-bold text-lg text-gray-900">{role.roleName}</h3>
-                                                    <p className="text-sm text-gray-600">Định mức hiện tại: <span className="font-bold">{role.pointValue}</span></p>
-                                                </div>
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                {isEditing ? (
-                                                    <>
-                                                        <input type="number" value={editPointsValue} onChange={(e) => setEditPointsValue(Number(e.target.value))} className="w-20 px-2 py-1 border rounded font-bold" autoFocus />
-                                                        <button onClick={() => handleUpdateRolePoints(role.id, role.roleId)} className="p-2 bg-green-500 text-white rounded"><Save className="w-4 h-4" /></button>
-                                                        <button onClick={() => setEditingRole(null)} className="p-2 bg-gray-400 text-white rounded"><X className="w-4 h-4" /></button>
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <div className={`text-2xl font-bold ${colors.text}`}>{role.pointValue}</div>
-                                                        <button onClick={() => { setEditingRole(role.id); setEditPointsValue(role.pointValue); }} className="p-2 bg-white border rounded hover:text-blue-600"><Edit2 className="w-4 h-4" /></button>
-                                                    </>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>}
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+                        <motion.div 
+                            className="bg-white rounded-xl p-5 shadow-lg border-2 border-blue-100"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.2 }}
+                            whileHover={{ scale: 1.05, y: -4 }}
+                        >
+                            <div className="text-xs text-blue-600 uppercase font-bold mb-2">Ngân sách/tháng</div>
+                            <div className="text-3xl font-bold text-gray-900">{totalMonthlyBudget.toLocaleString()}</div>
+                            <div className="text-sm text-gray-500 mt-1">điểm/tháng</div>
+                        </motion.div>
+                        <motion.div 
+                            className="bg-white rounded-xl p-5 shadow-lg border-2 border-green-100"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.25 }}
+                            whileHover={{ scale: 1.05, y: -4 }}
+                        >
+                            <div className="text-xs text-green-600 uppercase font-bold mb-2">Tổng nhân viên</div>
+                            <div className="text-3xl font-bold text-gray-900">{totalCount}</div>
+                            <div className="text-sm text-gray-500 mt-1">người</div>
+                        </motion.div>
+                        <motion.div 
+                            className="bg-white rounded-xl p-5 shadow-lg border-2 border-purple-100"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.3 }}
+                            whileHover={{ scale: 1.05, y: -4 }}
+                        >
+                            <div className="text-xs text-purple-600 uppercase font-bold mb-2">Trung bình/người</div>
+                            <div className="text-3xl font-bold text-gray-900">
+                                {totalCount > 0 ? Math.round(totalMonthlyBudget / totalCount).toLocaleString() : 0}
+                            </div>
+                            <div className="text-sm text-gray-500 mt-1">điểm/người</div>
+                        </motion.div>
+                        <motion.div 
+                            className="bg-linear-to-br from-orange-500 to-amber-600 rounded-xl p-5 shadow-lg relative overflow-hidden"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.35 }}
+                            whileHover={{ scale: 1.05, y: -4 }}
+                        >
+                            <div className="absolute top-0 right-0 p-2 opacity-20">
+                                <Clock size={48} color="white"/>
+                            </div>
+                            <div className="text-xs text-orange-100 uppercase font-bold mb-2 relative z-10">Yêu cầu chờ duyệt</div>
+                            <div className="text-3xl font-bold text-white relative z-10">{pendingRequests.length}</div>
+                            <div className="text-sm text-orange-100 mt-1 relative z-10">yêu cầu</div>
+                        </motion.div>
                     </div>
-                )}
+                </motion.div>
 
-                {/* TAB 2: EMPLOYEES */}
-                {activeTab === 'employees' && (
-                    <>
-                        <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg p-6 mb-6 text-white shadow-lg">
-                            <div className="flex items-center gap-3">
-                                <TrendingUp className="w-8 h-8" />
-                                <div>
-                                    <h1 className="text-2xl font-bold">Danh sách nhân viên</h1>
-                                    <p className="text-blue-100 mt-1">Quản lý điểm thưởng của từng nhân viên</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                        <div className="mb-4 relative max-w-sm">
-                            <Search className="absolute left-3 top-2.5 text-gray-400 w-5 h-5" />
-                            <input type="text" placeholder="Tìm nhân viên..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
-                        </div>
-                        <div className="overflow-x-auto">
-                            <table className="w-full">
-                                <thead className="bg-gray-50 border-b">
-                                    <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Nhân viên</th>
-                                        <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Email</th>
-                                        <th className="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase">Điểm</th>
-                                        <th className="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase">Cập nhật</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y">
-                                    {currentEmployees.map(emp => (
-                                        <tr key={emp.id} className="hover:bg-gray-50">
-                                            <td className="px-6 py-4 font-medium flex items-center gap-3">
-                                                <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold">{emp.employeeName.charAt(0)}</div>
-                                                {emp.employeeName}
-                                            </td>
-                                            <td className="px-6 py-4 text-gray-600">{emp.email}</td>
-                                            <td className="px-6 py-4 text-center"><span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-bold">{emp.pointTotal}</span></td>
-                                            <td className="px-6 py-4 text-center text-sm text-gray-500">{new Date(emp.lastUpdate).toLocaleDateString('vi-VN')}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                        <div className="mt-4 flex justify-between items-center">
-                            <span className="text-sm text-gray-500">Hiển thị {startIdx + 1}-{Math.min(startIdx + itemsPerPage, filteredEmployees.length)} trên {filteredEmployees.length}</span>
-                            <div className="flex gap-2">
-                                <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)} className="px-3 py-1 border rounded disabled:opacity-50 hover:bg-gray-50">Trước</button>
-                                <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)} className="px-3 py-1 border rounded disabled:opacity-50 hover:bg-gray-50">Sau</button>
-                            </div>
-                        </div>
-                        </div>
-                    </>
-                )}
-
-                {/* TAB 3: CONVERSION */}
-                {activeTab === 'conversion' && (
-                    <>
-                        <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg p-6 mb-6 text-white shadow-lg">
-                            <div className="flex items-center gap-3">
-                                <ArrowLeftRight className="w-8 h-8" />
-                                <div>
-                                    <h1 className="text-2xl font-bold">Bảng quy đổi điểm</h1>
-                                    <p className="text-blue-100 mt-1">Quản lý tỷ giá quy đổi điểm sang tiền mặt</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                        <div className="flex justify-between mb-4">
-                            <h2 className="font-bold text-lg">Quy tắc đổi điểm</h2>
-                            <button onClick={() => setIsAddingRule(true)} className="bg-blue-600 text-white px-3 py-1 rounded flex items-center gap-1 hover:bg-blue-700"><Plus className="w-4 h-4"/> Thêm</button>
-                        </div>
-                        <div className="space-y-3">
-                            {rules.map(rule => {
-                                const isEditing = editingRuleId === rule.id;
-                                return (
-                                    <div key={rule.id} className="border rounded-lg p-4 flex justify-between items-center hover:bg-gray-50">
+                <motion.div 
+                    className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-2xl p-6 border-2 border-purple-100"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                >
+                    {loadingRoles ? 
+                    <motion.div 
+                        className="text-center py-10"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                    >
+                        <Loader2 className="animate-spin inline text-blue-600 w-8 h-8"/>
+                        <p className="mt-3 text-gray-600">Đang tải...</p>
+                    </motion.div> : 
+                    <div className="grid md:grid-cols-2 gap-4">
+                        {roles.map((role, index) => {
+                            const colors = getColorClasses(role.color);
+                            const isEditing = editingRole === role.id;
+                            return (
+                                <motion.div 
+                                    key={role.id} 
+                                    className={`border-2 ${colors.border} rounded-xl p-5 ${colors.bg} shadow-lg`}
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: index * 0.1 }}
+                                    whileHover={{ scale: 1.02, y: -2 }}
+                                >
+                                    <div className="flex justify-between items-center">
                                         <div className="flex items-center gap-4">
-                                            <div className="bg-orange-100 p-2 rounded-lg text-orange-600"><ArrowLeftRight className="w-6 h-6"/></div>
-                                            {isEditing ? (
-                                                <div className="flex gap-2 items-center">
-                                                    <input type="number" value={editRuleData.point} onChange={e => setEditRuleData({...editRuleData, point: +e.target.value})} className="border rounded px-2 py-1 w-20" />
-                                                    <span>=</span>
-                                                    <input type="number" value={editRuleData.money} onChange={e => setEditRuleData({...editRuleData, money: +e.target.value})} className="border rounded px-2 py-1 w-28" />
-                                                    <select value={String(editRuleData.active)} onChange={e => setEditRuleData({...editRuleData, active: e.target.value === 'true'})} className="border rounded p-1">
-                                                        <option value="true">Active</option>
-                                                        <option value="false">Inactive</option>
-                                                    </select>
-                                                </div>
-                                            ) : (
-                                                <div>
-                                                    <div className="font-bold">{rule.pointValue} điểm = {rule.moneyValue.toLocaleString()} VNĐ</div>
-                                                    <div className={`text-xs ${rule.isActive ? 'text-green-600' : 'text-red-500'}`}>{rule.isActive ? 'Đang hoạt động' : 'Đã khóa'}</div>
-                                                </div>
-                                            )}
-                                        </div>
-                                        <div className="flex gap-2">
-                                            {isEditing ? (
-                                                <>
-                                                    <button onClick={handleUpdateConversionRule} className="p-2 bg-blue-600 text-white rounded"><Save className="w-4 h-4"/></button>
-                                                    <button onClick={() => setEditingRuleId(null)} className="p-2 bg-gray-200 rounded"><X className="w-4 h-4"/></button>
-                                                </>
-                                            ) : (
-                                                <button onClick={() => { setEditingRuleId(rule.id); setEditRuleData({ point: rule.pointValue, money: rule.moneyValue, active: rule.isActive }) }} className="p-2 border rounded hover:bg-gray-100"><Edit2 className="w-4 h-4 text-gray-500"/></button>
-                                            )}
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                        </div>
-                    </>
-                )}
-
-                {/* TAB 4: REQUESTS */}
-                {activeTab === 'requests' && (
-                    <>
-                        <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg p-6 mb-6 text-white shadow-lg">
-                            <div className="flex items-center gap-3">
-                                <CheckCircle className="w-8 h-8" />
-                                <div>
-                                    <h1 className="text-2xl font-bold">Duyệt yêu cầu đổi điểm</h1>
-                                    <p className="text-blue-100 mt-1">Xử lý các yêu cầu đổi điểm thưởng sang tiền mặt</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                        <div className="flex items-center justify-between mb-6">
-                            <div>
-                                <h2 className="text-lg font-bold text-gray-800">Yêu cầu đổi điểm chờ duyệt</h2>
-                                <p className="text-sm text-gray-500">Danh sách nhân viên yêu cầu đổi điểm sang tiền mặt</p>
-                            </div>
-                            <div className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
-                                Tổng: {pendingRequests.length} yêu cầu
-                            </div>
-                        </div>
-
-                        {loadingRequests ? (
-                            <div className="flex justify-center py-12"><Loader2 className="animate-spin text-blue-600 w-8 h-8"/></div>
-                        ) : pendingRequests.length === 0 ? (
-                            <div className="text-center py-16 flex flex-col items-center">
-                                <div className="bg-gray-100 p-4 rounded-full mb-3"><CheckCircle className="w-8 h-8 text-green-500"/></div>
-                                <p className="text-gray-500 font-medium">Hiện tại không có yêu cầu nào cần duyệt.</p>
-                            </div>
-                        ) : (
-                            <div className="grid gap-4">
-                                {pendingRequests.map(req => (
-                                    <div key={req.id} className="border border-gray-200 rounded-xl p-5 bg-white shadow-sm hover:shadow-md transition-shadow flex flex-col md:flex-row justify-between items-center gap-4">
-                                        <div className="flex items-center gap-4 w-full md:w-auto">
-                                            <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold text-lg">
-                                                {req.employeeName.charAt(0)}
+                                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold text-lg border-2 ${colors.border} ${colors.text} bg-white`}>
+                                                {role.roleName.substring(0, 2).toUpperCase()}
                                             </div>
                                             <div>
-                                                <h3 className="font-bold text-gray-900 text-lg">{req.employeeName}</h3>
-                                                <div className="flex items-center gap-2 text-sm text-gray-500">
-                                                    <Clock className="w-4 h-4"/>
-                                                    {new Date(req.createdAt).toLocaleString('vi-VN')}
-                                                </div>
+                                                <h3 className="font-bold text-lg text-gray-900">{role.roleName}</h3>
+                                                <p className="text-sm text-gray-600">
+                                                    Định mức hiện tại: <span className="font-bold">{role.pointValue}</span>
+                                                </p>
                                             </div>
                                         </div>
-                                        <div className="flex flex-col items-center md:items-end w-full md:w-auto bg-gray-50 p-3 rounded-lg md:bg-transparent md:p-0">
-                                            <div className="text-sm text-gray-500 uppercase font-semibold">Yêu cầu đổi</div>
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-xl font-bold text-blue-600">{req.pointRequested} điểm</span>
-                                                <ArrowLeftRight className="w-4 h-4 text-gray-400"/>
-                                                <span className="text-xl font-bold text-green-600">{req.moneyReceived.toLocaleString('vi-VN')} đ</span>
-                                            </div>
-                                        </div>
-                                        <div className="flex gap-3 w-full md:w-auto justify-end">
-                                            {processingId === req.id ? (
-                                                <button disabled className="px-6 py-2 bg-gray-100 text-gray-400 rounded-lg flex items-center gap-2">
-                                                    <Loader2 className="w-5 h-5 animate-spin"/> Đang xử lý...
-                                                </button>
+                                        <div className="flex items-center gap-2">
+                                            {isEditing ? (
+                                                <>
+                                                    <input 
+                                                        type="number" 
+                                                        value={editPointsValue} 
+                                                        onChange={(e) => setEditPointsValue(Number(e.target.value))} 
+                                                        className="w-20 px-3 py-2 border-2 border-purple-200 rounded-lg font-bold focus:ring-2 focus:ring-purple-500 focus:outline-none" 
+                                                        autoFocus 
+                                                    />
+                                                    <motion.button 
+                                                        onClick={() => handleUpdateRolePoints(role.id, role.roleId)} 
+                                                        className="p-2 bg-green-500 text-white rounded-lg shadow-lg"
+                                                        whileHover={{ scale: 1.1 }}
+                                                        whileTap={{ scale: 0.9 }}
+                                                    >
+                                                        <Save className="w-4 h-4" />
+                                                    </motion.button>
+                                                    <motion.button 
+                                                        onClick={() => setEditingRole(null)} 
+                                                        className="p-2 bg-gray-400 text-white rounded-lg shadow-lg"
+                                                        whileHover={{ scale: 1.1 }}
+                                                        whileTap={{ scale: 0.9 }}
+                                                    >
+                                                        <X className="w-4 h-4" />
+                                                    </motion.button>
+                                                </>
                                             ) : (
                                                 <>
-                                                    <button onClick={() => handleProcessRequest(req.id, 'rejected')} className="px-4 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 flex items-center gap-2 font-medium">
-                                                        <Ban className="w-4 h-4"/> Từ chối
-                                                    </button>
-                                                    <button onClick={() => handleProcessRequest(req.id, 'approved')} className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2 font-bold">
-                                                        <Check className="w-5 h-5"/> Duyệt
-                                                    </button>
+                                                    <div className={`text-3xl font-bold ${colors.text}`}>{role.pointValue}</div>
+                                                    <motion.button 
+                                                        onClick={() => { setEditingRole(role.id); setEditPointsValue(role.pointValue); }} 
+                                                        className="p-2 bg-white border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:text-blue-600 shadow-sm"
+                                                        whileHover={{ scale: 1.1 }}
+                                                        whileTap={{ scale: 0.9 }}
+                                                    >
+                                                        <Edit2 className="w-4 h-4" />
+                                                    </motion.button>
                                                 </>
                                             )}
                                         </div>
                                     </div>
-                                ))}
-                            </div>
-                        )}
-                        </div>
-                    </>
-                )}
-
-                {/* TAB 5: CONVERSION HISTORY - Component riêng */}
-                {activeTab === 'conversion-history' && (
-                    <>
-                        <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg p-6 mb-6 text-white shadow-lg">
-                            <div className="flex items-center gap-3">
-                                <Clock className="w-8 h-8" />
-                                <div>
-                                    <h1 className="text-2xl font-bold">Lịch sử đổi điểm</h1>
-                                    <p className="text-blue-100 mt-1">Theo dõi các giao dịch đổi điểm đã được duyệt</p>
-                                </div>
-                            </div>
-                        </div>
-                        <ConversionHistoryTab />
-                    </>
-                )}
-
-                {/* TAB 6: HISTORY */}
-                {activeTab === 'history' && (
-                    <>
-                        <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg p-6 mb-6 text-white shadow-lg">
-                            <div className="flex items-center gap-3">
-                                <Calendar className="w-8 h-8" />
-                                <div>
-                                    <h1 className="text-2xl font-bold">Lịch sử giao dịch điểm</h1>
-                                    <p className="text-blue-100 mt-1">Nhật ký biến động điểm thưởng trong hệ thống</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                        <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-4">
-                            <div>
-                                <h2 className="text-lg font-bold text-gray-800">Nhật ký giao dịch điểm</h2>
-                                <p className="text-sm text-gray-500">Lịch sử biến động điểm thưởng trong hệ thống</p>
-                            </div>
-                            
-                            {/* Bộ lọc loại giao dịch */}
-                            <div className="flex items-center gap-2">
-                                <div className="relative">
-                                    <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-                                    <select 
-                                        value={historyFilter} 
-                                        onChange={(e) => { setHistoryFilter(e.target.value); setHistoryPage(1); }}
-                                        className="pl-9 pr-4 py-2 border border-gray-200 rounded-lg bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer hover:bg-white transition-colors"
-                                    >
-                                        <option value="">Tất cả giao dịch</option>
-                                        <option value="earn">Cộng điểm (Earn)</option>
-                                        <option value="redeem">Đổi thưởng/Bị phạt (Redeem)</option>
-                                        <option value="adjustment">Điều chỉnh (Adjustment)</option>
-                                        <option value="transfer">Chuyển điểm (Transfer)</option>
-                                    </select>
-                                </div>
-                                <button onClick={() => fetchHistory()} className="p-2 border border-gray-200 rounded-lg hover:bg-gray-100 text-gray-500" title="Làm mới">
-                                    <RefreshCcw className="w-4 h-4"/>
-                                </button>
-                            </div>
-                        </div>
-
-                        {loadingHistory ? (
-                            <div className="flex justify-center py-10"><Loader2 className="animate-spin text-blue-600"/></div>
-                        ) : history.length === 0 ? (
-                            <div className="text-center py-12 text-gray-500 flex flex-col items-center">
-                                <Clock className="w-10 h-10 mb-2 text-gray-300"/>
-                                Không tìm thấy lịch sử giao dịch nào.
-                            </div>
-                        ) : (
-                            <>
-                                <div className="space-y-0 divide-y divide-gray-100 border rounded-lg overflow-hidden">
-                                    {history.map(item => {
-                                        const style = getTransactionStyle(item.type);
-                                        return (
-                                            <div key={item.id} className="p-4 flex items-center justify-between bg-white hover:bg-gray-50 transition-colors">
-                                                <div className="flex items-center gap-4">
-                                                    <div className={`w-10 h-10 ${style.bg} ${style.color} rounded-full flex items-center justify-center font-bold text-lg`}>
-                                                        {style.sign === '->' ? <ArrowLeftRight className="w-5 h-5"/> : style.sign}
-                                                    </div>
-                                                    <div>
-                                                        <div className="font-bold text-gray-800">{item.employeeName}</div>
-                                                        <div className="text-sm text-gray-500 flex flex-wrap items-center gap-2">
-                                                            <span className={`text-xs px-2 py-0.5 rounded-full border ${style.bg} ${style.color} border-current opacity-80`}>
-                                                                {style.label}
-                                                            </span>
-                                                            <span>{new Date(item.createdAt).toLocaleString('vi-VN')}</span>
-                                                            <span className="hidden sm:inline w-1 h-1 bg-gray-300 rounded-full"></span>
-                                                            <span className="text-gray-400 italic truncate max-w-50 sm:max-w-md">{item.description}</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                {/* Logic hiển thị dấu thông minh */}
-                                                <div className={`font-bold ${style.color} text-lg whitespace-nowrap`}>
-                                                    {['earn', 'redeem'].includes(item.type) 
-                                                        ? `${style.sign}${Math.abs(item.value)}` 
-                                                        : `${style.sign} ${item.value}`}
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                                {/* Pagination Controls */}
-                                {totalHistoryPages > 1 && (
-                                    <div className="mt-4 flex justify-between items-center">
-                                        <span className="text-sm text-gray-500">
-                                            Hiển thị {startHistoryIdx + 1}-{Math.min(startHistoryIdx + historyItemsPerPage, historyTotalCount)} trên {historyTotalCount}
-                                        </span>
-                                        <div className="flex gap-2">
-                                            <button 
-                                                disabled={historyPage === 1} 
-                                                onClick={() => setHistoryPage(p => p - 1)} 
-                                                className="px-3 py-1 border rounded disabled:opacity-50 hover:bg-gray-50"
-                                            >
-                                                Trước
-                                            </button>
-                                            <span className="px-2 py-1 text-gray-600 font-medium">Trang {historyPage} / {totalHistoryPages}</span>
-                                            <button 
-                                                disabled={historyPage === totalHistoryPages} 
-                                                onClick={() => setHistoryPage(p => p + 1)} 
-                                                className="px-3 py-1 border rounded disabled:opacity-50 hover:bg-gray-50"
-                                            >
-                                                Sau
-                                            </button>
-                                        </div>
-                                    </div>
-                                )}
-                            </>
-                        )}
-                        </div>
-                    </>
-                )}
+                                </motion.div>
+                            );
+                        })}
+                    </div>}
+                </motion.div>
             </div>
 
-            {/* Notification */}
+            <AnimatePresence>
             {showToast.show && (
-                <div className={`fixed bottom-5 right-5 px-4 py-3 rounded shadow-lg text-white flex items-center gap-2 ${showToast.type === 'success' ? 'bg-green-600' : 'bg-red-600'}`}>
+                <motion.div 
+                    className={`fixed bottom-5 right-5 px-4 py-3 rounded-xl shadow-2xl text-white flex items-center gap-2 ${showToast.type === 'success' ? 'bg-linear-to-r from-green-500 to-emerald-600' : 'bg-linear-to-r from-red-500 to-pink-600'}`}
+                    initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 50, scale: 0.9 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                >
                     {showToast.type === 'success' ? <CheckCircle className="w-5 h-5"/> : <AlertCircle className="w-5 h-5"/>}
                     {showToast.message}
-                </div>
+                </motion.div>
             )}
-
-            {isAddingRule && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                    <div className="bg-white p-6 rounded-lg w-125">
-                        <CreateExchangePointRule onClose={() => setIsAddingRule(false)} />
-                    </div>
-                </div>
-            )}
-        </div>
+            </AnimatePresence>
+        </motion.div>
     );
 }

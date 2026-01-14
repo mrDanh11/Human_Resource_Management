@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import PointExchangeLayout from "../../layouts/PointExchangeLayout";
 import HalfCircleProgress from "../../components/rewards/HalfCircleProgress";
 import ConversionRateInfo from "../../components/rewards/ConversionRateInfo";
 import TickSelector from "../../components/rewards/TickSelector";
-import { Loader2, Clock } from "lucide-react";
+import { Loader2, Clock, Sparkles } from "lucide-react";
 import { pointService } from "../../services/pointService";
 import type { PointToMoneyHistoryDto, PointConversionRuleDto } from "../../services/pointService";
 import ConfirmExchangeModal from "../../components/rewards/ConfirmExchangeModal";
@@ -133,62 +134,106 @@ export default function PointExchange() {
 
   return (
     <PointExchangeLayout>
-      <div className="w-full p-6 md:p-10 bg-linear-to-br from-blue-50 via-purple-50 to-pink-50 min-h-screen">
-        <div className="mb-6 relative max-w-6xl mx-auto">
-          <div className="relative rounded-xl p-5 bg-blue-600 overflow-hidden shadow-lg">
-            <div className="absolute top-0 right-0 w-40 h-40 bg-white opacity-10 rounded-full -mr-20 -mt-20"></div>
-            <div className="absolute bottom-0 left-0 w-32 h-32 bg-white opacity-10 rounded-full -ml-16 -mb-16"></div>
+      <motion.div 
+        className="w-full p-6 md:p-10 bg-linear-to-br from-blue-50 via-purple-50 to-pink-50 min-h-screen relative overflow-hidden"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      >
+        {/* Decorative background blobs */}
+        <div className="absolute top-20 right-20 w-96 h-96 bg-purple-400 rounded-full blur-3xl opacity-10 pointer-events-none" />
+        <div className="absolute bottom-20 left-20 w-96 h-96 bg-blue-400 rounded-full blur-3xl opacity-10 pointer-events-none" />
+        <motion.div 
+          className="mb-6 relative max-w-6xl mx-auto"
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.1, duration: 0.4 }}
+        >
+          <div className="relative rounded-2xl p-6 bg-white/90 backdrop-blur-sm overflow-hidden shadow-2xl border-2 border-purple-100">
+            <div className="absolute top-0 right-0 w-40 h-40 bg-purple-400 opacity-10 rounded-full blur-2xl -mr-20 -mt-20"></div>
+            <div className="absolute bottom-0 left-0 w-32 h-32 bg-blue-400 opacity-10 rounded-full blur-2xl -ml-16 -mb-16"></div>
             
             <div className="relative z-10 text-center">
               <div className="flex items-center justify-center gap-4 mb-3">
-                <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                  <span className="text-4xl">💰</span>
-                </div>
-                <h1 className="text-4xl font-bold text-white tracking-tight">
+                <motion.div 
+                  className="w-14 h-14 bg-linear-to-br from-blue-600 via-purple-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg"
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  transition={{ type: "spring", stiffness: 400 }}
+                >
+                  <Sparkles className="w-7 h-7 text-white" />
+                </motion.div>
+                <h1 className="text-4xl font-bold bg-linear-to-r from-blue-600 via-purple-600 to-blue-700 bg-clip-text text-transparent tracking-tight">
                   Quy đổi điểm thưởng
                 </h1>
               </div>
-              <p className="text-white/90 text-lg font-light">
+              <p className="text-gray-600 text-lg font-medium">
                 Chuyển đổi điểm thưởng của bạn thành tiền mặt
               </p>
             </div>
           </div>
-        </div>
+        </motion.div>
 
-        {hasPendingRequest && (
-          <div className="bg-linear-to-r from-yellow-50 to-orange-50 border-2 border-yellow-200 rounded-2xl p-6 mb-8 max-w-6xl mx-auto shadow-lg hover:shadow-xl transition-shadow duration-300">
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-yellow-500 rounded-xl flex items-center justify-center shrink-0">
-                <Clock className="w-6 h-6 text-white" />
-              </div>
-              <div className="flex-1">
-                <h3 className="font-bold text-yellow-800 text-xl mb-2">
-                  Yêu cầu đang chờ xử lý
-                </h3>
-                <p className="text-base text-yellow-700 mb-4 font-medium">
-                  Bạn có {pendingRequests.length} yêu cầu quy đổi đang chờ admin duyệt. 
-                  Vui lòng đợi trước khi gửi yêu cầu mới.
-                </p>
-                <div className="space-y-3">
-                  {pendingRequests.map((req) => (
-                    <div key={req.id} className="bg-white rounded-xl px-4 py-3 text-base shadow-sm border border-yellow-200">
-                      <span className="font-bold text-yellow-800">{req.pointRequested} điểm</span> 
-                      <span className="text-yellow-600 mx-2">→</span> 
-                      <span className="font-bold text-green-600">{req.moneyReceived.toLocaleString('vi-VN')}đ</span>
-                      <span className="text-gray-600 ml-3 text-sm">
-                        ({new Date(req.createdAt).toLocaleDateString('vi-VN')})
-                      </span>
-                    </div>
-                  ))}
+        <AnimatePresence>
+          {hasPendingRequest && (
+            <motion.div 
+              className="bg-linear-to-r from-yellow-50 to-orange-50 border-2 border-yellow-200 rounded-2xl p-6 mb-8 max-w-6xl mx-auto shadow-lg hover:shadow-xl transition-shadow duration-300"
+              initial={{ y: 20, opacity: 0, scale: 0.95 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              exit={{ y: -20, opacity: 0, scale: 0.95 }}
+              transition={{ delay: 0.2, duration: 0.4 }}
+            >
+              <div className="flex items-start gap-4">
+                <motion.div 
+                  className="w-12 h-12 bg-yellow-500 rounded-xl flex items-center justify-center shrink-0"
+                  animate={{ rotate: [0, -10, 10, -10, 0] }}
+                  transition={{ duration: 0.5, delay: 0.3 }}
+                >
+                  <Clock className="w-6 h-6 text-white" />
+                </motion.div>
+                <div className="flex-1">
+                  <h3 className="font-bold text-yellow-800 text-xl mb-2">
+                    Yêu cầu đang chờ xử lý
+                  </h3>
+                  <p className="text-base text-yellow-700 mb-4 font-medium">
+                    Bạn có {pendingRequests.length} yêu cầu quy đổi đang chờ admin duyệt. 
+                    Vui lòng đợi trước khi gửi yêu cầu mới.
+                  </p>
+                  <div className="space-y-3">
+                    {pendingRequests.map((req, index) => (
+                      <motion.div 
+                        key={req.id} 
+                        className="bg-white rounded-xl px-4 py-3 text-base shadow-sm border border-yellow-200"
+                        initial={{ x: -20, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        transition={{ delay: 0.3 + index * 0.1, duration: 0.3 }}
+                        whileHover={{ scale: 1.02, boxShadow: "0 4px 12px rgba(234, 179, 8, 0.15)" }}
+                      >
+                        <span className="font-bold text-yellow-800">{req.pointRequested} điểm</span> 
+                        <span className="text-yellow-600 mx-2">→</span> 
+                        <span className="font-bold text-green-600">{req.moneyReceived.toLocaleString('vi-VN')}đ</span>
+                        <span className="text-gray-600 ml-3 text-sm">
+                          ({new Date(req.createdAt).toLocaleDateString('vi-VN')})
+                        </span>
+                      </motion.div>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-        )}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-6 relative">
-          <div className="lg:w-1/3 flex">
-            <div className="p-6 rounded-2xl bg-white shadow-lg border-2 border-gray-100 w-full flex flex-col hover:shadow-xl transition-shadow duration-300">
+          <motion.div 
+            className="lg:w-1/3 flex"
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.4 }}
+          >
+            <motion.div 
+              className="p-6 rounded-2xl bg-white/90 backdrop-blur-sm shadow-lg border-2 border-purple-100 w-full flex flex-col hover:shadow-2xl transition-all duration-300"
+              whileHover={{ y: -4, scale: 1.01 }}
+            >
               <HalfCircleProgress
                 percent={percent}
                 totalPoints={currentPoints}
@@ -215,19 +260,27 @@ export default function PointExchange() {
               ) : (
                 <ConversionRateInfo rate={+conversionRules[0]} />
               )}
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
-          <div className="lg:w-2/3 flex">
-            <div className="p-6 rounded-2xl bg-white shadow-lg border-2 border-gray-100 w-full flex flex-col hover:shadow-xl transition-shadow duration-300">
+          <motion.div 
+            className="lg:w-2/3 flex"
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.4, duration: 0.4 }}
+          >
+            <motion.div 
+              className="p-6 rounded-2xl bg-white/90 backdrop-blur-sm shadow-lg border-2 border-purple-100 w-full flex flex-col hover:shadow-2xl transition-all duration-300"
+              whileHover={{ y: -4, scale: 1.01 }}
+            >
               <TickSelector
                 max={currentPoints}
                 rate={conversionRules[0]?.moneyValue || 100}
                 onChangePercent={handleChangePercent}
                 onSelect={(points) => handleOpenModal(points)}
               />
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
 
         <ConfirmExchangeModal
@@ -241,15 +294,29 @@ export default function PointExchange() {
         
         <ExchangePointSuccessToast show={toast} />
 
-        {exchanging && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-            <div className="bg-white p-8 rounded-2xl shadow-2xl flex flex-col items-center border-2 border-gray-100">
-              <Loader2 className="h-12 w-12 text-blue-600 animate-spin mb-4" />
-              <p className="text-gray-800 font-bold text-lg">Đang gửi yêu cầu quy đổi...</p>
-            </div>
-          </div>
-        )}
-      </div>
+        <AnimatePresence>
+          {exchanging && (
+            <motion.div 
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <motion.div 
+                className="bg-white p-8 rounded-2xl shadow-2xl flex flex-col items-center border-2 border-purple-100"
+                initial={{ scale: 0.8, opacity: 0, y: 20 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.8, opacity: 0, y: 20 }}
+                transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              >
+                <Loader2 className="h-12 w-12 text-blue-600 animate-spin mb-4" />
+                <p className="text-gray-800 font-bold text-lg">Đang gửi yêu cầu quy đổi...</p>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
     </PointExchangeLayout>
   );
 }
