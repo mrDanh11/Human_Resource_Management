@@ -42,7 +42,13 @@ const AttendanceFormModal: React.FC<AttendanceFormModalProps> = ({
   // Validate date
   useEffect(() => {
     if (formData.date) {
-      const formattedDate = new Date(formData.date).toLocaleDateString('vi-VN');
+      // Format date to dd/mm/yyyy with leading zeros
+      const dateObj = new Date(formData.date);
+      const day = String(dateObj.getDate()).padStart(2, '0');
+      const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const year = dateObj.getFullYear();
+      const formattedDate = `${day}/${month}/${year}`;
+      
       if (!validDates.includes(formattedDate)) {
         setDateError('Ngày làm việc phải nằm trong các ngày đã có trong bảng chấm công!');
       } else {
