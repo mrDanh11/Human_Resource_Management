@@ -55,7 +55,6 @@ const App = () => {
           {/* Employee Layout Routes */}
           <Route element={<Layout />}>
             <Route path="/employee/profile/:id" element={<ProfilePage />} />
-
             
             <Route path="rewards">
               <Route path="exchange" element={<PointExchange />} />
@@ -82,16 +81,17 @@ const App = () => {
 
             <Route path="/attendance" element={<AttendancePage />} />
           </Route>
-        </Route>
+
           {/* Manager Routes */}
-        <Route element={<ProtectedRoute allowedRoles={['MANAGER']} />}>
-          <Route path="/employee/profile/:id" element={<ProfilePage />} />
-          <Route path="/manager" element={<ManagerLayout />}>
-            <Route path="requests" element={<LeaveRequestPage />} />
-            <Route path="rewards">
-              <Route path="exchange" element={<PointExchange />} />
-              <Route path="history" element={<RewardHistory />} />
-              <Route path="points" element={<RewardDashboard />} />
+          <Route element={<ProtectedRoute allowedRoles={['MANAGER']} />}>
+            <Route path="/employee/profile/:id" element={<ProfilePage />} />
+            <Route path="/manager" element={<ManagerLayout />}>
+              <Route path="requests" element={<LeaveRequestPage />} />
+              <Route path="rewards">
+                <Route path="exchange" element={<PointExchange />} />
+                <Route path="history" element={<RewardHistory />} />
+                <Route path="points" element={<RewardDashboard />} />
+              </Route>
             </Route>
           </Route>
 
