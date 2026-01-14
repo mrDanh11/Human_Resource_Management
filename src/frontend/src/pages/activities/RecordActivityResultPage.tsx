@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Search, 
   CheckCircle, 
@@ -7,7 +8,10 @@ import {
   Calendar, 
   ClipboardList, 
   XCircle, 
-  Edit2 
+  Edit2,
+  Sparkles,
+  Award,
+  TrendingUp
 } from 'lucide-react';
 import { participationService } from '../../services/participationService';
 import { getAllActivities } from '../../services/activityService';
@@ -207,171 +211,289 @@ export default function RecordActivityResultPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-10">
+    <motion.div 
+      className="min-h-screen bg-linear-to-br from-blue-50 via-indigo-50 to-purple-50 pb-10"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         
         {/* HEADER */}
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-6">
-          <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-6">
-            <div className="flex items-center gap-3 mb-2">
-              <ClipboardList className="w-8 h-8" />
-              <h1 className="text-3xl font-bold">Ghi nhận thành tích</h1>
+        <motion.div 
+          className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-2xl overflow-hidden mb-6"
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.1 }}
+        >
+          <div className="bg-linear-to-r from-blue-600 via-purple-600 to-blue-700 text-white px-8 py-6 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full -mr-32 -mt-32" />
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-10 rounded-full -ml-24 -mb-24" />
+            <div className="relative z-10">
+              <div className="flex items-center gap-3 mb-2">
+                <motion.div
+                  className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center"
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  transition={{ type: "spring", stiffness: 400 }}
+                >
+                  <Award className="w-8 h-8" />
+                </motion.div>
+                <h1 className="text-4xl font-bold tracking-tight">Ghi nhận thành tích</h1>
+              </div>
+              <p className="text-white/90 text-lg font-light ml-16">Ghi nhận kết quả và đánh giá hiệu suất tham gia hoạt động</p>
             </div>
-            <p className="text-blue-100">Ghi nhận kết quả và đánh giá hiệu suất tham gia hoạt động</p>
           </div>
 
-          <div className="p-6 border-b border-gray-200">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+          <div className="p-6 border-b border-purple-100">
+            <label className="block text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
+              <ClipboardList className="w-5 h-5 text-purple-600" />
               Chọn hoạt động <span className="text-red-500">*</span>
             </label>
             <select
               value={selectedActivityId || ''}
               onChange={(e) => setSelectedActivityId(Number(e.target.value))}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+              className="w-full px-4 py-3 border-2 border-purple-200 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100 bg-white transition-all shadow-sm hover:border-purple-300"
             >
-              <option value="">-- Chọn hoạt động --</option>
+              <option value="">🎯 -- Chọn hoạt động --</option>
               {activities.map(activity => (
                 <option key={activity.id} value={activity.id}>
-                  {activity.name} - {activity.status === 'completed' ? 'Đã hoàn thành' : 'Đang diễn ra'}
+                  {activity.status === 'completed' ? '✅' : '🎪'} {activity.name} - {activity.status === 'completed' ? 'Đã hoàn thành' : 'Đang diễn ra'}
                 </option>
               ))}
             </select>
           </div>
 
           {selectedActivityId && (
-            <div className="px-6 pt-6 pb-2">
+            <motion.div 
+              className="px-6 pt-6 pb-2"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-                <div className="flex items-center gap-2 text-gray-700 font-medium">
-                  <div className="bg-blue-100 p-2 rounded-lg">
-                    <Users className="w-5 h-5 text-blue-600" />
+                <motion.div 
+                  className="flex items-center gap-3 px-4 py-3 bg-linear-to-r from-blue-50 to-indigo-50 rounded-xl border-2 border-blue-200"
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: 0.25 }}
+                >
+                  <div className="bg-blue-500 p-2 rounded-lg shadow-lg">
+                    <Users className="w-5 h-5 text-white" />
                   </div>
-                  <span>Tổng số: <span className="text-blue-600 font-bold">{participants.length}</span></span>
-                </div>
+                  <span className="font-semibold text-gray-700">Tổng số: <span className="text-blue-600 font-bold text-lg">{participants.length}</span> người</span>
+                </motion.div>
 
-                <div className="relative w-full md:w-96">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <motion.div 
+                  className="relative w-full md:w-96"
+                  initial={{ x: 20, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400 w-5 h-5" />
                   <input
                     type="text"
-                    placeholder="Tìm kiếm nhân viên..."
+                    placeholder="🔍 Tìm kiếm nhân viên..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                    className="w-full pl-10 pr-4 py-3 border-2 border-purple-200 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all shadow-sm"
                   />
-                </div>
+                </motion.div>
               </div>
 
-              <div className="flex border-b border-gray-200">
-                <button
+              <div className="flex border-b-2 border-purple-100">
+                <motion.button
                   onClick={() => setActiveTab('pending')}
-                  className={`flex items-center gap-2 px-6 py-3 font-medium text-sm border-b-2 transition-colors ${
+                  className={`flex items-center gap-2 px-6 py-3 font-semibold text-sm border-b-3 transition-all ${
                     activeTab === 'pending'
-                      ? 'border-orange-500 text-orange-600 bg-orange-50'
-                      : 'border-transparent text-gray-500 hover:text-gray-700'
+                      ? 'border-orange-500 text-orange-600 bg-linear-to-b from-orange-50 to-transparent'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
                   }`}
+                  whileHover={{ y: -2 }}
+                  whileTap={{ scale: 0.95 }}
                 >
-                  <AlertCircle className="w-4 h-4" />
-                  Chưa nhập <span className="bg-orange-100 text-orange-800 px-2 rounded-full text-xs">{pendingCount}</span>
-                </button>
-                <button
+                  <AlertCircle className="w-5 h-5" />
+                  Chưa nhập <span className="bg-orange-500 text-white px-2.5 py-0.5 rounded-full text-xs font-bold shadow-sm">{pendingCount}</span>
+                </motion.button>
+                <motion.button
                   onClick={() => setActiveTab('completed')}
-                  className={`flex items-center gap-2 px-6 py-3 font-medium text-sm border-b-2 transition-colors ${
+                  className={`flex items-center gap-2 px-6 py-3 font-semibold text-sm border-b-3 transition-all ${
                     activeTab === 'completed'
-                      ? 'border-green-500 text-green-600 bg-green-50'
-                      : 'border-transparent text-gray-500 hover:text-gray-700'
+                      ? 'border-green-500 text-green-600 bg-linear-to-b from-green-50 to-transparent'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
                   }`}
+                  whileHover={{ y: -2 }}
+                  whileTap={{ scale: 0.95 }}
                 >
-                  <CheckCircle className="w-4 h-4" />
-                  Đã nhập <span className="bg-green-100 text-green-800 px-2 rounded-full text-xs">{completedCount}</span>
-                </button>
+                  <CheckCircle className="w-5 h-5" />
+                  Đã nhập <span className="bg-green-500 text-white px-2.5 py-0.5 rounded-full text-xs font-bold shadow-sm">{completedCount}</span>
+                </motion.button>
               </div>
-            </div>
+            </motion.div>
           )}
-        </div>
+        </motion.div>
 
         {/* MAIN CONTENT - TABLE VIEW */}
-        {loading ? (
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Đang tải dữ liệu...</p>
-          </div>
-        ) : selectedActivityId ? (
-          displayedParticipants.length > 0 ? (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Nhân viên
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Trạng thái
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Đánh giá
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Thao tác
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {displayedParticipants.map((participant) => (
-                    <tr key={participant.employeeId} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                            <span className="text-blue-600 font-bold text-sm">
-                              {participant.employeeName.charAt(0)}
-                            </span>
-                          </div>
-                          <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900">{participant.employeeName}</div>
-                            <div className="text-sm text-gray-500">{participant.employeeCode}</div>
-                          </div>
+        <AnimatePresence mode="wait">
+          {loading ? (
+            <motion.div 
+              className="text-center py-16"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <div className="relative inline-block">
+                <div className="animate-spin rounded-full h-16 w-16 border-4 border-purple-200"></div>
+                <div className="animate-spin rounded-full h-16 w-16 border-4 border-purple-600 border-t-transparent absolute top-0 left-0"></div>
+              </div>
+              <p className="mt-6 text-gray-700 font-medium text-lg flex items-center justify-center gap-2">
+                <Sparkles className="w-5 h-5 text-purple-500 animate-pulse" />
+                Đang tải dữ liệu...
+              </p>
+            </motion.div>
+          ) : selectedActivityId ? (
+            displayedParticipants.length > 0 ? (
+              <motion.div 
+                className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-2xl border-2 border-purple-100 overflow-hidden"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                transition={{ delay: 0.2 }}
+              >
+                <table className="min-w-full divide-y divide-purple-100">
+                  <thead className="bg-linear-to-r from-purple-50 to-blue-50">
+                    <tr>
+                      <th scope="col" className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                        <div className="flex items-center gap-2">
+                          <Users className="w-4 h-4 text-purple-600" />
+                          Nhân viên
                         </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-center">
-                        {hasValidResult(participant.result) ? (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            Đã hoàn thành
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
-                            Chờ cập nhật
-                          </span>
-                        )}
-                      </td>
+                      </th>
+                      <th scope="col" className="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">
+                        <div className="flex items-center justify-center gap-2">
+                          <TrendingUp className="w-4 h-4 text-purple-600" />
+                          Trạng thái
+                        </div>
+                      </th>
+                      <th scope="col" className="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">
+                        <div className="flex items-center justify-center gap-2">
+                          <Award className="w-4 h-4 text-purple-600" />
+                          Đánh giá
+                        </div>
+                      </th>
+                      <th scope="col" className="px-6 py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wider">
+                        Thao tác
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-purple-50">
+                    {displayedParticipants.map((participant, index) => (
+                      <motion.tr 
+                        key={participant.employeeId} 
+                        className="hover:bg-linear-to-r hover:from-purple-50 hover:to-blue-50 transition-all"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                        whileHover={{ scale: 1.01 }}
+                      >
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <motion.div 
+                              className="flex-shrink-0 w-12 h-12 bg-linear-to-br from-purple-400 to-blue-500 rounded-xl flex items-center justify-center shadow-lg"
+                              whileHover={{ scale: 1.1, rotate: 5 }}
+                              transition={{ type: "spring", stiffness: 400 }}
+                            >
+                              <span className="text-white font-bold text-lg">
+                                {participant.employeeName.charAt(0)}
+                              </span>
+                            </motion.div>
+                            <div className="ml-4">
+                              <div className="text-sm font-bold text-gray-900">{participant.employeeName}</div>
+                              <div className="text-xs text-gray-500 bg-purple-50 px-2 py-0.5 rounded-md inline-block font-medium">{participant.employeeCode}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-center">
+                          {hasValidResult(participant.result) ? (
+                            <motion.span 
+                              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-linear-to-r from-green-500 to-emerald-600 text-white shadow-md"
+                              initial={{ scale: 0.9 }}
+                              animate={{ scale: 1 }}
+                              whileHover={{ scale: 1.05 }}
+                            >
+                              <CheckCircle className="w-3 h-3" />
+                              ✅ Đã hoàn thành
+                            </motion.span>
+                          ) : (
+                            <motion.span 
+                              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-linear-to-r from-orange-500 to-amber-600 text-white shadow-md animate-pulse"
+                              initial={{ scale: 0.9 }}
+                              animate={{ scale: 1 }}
+                              whileHover={{ scale: 1.05 }}
+                            >
+                              <AlertCircle className="w-3 h-3" />
+                              ⏳ Chờ cập nhật
+                            </motion.span>
+                          )}
+                        </td>
                       <td className="px-6 py-4 whitespace-nowrap text-center">
                         {getPerformanceBadge(participant.performance)}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <button
-                          onClick={() => handleOpenModal(participant)}
-                          className="text-blue-600 hover:text-blue-900 inline-flex items-center gap-1 font-semibold hover:bg-blue-50 px-3 py-1.5 rounded transition-colors"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                          {hasValidResult(participant.result) ? 'Chỉnh sửa' : 'Nhập kết quả'}
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                          <motion.button
+                            onClick={() => handleOpenModal(participant)}
+                            className="text-white bg-linear-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 inline-flex items-center gap-2 font-bold px-4 py-2 rounded-xl transition-all shadow-lg"
+                            whileHover={{ scale: 1.05, y: -2 }}
+                            whileTap={{ scale: 0.95 }}
+                          >
+                            <Edit2 className="w-4 h-4" />
+                            {hasValidResult(participant.result) ? '✏️ Chỉnh sửa' : '📝 Nhập kết quả'}
+                          </motion.button>
+                        </td>
+                      </motion.tr>
+                    ))}
+                  </tbody>
+                </table>
+              </motion.div>
+            ) : (
+              <motion.div 
+                className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-16 text-center border-2 border-purple-100"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+              >
+                <motion.div
+                  initial={{ rotate: 0 }}
+                  animate={{ rotate: [0, -10, 10, -10, 0] }}
+                  transition={{ duration: 0.5, delay: 0.3 }}
+                >
+                  <XCircle className="w-20 h-20 text-purple-300 mx-auto mb-4" />
+                </motion.div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">🔍 Không tìm thấy dữ liệu</h3>
+                <p className="text-gray-600 text-lg">Không có nhân viên nào trong danh sách này.</p>
+              </motion.div>
+            )
           ) : (
-            <div className="bg-white rounded-lg shadow-sm p-12 text-center border border-gray-200">
-              <XCircle className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-              <h3 className="text-lg font-medium text-gray-900">Không tìm thấy dữ liệu</h3>
-              <p className="text-gray-500 mt-1">Không có nhân viên nào trong danh sách này.</p>
-            </div>
-          )
-        ) : (
-          <div className="bg-white rounded-lg shadow-sm p-12 text-center border border-gray-200">
-            <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Chưa chọn hoạt động</h3>
-            <p className="text-gray-600">Vui lòng chọn một hoạt động từ danh sách phía trên để bắt đầu.</p>
-          </div>
-        )}
+            <motion.div 
+              className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-16 text-center border-2 border-purple-100"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+            >
+              <div className="relative inline-block mb-6">
+                <Calendar className="w-24 h-24 text-purple-300 mx-auto" />
+                <motion.div
+                  className="absolute -top-2 -right-2"
+                  animate={{ rotate: [0, 10, -10, 0] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  <Sparkles className="w-8 h-8 text-yellow-400" />
+                </motion.div>
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">🎯 Chưa chọn hoạt động</h3>
+              <p className="text-gray-600 text-lg">Vui lòng chọn một hoạt động từ danh sách phía trên để bắt đầu.</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Render Modal */}
@@ -386,6 +508,6 @@ export default function RecordActivityResultPage() {
         onSave={handleSaveResult}
         isSaving={isSaving}
       />
-    </div>
+    </motion.div>
   );
 }

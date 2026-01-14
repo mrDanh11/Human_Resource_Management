@@ -71,6 +71,25 @@ const BaseSidebar: React.FC = () => {
       });
     }
 
+    // Bảng công - Employee và HR có, Admin không
+    if (userRole === 'hr') {
+      items.push({
+        label: "Bảng công",
+        icon: ClipboardList,
+        key: "attendance",
+        submenu: [
+          { label: "Bảng công", to: "/hr/attendance" },
+          { label: "Quản lý Timesheet", to: "/hr/timesheet/manage" },
+        ]
+      });
+    } else if (userRole === 'employee') {
+      items.push({ 
+        label: "Bảng công", 
+        icon: ClipboardList, 
+        to: "/attendance" 
+      });
+    }
+
     // Quản lý nhân viên - Chỉ HR có
     if (userRole === 'hr') {
       items.push({
@@ -84,12 +103,17 @@ const BaseSidebar: React.FC = () => {
       });
     }
 
-    // Yêu cầu - HR có hết, Employee có nhưng không có Danh sách yêu cầu và Quản lý timesheet, Admin không có
+    // Yêu cầu - HR và Employee có, Admin không có
     if (userRole === 'hr') {
-      items.push({ 
-        label: "Yêu cầu", 
-        icon: FileText, 
-        to: "/hr/requests" 
+      items.push({
+        label: "Yêu cầu",
+        icon: FileText,
+        key: "requests",
+        submenu: [
+          { label: "Tạo yêu cầu mới", to: "/hr/requests/create" },
+          { label: "Yêu cầu của tôi", to: "/hr/requests/my-requests" },
+          { label: "Tạo yêu cầu nghỉ phép", to: "/hr/requests/create/on-leave" },
+        ]
       });
     } else if (userRole === 'employee') {
       items.push({
