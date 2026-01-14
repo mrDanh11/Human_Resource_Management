@@ -113,8 +113,7 @@ public class ActivityService implements IActivityService {
     public void deleteActivity(Long id) {
         Activity activity = activityRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Activity not found"));
-        
-        activity.setDeleted(true);
+        activity.setStatus("cancelled");
         activityRepository.save(activity);
     }
 
