@@ -11,7 +11,7 @@ public interface IAttendanceService
     /// <summary>
     /// Lấy timesheet của nhân viên trong khoảng thời gian
     /// </summary>
-    Task<TimesheetSummaryDto> GetMyTimesheetAsync(int employeeId, DateOnly fromDate, DateOnly toDate);
+    Task<TimesheetSummaryDto> GetMyTimesheetAsync(int employeeId, DateOnly? fromDate, DateOnly? toDate);
     
     /// <summary>
     /// Lấy attendance của nhân viên theo ngày cụ thể
@@ -79,4 +79,9 @@ public interface IAttendanceService
     /// Kiểm tra attendance có tồn tại không
     /// </summary>
     Task<bool> CheckAttendanceExistsAsync(int employeeId, DateOnly date);
+
+    /// <summary>
+    /// Lấy lịch sử chấm công của nhân viên (không truyền ngày sẽ lấy tất cả)
+    /// </summary>
+    Task<List<AttendanceResponseDto>> GetMyAttendanceHistoryAsync(int employeeId, DateOnly? fromDate, DateOnly? toDate);
 }

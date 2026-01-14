@@ -23,6 +23,8 @@ public partial class Employee
 
     public string? Status { get; set; }
 
+    public double AnnualLeaveBalance { get; set; } = 12.0;
+
     public DateOnly? Birthday { get; set; }
 
     public string? Gender { get; set; }
