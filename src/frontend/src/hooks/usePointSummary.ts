@@ -4,13 +4,43 @@
  */
 
 import { useState, useEffect } from 'react';
-import { pointService, type EmployeePointDto } from '../services/pointService';
+import { pointService } from '../services/pointService';
 import type { PointSummary } from '../types/reward';
 
 interface UsePointSummaryReturn {
   summary: PointSummary | null;
   loading: boolean;
   error: string | null;
+}
+
+/**
+ * Calculate period stats from transactions (current month)
+ */
+function calculatePeriodStats(employeeId: number): Promise<{ earned: number; redeemed: number }> {
+  const now = new Date();
+  const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  
+  return pointService.getPointTransactions(
+    1,
+    1000,
+    employeeId,
+    undefined,
+    firstDayOfMonth.toISOString().split('T')[0],
+    undefined
+  ).then(result => {
+    let earned = 0;
+    let redeemed = 0;
+    
+    result.items.forEach(transaction => {
+      if (transaction.type === 'earn') {
+        earned += transaction.value;
+      } else if (transaction.type === 'redeem') {
+        redeemed += Math.abs(transaction.value);
+      }
+    });
+    
+    return { earned, redeemed };
+  });
 }
 
 export function usePointSummary(employeeId: number): UsePointSummaryReturn {
@@ -26,15 +56,20 @@ export function usePointSummary(employeeId: number): UsePointSummaryReturn {
       setError(null);
 
       try {
-        const pointData: EmployeePointDto = await pointService.getEmployeePoint(employeeId);
+        const [pointData, periodStats, conversionRule] = await Promise.all([
+          pointService.getEmployeePoint(employeeId),
+          calculatePeriodStats(employeeId),
+          pointService.getActiveConversionRule()
+        ]);
         
-        // TODO: Enhance backend to return period stats
-        // For now, we'll use total points as current
+        // Calculate conversion rate from backend rule
+        const conversionRate = conversionRule.moneyValue / conversionRule.pointValue;
+        
         setSummary({
           current: pointData.pointTotal || 0,
-          earnedThisPeriod: 0, // would come from backend
-          redeemedThisPeriod: 0, // would come from backend  
-          conversionRate: 1000, // 1 point = 1000 VND (should come from backend)
+          earnedThisPeriod: periodStats.earned,
+          redeemedThisPeriod: periodStats.redeemed,
+          conversionRate: conversionRate,
         });
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Lỗi khi tải thông tin điểm');
