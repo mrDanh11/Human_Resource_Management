@@ -15,6 +15,8 @@ interface AttendanceFormModalProps {
   formData: AttendanceFormData;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
   onSubmit: (e: React.FormEvent) => void;
+  validDates: string[];
+  onValidationChange?: (hasErrors: boolean) => void;
 }
 
 const AttendanceFormModal: React.FC<AttendanceFormModalProps> = ({
@@ -22,8 +24,62 @@ const AttendanceFormModal: React.FC<AttendanceFormModalProps> = ({
   onClose,
   formData,
   onInputChange,
-  onSubmit
+  onSubmit,
+  validDates,
+  onValidationChange
 }) => {
+  // Validation states
+  const [dateError, setDateError] = React.useState<string>('');
+  const [timeError, setTimeError] = React.useState<string>('');
+  const [reasonError, setReasonError] = React.useState<string>('');
+
+  // Notify parent about validation state
+  useEffect(() => {
+    const hasErrors = !!(dateError || timeError || reasonError);
+    onValidationChange?.(hasErrors);
+  }, [dateError, timeError, reasonError, onValidationChange]);
+
+  // Validate date
+  useEffect(() => {
+    if (formData.date) {
+      const formattedDate = new Date(formData.date).toLocaleDateString('vi-VN');
+      if (!validDates.includes(formattedDate)) {
+        setDateError('Ngày làm việc phải nằm trong các ngày đã có trong bảng chấm công!');
+      } else {
+        setDateError('');
+      }
+    } else {
+      setDateError('');
+    }
+  }, [formData.date, validDates]);
+
+  // Validate time
+  useEffect(() => {
+    if (formData.checkinTime && formData.checkoutTime) {
+      const checkinMinutes = parseInt(formData.checkinTime.split(':')[0]) * 60 + parseInt(formData.checkinTime.split(':')[1]);
+      const checkoutMinutes = parseInt(formData.checkoutTime.split(':')[0]) * 60 + parseInt(formData.checkoutTime.split(':')[1]);
+      
+      if (checkoutMinutes <= checkinMinutes) {
+        setTimeError('Giờ ra phải lớn hơn giờ vào!');
+      } else {
+        setTimeError('');
+      }
+    } else {
+      setTimeError('');
+    }
+  }, [formData.checkinTime, formData.checkoutTime]);
+
+  // Validate reason
+  useEffect(() => {
+    const reasonLength = formData.reason.trim().length;
+    if (formData.reason && reasonLength > 0 && reasonLength < 10) {
+      setReasonError('Nguyên nhân phải có ít nhất 10 ký tự!');
+    } else if (reasonLength > 500) {
+      setReasonError('Nguyên nhân không được vượt quá 500 ký tự!');
+    } else {
+      setReasonError('');
+    }
+  }, [formData.reason]);
 
   useEffect(() => {
       const handleEscape = (e: KeyboardEvent) => {
@@ -81,8 +137,15 @@ const AttendanceFormModal: React.FC<AttendanceFormModalProps> = ({
                 value={formData.date}
                 onChange={onInputChange}
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent ${
+                  dateError ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                }`}
               />
+              {dateError && (
+                <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
+                  <span>⚠️</span> {dateError}
+                </p>
+              )}
             </div>
 
             {/* Check-in & Check-out */}
@@ -110,10 +173,17 @@ const AttendanceFormModal: React.FC<AttendanceFormModalProps> = ({
                   name="checkoutTime"
                   value={formData.checkoutTime}
                   onChange={onInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent ${
+                    timeError ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                  }`}
                 />
               </div>
             </div>
+            {timeError && (
+              <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
+                <span>⚠️</span> {timeError}
+              </p>
+            )}
 
             {/* Nguyên nhân */}
             <div>
@@ -126,12 +196,20 @@ const AttendanceFormModal: React.FC<AttendanceFormModalProps> = ({
                 value={formData.reason}
                 onChange={onInputChange}
                 rows={3}
+                minLength={10}
                 maxLength={500}
                 required
-                placeholder="Nhập nguyên nhân yêu cầu cập nhật (tối đa 500 ký tự)"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                placeholder="Nhập nguyên nhân yêu cầu cập nhật (từ 10 đến 500 ký tự)"
+                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent resize-none ${
+                  reasonError ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                }`}
               />
-              <p className="text-xs text-gray-500 mt-1">
+              {reasonError && (
+                <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
+                  <span>⚠️</span> {reasonError}
+                </p>
+              )}
+              <p className={`text-xs mt-1 ${formData.reason.length < 10 ? 'text-orange-500' : 'text-gray-500'}`}>
                 {formData.reason.length}/500 ký tự
               </p>
             </div>
@@ -162,9 +240,14 @@ const AttendanceFormModal: React.FC<AttendanceFormModalProps> = ({
             {/* Info box */}
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <p className="text-sm text-blue-800">
-                <strong>Lưu ý:</strong> Yêu cầu sẽ được gửi đến HR để xem xét và phê duyệt. 
-                Vui lòng mô tả rõ nguyên nhân và đính kèm tài liệu chứng minh (nếu có).
+                <strong>Lưu ý:</strong> Yêu cầu sẽ được gửi đến HR để xem xét và phê duyệt.
               </p>
+              <ul className="text-sm text-blue-800 mt-2 ml-4 list-disc space-y-1">
+                <li>Ngày làm việc phải nằm trong các ngày đã có trong bảng chấm công</li>
+                <li>Giờ ra phải lớn hơn giờ vào</li>
+                <li>Nguyên nhân phải từ 10 đến 500 ký tự</li>
+                <li>Đính kèm tài liệu chứng minh (nếu có)</li>
+              </ul>
             </div>
           </div>
 
@@ -190,13 +273,16 @@ const AttendanceFormModal: React.FC<AttendanceFormModalProps> = ({
             </button>
             <button
               type="submit"
-              className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all font-medium"
+              disabled={!!(dateError || timeError || reasonError)}
+              className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600"
               style={{
                 transition: 'all 0.3s ease'
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 5px 20px rgba(37, 99, 235, 0.4)';
+                if (!(dateError || timeError || reasonError)) {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 5px 20px rgba(37, 99, 235, 0.4)';
+                }
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'translateY(0)';

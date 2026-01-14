@@ -39,7 +39,7 @@ const AttendanceManagementPage: React.FC = () => {
 
   // Fetch data khi component mount
   useEffect(() => {
-    dispatch(fetchAllAttendances({}));
+    dispatch(fetchAllAttendances({ pageNumber: 1, pageSize: 100 }));
   }, [dispatch]);
 
   const transformedRecords = transformedAttendances;

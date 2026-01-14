@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Search, Calendar, Check, X, Eye, RefreshCw, Sparkles, CheckCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { fetchAllRequests, processRequest, clearError } from '../../store/approvalSlice';
+import { fetchAllRequests, batchProcessRequests, clearError } from '../../store/approvalSlice';
 import type { RequestResponseDto } from '../../services/requestForAttendanceService';
 import { 
   getRequestTypeDisplay, 
@@ -14,7 +14,7 @@ import {
 
 const ApprovalPage: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { requests, loading, error, processingIds } = useAppSelector(state => state.approval);
+  const { requests, loading, error } = useAppSelector(state => state.approval);
   
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatus, setSelectedStatus] = useState<string>('Tất cả trạng thái');
@@ -26,7 +26,7 @@ const ApprovalPage: React.FC = () => {
 
   // Fetch requests on component mount
   useEffect(() => {
-    dispatch(fetchAllRequests({}));
+    dispatch(fetchAllRequests({ type: 'attendance_correction' }));
   }, [dispatch]);
 
   // Show error alert
@@ -126,18 +126,15 @@ const ApprovalPage: React.FC = () => {
     }
 
     try {
-      for (const id of selectedRequests) {
-        await dispatch(processRequest({ 
-          id, 
-          data: { 
-            status: 'approved',
-            autoUpdateAttendance: true 
-          } 
-        })).unwrap();
-      }
+      await dispatch(batchProcessRequests({
+        requestIds: selectedRequests,
+        status: 'approved',
+        autoUpdateAttendance: true
+      })).unwrap();
+      
       alert('Đã phê duyệt các yêu cầu thành công');
       setSelectedRequests([]);
-      dispatch(fetchAllRequests({}));
+      dispatch(fetchAllRequests({ type: 'attendance_correction' }));
     } catch (error: any) {
       alert(error || 'Không thể phê duyệt một số yêu cầu');
     }
@@ -155,18 +152,15 @@ const ApprovalPage: React.FC = () => {
     }
 
     try {
-      for (const id of selectedRequests) {
-        await dispatch(processRequest({ 
-          id, 
-          data: { 
-            status: 'rejected',
-            note: 'Yêu cầu không được chấp nhận'
-          } 
-        })).unwrap();
-      }
+      await dispatch(batchProcessRequests({
+        requestIds: selectedRequests,
+        status: 'rejected',
+        note: 'Yêu cầu không được chấp nhận'
+      })).unwrap();
+      
       alert('Đã từ chối các yêu cầu');
       setSelectedRequests([]);
-      dispatch(fetchAllRequests({}));
+      dispatch(fetchAllRequests({ type: 'attendance_correction' }));
     } catch (error: any) {
       alert(error || 'Không thể từ chối một số yêu cầu');
     }
@@ -332,10 +326,10 @@ const ApprovalPage: React.FC = () => {
           {selectedRequests.length > 0 && (
             <motion.div 
               className="bg-white/90 backdrop-blur-sm rounded-xl shadow-lg border-2 border-purple-100 p-4 mb-6"
-              initial={{ y: -20, opacity: 0, height: 0 }}
-              animate={{ y: 0, opacity: 1, height: 'auto' }}
-              exit={{ y: -20, opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
