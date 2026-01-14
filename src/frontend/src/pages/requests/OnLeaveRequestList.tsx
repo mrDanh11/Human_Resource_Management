@@ -26,11 +26,9 @@ const LeaveRequestPage = () => {
     
     useEffect(() => {
         // Dispatch action to fetch requests list
-        dispatch(fetchRequestsList({ page: currentPage, size: 10 }));
-    }, [dispatch, currentPage]);
-        
+        dispatch(fetchRequestsList({ page: 1, size: 100 }));
+    }, [dispatch]);
 
-    console.log("Requests List:", requestsList);
     const filteredRequests = useMemo(() => {
         if (!requestsList) return [];
 
@@ -44,9 +42,6 @@ const LeaveRequestPage = () => {
             const startDateMatch = !startDate || requestStartDate >= startDate;
             const endDateMatch = !endDate || requestEndDate <= endDate;
 
-            console.log("Date Filters:", { startDate, endDate });
-            console.log("Request Dates:", { requestStart: request.startTime, requestEnd: request.endTime });
-            console.log("Date Matches:", { startDateMatch, endDateMatch });
             return statusMatch && typeMatch && searchMatch && startDateMatch && endDateMatch;
         }).sort((a, b) => {
             const dateA = new Date(a.createdDate).getTime();
@@ -60,6 +55,8 @@ const LeaveRequestPage = () => {
     const startIdx = (currentPage - 1) * itemsPerPage;
     const endIdx = startIdx + itemsPerPage;
     const currentRequests = filteredRequests.slice(startIdx, endIdx);
+
+    console.log("index:", startIdx, endIdx)
 
     // Reset về trang 1 khi filter thay đổi
     useEffect(() => {
@@ -78,8 +75,6 @@ const LeaveRequestPage = () => {
         setIsDetailModalOpen(false);
         setSelectedRequest(null);
     };
-
-    console.log("Filtered Requests:", filteredRequests);
 
     const getTypeDisplay = (type: string) => {
         const typeMap: Record<string, { label: string; badge: string }> = {
@@ -168,7 +163,7 @@ const LeaveRequestPage = () => {
                 <div className="bg-blue-600 text-white p-6 rounded-lg shadow-md">
                     <h1 className="text-2xl font-bold flex items-center gap-2">
                         <FileClock className="w-6 h-6" /> 
-                        Yêu cầu nghỉ phép
+                        Danh sách yêu cầu
                     </h1>
                 </div>
 
@@ -361,7 +356,7 @@ const LeaveRequestPage = () => {
                                     </button>
                                     {renderPaginationButtons()}
                                     <button 
-                                        onClick={() => handlePageChange(currentPage + 1)}
+                                        onClick={() => () => setCurrentPage(prev => Math.min(prev + 1, totalFilteredPages))}
                                         disabled={currentPage === totalFilteredPages}
                                         className="px-3 py-1 border border-gray-300 rounded bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                                     >

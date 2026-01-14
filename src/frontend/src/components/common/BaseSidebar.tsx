@@ -124,6 +124,15 @@ const BaseSidebar: React.FC = () => {
           { label: "Yêu cầu của tôi", to: "/requests/my-requests" },
         ]
       });
+    } else if (userRole === 'manager') {
+      items.push({
+        label: "Yêu cầu",
+        icon: FileText,
+        key: "requests",
+        submenu: [
+          { label: "Danh sách yêu cầu", to: "manager/requests" },
+        ]
+      });
     }
 
     // Hoạt động
