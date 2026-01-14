@@ -1,28 +1,68 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Search, RefreshCw, Download, Plus, ChevronLeft, ChevronRight, Edit, Users } from 'lucide-react';
 import { motion } from 'framer-motion';
-import {
-  mockAttendanceRecords,
-  employees,
-  departments,
-} from '../../data/attendanceManagementData';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { fetchAllAttendances, updateAttendanceRecord, createAttendanceRecord } from '../../store/attendanceSlice';
+import EditAttendanceModal from '../../components/attendance/EditAttendanceModal';
+import CreateAttendanceModal from '../../components/attendance/CreateAttendanceModal';
 
 const AttendanceManagementPage: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const { allAttendances, allAttendancesLoading, error } = useAppSelector(state => state.attendance);
+  
   const [selectedEmployee, setSelectedEmployee] = useState('all');
-  const [selectedDepartment, setSelectedDepartment] = useState('all');
   const [fromDate, setFromDate] = useState('2024-01-01');
   const [toDate, setToDate] = useState('2024-01-31');
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedRecords, setSelectedRecords] = useState<string[]>([]);
-  const [itemsPerPage] = useState(10);
+  const [itemsPerPage] = useState(5);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [editingRecord, setEditingRecord] = useState<any>(null);
+  const [editFormData, setEditFormData] = useState({
+    checkIn: '',
+    checkOut: '',
+    status: '',
+    note: ''
+  });
+  const [createFormData, setCreateFormData] = useState({
+    employeeId: '',
+    date: '',
+    checkIn: '',
+    checkOut: '',
+    status: '',
+    note: ''
+  });
+
+  // Fetch data khi component mount
+  useEffect(() => {
+    dispatch(fetchAllAttendances({}));
+  }, [dispatch]);
+
+  const transformedRecords = useMemo(() => {
+    return allAttendances;
+  }, [allAttendances]);
+
+  // Tạo danh sách unique employees từ API data
+  const uniqueEmployees = useMemo(() => {
+    const employeeMap = new Map();
+    transformedRecords.forEach(record => {
+      if (!employeeMap.has(record.employeeId)) {
+        employeeMap.set(record.employeeId, {
+          id: record.employeeId,
+          name: record.employeeName
+        });
+      }
+    });
+    return Array.from(employeeMap.values()).sort((a, b) => a.name.localeCompare(b.name));
+  }, [transformedRecords]);
 
   const filteredRecords = useMemo(() => {
-    return mockAttendanceRecords.filter(record => {
+    return transformedRecords.filter(record => {
       const matchesEmployee = selectedEmployee === 'all' || record.employeeId === selectedEmployee;
-      const matchesDepartment = selectedDepartment === 'all' || record.department === selectedDepartment;
-      return matchesEmployee && matchesDepartment;
+      return matchesEmployee;
     });
-  }, [selectedEmployee, selectedDepartment]);
+  }, [transformedRecords, selectedEmployee]);
 
   const totalPages = Math.ceil(filteredRecords.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -31,9 +71,17 @@ const AttendanceManagementPage: React.FC = () => {
 
   const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
-      setSelectedRecords(currentRecords.map(r => r.id));
+      // Chọn tất cả records trong trang hiện tại
+      const currentIds = currentRecords.map(r => r.id);
+      setSelectedRecords(prev => {
+        // Thêm các IDs mới mà chưa có trong danh sách
+        const newIds = currentIds.filter(id => !prev.includes(id));
+        return [...prev, ...newIds];
+      });
     } else {
-      setSelectedRecords([]);
+      // Bỏ chọn tất cả records trong trang hiện tại
+      const currentIds = currentRecords.map(r => r.id);
+      setSelectedRecords(prev => prev.filter(id => !currentIds.includes(id)));
     }
   };
 
@@ -45,10 +93,210 @@ const AttendanceManagementPage: React.FC = () => {
 
   const handleReset = () => {
     setSelectedEmployee('all');
-    setSelectedDepartment('all');
     setFromDate('2024-01-01');
     setToDate('2024-01-31');
     setCurrentPage(1);
+    // Fetch lại tất cả dữ liệu
+    dispatch(fetchAllAttendances({}));
+  };
+
+  const handleSearch = () => {
+    setCurrentPage(1); // Reset về trang 1 khi tìm kiếm
+    const params: any = {};
+    if (fromDate) params.fromDate = fromDate;
+    if (toDate) params.toDate = toDate;
+    if (selectedEmployee !== 'all') params.employeeId = parseInt(selectedEmployee);
+    
+    dispatch(fetchAllAttendances(params));
+  };
+
+  const handleEditRecord = (record: any) => {
+    setEditingRecord(record);
+    setEditFormData({
+      checkIn: record.checkIn,
+      checkOut: record.checkOut,
+      status: record.status,
+      note: ''
+    });
+    setIsEditModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsEditModalOpen(false);
+    setEditingRecord(null);
+    setEditFormData({
+      checkIn: '',
+      checkOut: '',
+      status: '',
+      note: ''
+    });
+  };
+
+  const handleSaveChanges = async () => {
+    if (!editingRecord) return;
+
+    try {
+      // Chuẩn bị dữ liệu để gửi API
+      const updateData: any = {};
+      
+      // Chỉ gửi những field đã thay đổi
+      if (editFormData.checkIn) {
+        // Parse date từ editingRecord.date (format: DD/MM/YYYY -> YYYY-MM-DD)
+        const dateParts = editingRecord.date.split('/');
+        const isoDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
+        updateData.checkinTime = `${isoDate}T${editFormData.checkIn}:00`;
+      }
+      
+      if (editFormData.checkOut) {
+        const dateParts = editingRecord.date.split('/');
+        const isoDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
+        updateData.checkoutTime = `${isoDate}T${editFormData.checkOut}:00`;
+      }
+      
+      // Map status từ local sang API format
+      if (editFormData.status) {
+        const statusMap: Record<string, 'present' | 'absent' | 'late' | 'half_day' | 'wfh'> = {
+          'normal': 'present',
+          'late': 'late',
+          'missing': 'absent',
+          'on-leave': 'half_day'
+        };
+        updateData.status = statusMap[editFormData.status] || 'present';
+      }
+      
+      if (editFormData.note) {
+        updateData.note = editFormData.note;
+      }
+
+      // Gọi API thông qua thunk
+      await dispatch(updateAttendanceRecord({
+        id: parseInt(editingRecord.id),
+        data: updateData
+      })).unwrap();
+
+      // Đóng modal và hiển thị thông báo thành công
+      handleCloseModal();
+      alert('Cập nhật chấm công thành công!');
+    } catch (error: any) {
+      console.error('Error updating attendance:', error);
+      alert(error || 'Có lỗi xảy ra khi cập nhật chấm công!');
+    }
+  };
+
+  const handleFormChange = (field: string, value: string) => {
+    setEditFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleCreateFormChange = (field: string, value: string) => {
+    setCreateFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleOpenCreateModal = () => {
+    setCreateFormData({
+      employeeId: '',
+      date: '',
+      checkIn: '',
+      checkOut: '',
+      status: '',
+      note: ''
+    });
+    setIsCreateModalOpen(true);
+  };
+
+  const handleCloseCreateModal = () => {
+    setIsCreateModalOpen(false);
+    setCreateFormData({
+      employeeId: '',
+      date: '',
+      checkIn: '',
+      checkOut: '',
+      status: '',
+      note: ''
+    });
+  };
+
+  const handleCreateAttendance = async () => {
+    // Validate required fields
+    if (!createFormData.employeeId || !createFormData.date || !createFormData.status) {
+      alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
+      return;
+    }
+
+    try {
+      const payload: any = {
+        employeeId: parseInt(createFormData.employeeId),
+        date: createFormData.date,
+        status: createFormData.status as 'present' | 'absent' | 'late' | 'half_day' | 'wfh'
+      };
+
+      // Add optional fields
+      if (createFormData.checkIn) {
+        payload.checkinTime = `${createFormData.date}T${createFormData.checkIn}:00`;
+      }
+      if (createFormData.checkOut) {
+        payload.checkoutTime = `${createFormData.date}T${createFormData.checkOut}:00`;
+      }
+      if (createFormData.note) {
+        payload.note = createFormData.note;
+      }
+
+      await dispatch(createAttendanceRecord(payload)).unwrap();
+      
+      handleCloseCreateModal();
+      alert('Thêm bản ghi chấm công thành công!');
+    } catch (error: any) {
+      console.error('Error creating attendance:', error);
+      alert(error || 'Có lỗi xảy ra khi tạo bản ghi!');
+    }
+  };
+
+  const handleExportCSV = () => {
+    // Lọc ra các records đã được chọn
+    const selectedData = transformedRecords.filter(record => 
+      selectedRecords.includes(record.id)
+    );
+
+    if (selectedData.length === 0) {
+      alert('Vui lòng chọn ít nhất một bản ghi để xuất!');
+      return;
+    }
+
+    // Tạo CSV header
+    const headers = ['ID', 'Nhân viên', 'ID Nhân viên', 'Ngày làm việc', 'Giờ vào', 'Giờ ra', 'Trạng thái'];
+    
+    // Tạo CSV rows
+    const rows = selectedData.map(record => [
+      record.id,
+      record.employeeName,
+      record.employeeId,
+      record.date,
+      record.checkIn,
+      record.checkOut,
+      record.statusText
+    ]);
+
+    // Kết hợp header và rows
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+    ].join('\n');
+
+    // Tạo BOM cho UTF-8 để Excel hiển thị đúng tiếng Việt
+    const BOM = '\uFEFF';
+    const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
+    
+    // Tạo link download
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `cham-cong-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    alert(`Đã xuất ${selectedData.length} bản ghi thành công!`);
   };
 
   const getStatusBadge = (status: string, text: string) => {
@@ -116,7 +364,7 @@ const AttendanceManagementPage: React.FC = () => {
             <h2 className="text-xl font-bold bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Bộ lọc tìm kiếm</h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             {/* Nhân viên */}
             <motion.div
               initial={{ x: -20, opacity: 0 }}
@@ -131,30 +379,9 @@ const AttendanceManagementPage: React.FC = () => {
                 onChange={(e) => setSelectedEmployee(e.target.value)}
                 className="w-full px-4 py-2.5 border-2 border-purple-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all bg-white hover:border-purple-300"
               >
-                <option value="all">Chọn nhân viên</option>
-                {employees.map(emp => (
+                <option value="all">Tất cả nhân viên</option>
+                {uniqueEmployees.map(emp => (
                   <option key={emp.id} value={emp.id}>{emp.name}</option>
-                ))}
-              </select>
-            </motion.div>
-
-            {/* Phòng ban */}
-            <motion.div
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.35 }}
-            >
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Phòng ban
-              </label>
-              <select
-                value={selectedDepartment}
-                onChange={(e) => setSelectedDepartment(e.target.value)}
-                className="w-full px-4 py-2.5 border-2 border-purple-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all bg-white hover:border-purple-300"
-              >
-                <option value="all">Tất cả phòng ban</option>
-                {departments.map(dept => (
-                  <option key={dept.id} value={dept.name}>{dept.name}</option>
                 ))}
               </select>
             </motion.div>
@@ -163,7 +390,7 @@ const AttendanceManagementPage: React.FC = () => {
             <motion.div
               initial={{ x: -20, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.4 }}
+              transition={{ delay: 0.35 }}
             >
               <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Từ ngày
@@ -180,7 +407,7 @@ const AttendanceManagementPage: React.FC = () => {
             <motion.div
               initial={{ x: -20, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.45 }}
+              transition={{ delay: 0.4 }}
             >
               <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Đến ngày
@@ -197,6 +424,7 @@ const AttendanceManagementPage: React.FC = () => {
           {/* Action Buttons */}
           <div className="flex gap-3">
             <motion.button
+              onClick={handleSearch}
               className="bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-2.5 rounded-xl transition-all flex items-center gap-2 font-semibold shadow-lg"
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
@@ -230,14 +458,16 @@ const AttendanceManagementPage: React.FC = () => {
             </div>
             <div className="flex gap-3">
               <motion.button 
+                onClick={handleExportCSV}
                 className="bg-linear-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-5 py-2.5 rounded-xl transition-all flex items-center gap-2 font-semibold shadow-lg"
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
               >
                 <Download className="w-4 h-4" />
-                Xuất Excel
+                Xuất CSV ({selectedRecords.length})
               </motion.button>
               <motion.button 
+                onClick={handleOpenCreateModal}
                 className="bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-5 py-2.5 rounded-xl transition-all flex items-center gap-2 font-semibold shadow-lg"
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
@@ -248,6 +478,19 @@ const AttendanceManagementPage: React.FC = () => {
             </div>
           </div>
 
+          {allAttendancesLoading ? (
+            <div className="flex justify-center items-center py-20">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+            </div>
+          ) : error ? (
+            <div className="flex justify-center items-center py-20">
+              <div className="text-red-600 font-semibold">{error}</div>
+            </div>
+          ) : allAttendances.length === 0 ? (
+            <div className="flex justify-center items-center py-20">
+              <div className="text-gray-500 font-semibold">Không có dữ liệu chấm công</div>
+            </div>
+          ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-linear-to-r from-purple-50 to-blue-50 border-b-2 border-purple-100">
@@ -255,7 +498,7 @@ const AttendanceManagementPage: React.FC = () => {
                   <th className="px-6 py-4 text-left">
                     <input
                       type="checkbox"
-                      checked={selectedRecords.length === currentRecords.length && currentRecords.length > 0}
+                      checked={currentRecords.length > 0 && currentRecords.every(r => selectedRecords.includes(r.id))}
                       onChange={handleSelectAll}
                       className="w-4 h-4 text-purple-600 border-purple-300 rounded focus:ring-purple-500"
                     />
@@ -307,7 +550,7 @@ const AttendanceManagementPage: React.FC = () => {
                         </motion.div>
                         <div>
                           <div className="font-semibold text-gray-900">{record.employeeName}</div>
-                          <div className="text-xs text-gray-500">{record.employeeId} - {record.department}</div>
+                          <div className="text-xs text-gray-500">ID: {record.employeeId}</div>
                         </div>
                       </div>
                     </td>
@@ -333,6 +576,7 @@ const AttendanceManagementPage: React.FC = () => {
                     </td>
                     <td className="px-6 py-4">
                       <motion.button 
+                        onClick={() => handleEditRecord(record)}
                         className="bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-4 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 shadow-md"
                         whileHover={{ scale: 1.05, y: -2 }}
                         whileTap={{ scale: 0.95 }}
@@ -346,6 +590,7 @@ const AttendanceManagementPage: React.FC = () => {
               </tbody>
             </table>
           </div>
+          )}
 
           {/* Pagination */}
           <div className="px-6 py-4 border-t-2 border-purple-100 bg-purple-50/50 flex items-center justify-between">
@@ -394,6 +639,26 @@ const AttendanceManagementPage: React.FC = () => {
           </div>
         </motion.div>
       </div>
+
+      {/* Edit Modal */}
+      <EditAttendanceModal
+        isOpen={isEditModalOpen}
+        onClose={handleCloseModal}
+        editingRecord={editingRecord}
+        formData={editFormData}
+        onFormChange={handleFormChange}
+        onSave={handleSaveChanges}
+      />
+
+      {/* Create Modal */}
+      <CreateAttendanceModal
+        isOpen={isCreateModalOpen}
+        onClose={handleCloseCreateModal}
+        employees={uniqueEmployees}
+        formData={createFormData}
+        onFormChange={handleCreateFormChange}
+        onSave={handleCreateAttendance}
+      />
     </motion.div>
   );
 };
