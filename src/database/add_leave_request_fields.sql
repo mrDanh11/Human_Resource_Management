@@ -23,3 +23,4 @@ CHECK (type IN (
     'wfh', 'leave', 'overtime', 'attendance_correction', 'equipment', 'other',
     'LEAVE_ANNUAL', 'LEAVE_SICK', 'LEAVE_UNPAID', 'LEAVE_SATURDAY'
 ));
+
