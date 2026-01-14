@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import EmployeeList from "./pages/profile/EmployeeList";
 import CreateEmployee from "./pages/profile/CreateEmployee";
 import ProfilePage from "./pages/profile/ProfilePage";
-import LandingPage from "./pages/LandingPage/LandingPage";
+import LandingPage from "./pages/landingPage/landingPage";
 import PointExchange from "./pages/rewards/PointExchange";
 import RewardDashboard from "./pages/rewards/RewardDashboard";
 import RewardPointHR from "./pages/rewards/RewardPointHR";
@@ -34,10 +34,10 @@ import RequestFormPage from "./pages/requests/RequestFormPage";
 import MyRequestsPage from "./pages/requests/MyRequestsPage";
 import WfhRequestPage from "./pages/requests/WfhRequestPage";
 import LeaveRequestPage from './pages/requests/OnLeaveRequestList';
-import ManagerLayout from './layouts/ManagerLayout';
 import CreateOnLeaveRequest from './pages/requests/CreateOnLeaveRequest';
 import HRDashboard from "./pages/dashboard/HRDashboard";
 import ActivityListPageManage from "./pages/activities/ActivityListPageManage";
+import ApprovalPage from "./pages/approval/ApprovalPage";
 
 const App = () => {
   return (
@@ -125,6 +125,8 @@ const App = () => {
               <Route path="timesheet">
                 <Route path="manage" element={<AttendanceManagementPage />} />
               </Route>
+
+              <Route path="approval" element={<ApprovalPage />} />
             </Route>
           </Route>
 
