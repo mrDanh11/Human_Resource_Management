@@ -124,6 +124,15 @@ const BaseSidebar: React.FC = () => {
           { label: "Yêu cầu của tôi", to: "/requests/my-requests" },
         ]
       });
+    } else if (userRole === 'manager') {
+      items.push({
+        label: "Yêu cầu",
+        icon: FileText,
+        key: "requests",
+        submenu: [
+          { label: "Danh sách yêu cầu", to: "manager/requests" },
+        ]
+      });
     }
 
     // Hoạt động
@@ -134,11 +143,11 @@ const BaseSidebar: React.FC = () => {
         icon: Activity,
         key: "activities",
         submenu: [
-          { label: "Quản lý điểm danh", to: "/admin/activities/attendance", icon: UserCheck },
           { label: "Danh sách hoạt động", to: "/admin/activities", icon: ClipboardList },
           { label: "Thống kê hoạt động", to: "/admin/activities/statistics", icon: BarChart },
           { label: "Thêm hoạt động", to: "/admin/activities/create", icon: Plus },
           { label: "Hủy hoạt động", to: "/admin/activities/cancel", icon: XCircle },
+           { label: "Quản lý điểm danh", to: "/admin/activities/attendance", icon: UserCheck },
           { label: "Ghi nhận kết quả", to: "/admin/activities/record-result", icon: CheckCircle },
         ]
       });

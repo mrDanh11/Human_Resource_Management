@@ -1,24 +1,30 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Calendar, Clock, Search, Send, AlertCircle, Zap, XCircle, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  allMonthlyAttendance,
-  workShifts
-} from '../../data/attendanceData';
+import { workShifts } from '../../data/attendanceData';
 import AttendanceFormModal from '../../components/attendance/AttendanceFormModal';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { fetchMyTimesheet, setSelectedMonth, createCorrectionRequest } from '../../store/attendanceSlice';
 
 import type {
     AttendanceStatus
 } from '../../data/attendanceData';
 
 const AttendancePage: React.FC = () => {
-  const [selectedMonth, setSelectedMonth] = useState('10/2025');
+  const dispatch = useAppDispatch();
+  const { 
+    myTimesheet,
+    timesheetLoading,
+    loading,
+    selectedMonth: storeSelectedMonth 
+  } = useAppSelector((state) => state.attendance);
+
+  const [selectedMonth, setSelectedMonthLocal] = useState(storeSelectedMonth || 'all');
   const [selectedShift, setSelectedShift] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isLoading] = useState(false);
   
   // Form state
   const [formData, setFormData] = useState({
@@ -31,22 +37,113 @@ const AttendancePage: React.FC = () => {
     note: ''
   });
 
-  // Lấy dữ liệu chấm công theo tháng được chọn
-  const currentAttendance = useMemo(() => {
-    return allMonthlyAttendance.find(att => att.month === selectedMonth) || allMonthlyAttendance[0];
-  }, [selectedMonth]);
+  // Load data khi component mount hoặc khi tháng thay đổi
+  useEffect(() => {
+    if (selectedMonth === 'all') {
+      // Nếu chọn "Tất cả", không truyền fromDate và toDate
+      dispatch(fetchMyTimesheet({}));
+    } else {
+      // Parse selectedMonth (format: "3/2026" or "03/2026")
+      const [month, year] = selectedMonth.split('/');
+      const monthNum = parseInt(month);
+      const yearNum = parseInt(year);
+      
+      // Calculate fromDate and toDate for the selected month
+      const fromDate = `${yearNum}-${monthNum.toString().padStart(2, '0')}-01`;
+      const lastDay = new Date(yearNum, monthNum, 0).getDate();
+      const toDate = `${yearNum}-${monthNum.toString().padStart(2, '0')}-${lastDay.toString().padStart(2, '0')}`;
+      
+      // Dispatch actions to fetch data with month filter
+      dispatch(fetchMyTimesheet({ fromDate, toDate }));
+    }
+    dispatch(setSelectedMonth(selectedMonth));
+  }, [selectedMonth, dispatch]);
 
-  // Lọc dữ liệu theo search
+  // Dữ liệu đã được transform từ Redux
+  const currentAttendance = useMemo(() => {
+    if (!myTimesheet || !myTimesheet.attendances || myTimesheet.attendances.length === 0) {
+      return {
+        month: selectedMonth,
+        records: [],
+        summary: {
+          totalWorkDays: 0,
+          lateOrEarlyCount: 0,
+          overtimeHours: 0,
+          absenceOrLeaveCount: 0,
+        }
+      };
+    }
+
+    // Data đã được transform trong thunk, chỉ cần map structure
+    return {
+      month: selectedMonth,
+      records: myTimesheet.attendances as any[], // Attendances đã được transform
+      summary: {
+        totalWorkDays: myTimesheet.presentDays,
+        lateOrEarlyCount: myTimesheet.lateDays,
+        overtimeHours: myTimesheet.totalOvertimeHours,
+        absenceOrLeaveCount: myTimesheet.absentDays,
+      }
+    };
+  }, [myTimesheet, selectedMonth]);
+
+  // Lọc dữ liệu theo search và ca làm việc
   const filteredRecords = useMemo(() => {
     return currentAttendance.records.filter(record => {
+      // Filter theo tìm kiếm (ngày hoặc ghi chú)
       const matchesSearch = searchQuery === '' || 
         record.date.includes(searchQuery) ||
         record.note.toLowerCase().includes(searchQuery.toLowerCase());
       
-      // TODO: Implement shift filtering logic if needed
-      return matchesSearch;
+      // Filter theo ca làm việc
+      let matchesShift = true;
+      if (selectedShift !== 'all') {
+        // Define shift time ranges
+        const shiftTimeRanges: { [key: string]: { start: string; end: string } } = {
+          'morning': { start: '07:00', end: '12:00' },
+          'afternoon': { start: '13:00', end: '18:00' },
+          'fullday': { start: '08:00', end: '17:00' },
+          'night': { start: '20:00', end: '05:00' }
+        };
+
+        const shift = shiftTimeRanges[selectedShift];
+        if (shift && record.checkIn && record.checkOut) {
+          // Convert time string to minutes for easier comparison
+          const timeToMinutes = (time: string): number => {
+            const [hours, minutes] = time.split(':').map(Number);
+            return hours * 60 + minutes;
+          };
+
+          const checkInMinutes = timeToMinutes(record.checkIn);
+          const checkOutMinutes = timeToMinutes(record.checkOut);
+          const shiftStartMinutes = timeToMinutes(shift.start);
+          const shiftEndMinutes = timeToMinutes(shift.end);
+          
+          // Tolerance: 1 hour = 60 minutes
+          const tolerance = 60;
+          
+          // Check if checkIn is within ±1 hour of shift start
+          const checkInDiff = Math.abs(checkInMinutes - shiftStartMinutes);
+          
+          // Check if checkOut is within ±1 hour of shift end
+          // For night shift, handle day wrap-around
+          let checkOutDiff: number;
+          if (selectedShift === 'night' && checkOutMinutes < shiftStartMinutes) {
+            // checkOut is next day (e.g., 05:00 is next day)
+            checkOutDiff = Math.abs((checkOutMinutes + 24 * 60) - (shiftEndMinutes + 24 * 60));
+          } else {
+            checkOutDiff = Math.abs(checkOutMinutes - shiftEndMinutes);
+          }
+          
+          matchesShift = checkInDiff <= tolerance && checkOutDiff <= tolerance;
+        } else {
+          matchesShift = false;
+        }
+      }
+      
+      return matchesSearch && matchesShift;
     });
-  }, [currentAttendance.records, searchQuery]);
+  }, [currentAttendance.records, searchQuery, selectedShift]);
 
   // Phân trang
   const totalPages = Math.ceil(filteredRecords.length / itemsPerPage);
@@ -55,7 +152,7 @@ const AttendancePage: React.FC = () => {
   const currentRecords = filteredRecords.slice(startIndex, endIndex);
 
   // Reset về trang 1 khi filter thay đổi
-  React.useEffect(() => {
+  useEffect(() => {
     setCurrentPage(1);
   }, [selectedMonth, searchQuery]);
 
@@ -89,24 +186,39 @@ const AttendancePage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Chuẩn bị dữ liệu gửi lên API
-    const payload = {
-      employeeId: formData.employeeId,
-      date: formData.date,
-      checkinTime: formData.checkinTime ? `${formData.date}T${formData.checkinTime}:00` : null,
-      checkoutTime: formData.checkoutTime ? `${formData.date}T${formData.checkoutTime}:00` : null,
-      status: formData.status,
-      overtimeHours: formData.overtimeHours,
-      note: formData.note
-    };
+    // Validate date
+    if (!formData.date) {
+      alert('Vui lòng chọn ngày!');
+      return;
+    }
 
     try {
-      // TODO: Gọi API POST /api/v1/attendance
-      console.log('Submitting:', payload);
+      const payload = {
+        date: formData.date,
+        checkinTime: formData.checkinTime ? `${formData.date}T${formData.checkinTime}:00` : undefined,
+        checkoutTime: formData.checkoutTime ? `${formData.date}T${formData.checkoutTime}:00` : undefined,
+        status: formData.status as 'present' | 'absent' | 'late' | 'half_day' | 'wfh',
+        overtimeHours: formData.overtimeHours,
+        reason: formData.note
+      };
       
-      // Giả lập API call
+      await dispatch(createCorrectionRequest(payload)).unwrap();
+      
       alert('Gửi yêu cầu cập nhật chấm công thành công!');
       setIsModalOpen(false);
+      
+      // Refresh timesheet data
+      if (selectedMonth === 'all') {
+        dispatch(fetchMyTimesheet({}));
+      } else {
+        const [month, year] = selectedMonth.split('/');
+        const monthNum = parseInt(month);
+        const yearNum = parseInt(year);
+        const fromDate = `${yearNum}-${monthNum.toString().padStart(2, '0')}-01`;
+        const lastDay = new Date(yearNum, monthNum, 0).getDate();
+        const toDate = `${yearNum}-${monthNum.toString().padStart(2, '0')}-${lastDay.toString().padStart(2, '0')}`;
+        dispatch(fetchMyTimesheet({ fromDate, toDate }));
+      }
       
       // Reset form
       setFormData({
@@ -118,9 +230,9 @@ const AttendancePage: React.FC = () => {
         overtimeHours: 0,
         note: ''
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error:', error);
-      alert('Có lỗi xảy ra khi gửi yêu cầu!');
+      alert(error || 'Có lỗi xảy ra khi gửi yêu cầu!');
     }
   };
 
@@ -190,14 +302,25 @@ const AttendancePage: React.FC = () => {
               </label>
               <select
                 value={selectedMonth}
-                onChange={(e) => setSelectedMonth(e.target.value)}
+                onChange={(e) => {
+                  setSelectedMonthLocal(e.target.value);
+                  setSelectedMonth(e.target.value);
+                }}
                 className="w-full px-4 py-2.5 border-2 border-purple-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all bg-white hover:border-purple-300"
               >
-                {allMonthlyAttendance.map(att => (
-                  <option key={att.month} value={att.month}>
-                    {att.month}
-                  </option>
-                ))}
+                {/* Option Tất cả */}
+                <option value="all">Tất cả</option>
+                {/* Generate months dynamically */}
+                {Array.from({ length: 12 }, (_, i) => {
+                  const month = i + 1;
+                  const year = new Date().getFullYear();
+                  const monthYear = `${month}/${year}`;
+                  return (
+                    <option key={monthYear} value={monthYear}>
+                      {monthYear}
+                    </option>
+                  );
+                })}
               </select>
             </motion.div>
 
@@ -280,7 +403,7 @@ const AttendancePage: React.FC = () => {
           </div>
 
           <AnimatePresence mode="wait">
-          {isLoading ? (
+          {timesheetLoading ? (
             <motion.div 
               className="flex items-center justify-center py-20"
               initial={{ opacity: 0 }}
@@ -366,7 +489,7 @@ const AttendancePage: React.FC = () => {
           </AnimatePresence>
 
           {/* Pagination */}
-          {!isLoading && currentRecords.length > 0 && (
+          {!timesheetLoading && currentRecords.length > 0 && (
           <div className="px-6 py-4 border-t-2 border-purple-100 bg-purple-50/50 flex items-center justify-between">
             <div className="text-sm text-gray-700 font-medium">
               Hiển thị <span className="text-blue-600 font-bold">{startIndex + 1}</span> đến{' '}

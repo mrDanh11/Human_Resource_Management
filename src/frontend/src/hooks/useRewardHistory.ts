@@ -48,8 +48,17 @@ export function useRewardHistory(employeeId: number): UseRewardHistoryReturn {
     setError(null);
     
     try {
-      const data = await pointService.getEmployeeTransactionHistory(employeeId);
-      const mapped = data.map(mapTransactionDto);
+      // Use the paginated API with filters
+      const result = await pointService.getPointTransactions(
+        1, // pageNumber
+        1000, // pageSize - get all records for now
+        employeeId,
+        filters.type,
+        filters.fromDate,
+        filters.toDate
+      );
+      
+      const mapped = result.items.map(mapTransactionDto);
       setTransactions(mapped);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Lỗi khi tải lịch sử');
@@ -57,7 +66,7 @@ export function useRewardHistory(employeeId: number): UseRewardHistoryReturn {
     } finally {
       setLoading(false);
     }
-  }, [employeeId]);
+  }, [employeeId, filters]);
 
   useEffect(() => {
     fetchTransactions();

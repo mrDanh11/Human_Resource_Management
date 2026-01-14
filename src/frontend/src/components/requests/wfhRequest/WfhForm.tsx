@@ -111,7 +111,7 @@ export default function WfhForm({ onSuccess, onPreviewUpdate }: WfhFormProps) {
       if (onSuccess) {
         onSuccess();
       } else {
-        navigate("/requests");
+        navigate("/requests/my-requests");
       }
     } catch (error: any) {
       console.error("Error submitting WFH request:", error);
@@ -127,10 +127,10 @@ export default function WfhForm({ onSuccess, onPreviewUpdate }: WfhFormProps) {
   const handleCancel = () => {
     if (startDate || endDate || reason || attachment || note) {
       if (window.confirm("Bạn có chắc muốn hủy? Dữ liệu đã nhập sẽ bị mất.")) {
-        navigate("/requests");
+        navigate("/requests/my-requests");
       }
     } else {
-      navigate("/requests");
+      navigate("/requests/my-requests");
     }
   };
 

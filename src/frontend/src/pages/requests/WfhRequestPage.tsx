@@ -14,8 +14,8 @@ export default function WfhRequestPage() {
   };
 
   const handleSuccess = () => {
-    // Refresh or navigate after successful submission
-    navigate("/requests");
+    // Navigate to "My Requests" page after successful submission
+    navigate("/requests/my-requests");
   };
 
   return (
