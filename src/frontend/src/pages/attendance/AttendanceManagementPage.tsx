@@ -2,13 +2,16 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Search, RefreshCw, Download, Plus, ChevronLeft, ChevronRight, Edit, Users } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { fetchAllAttendances, updateAttendanceRecord, createAttendanceRecord } from '../../store/attendanceSlice';
+import { fetchAllAttendances, updateAttendanceRecord, createAttendanceRecord, selectTransformedAllAttendances } from '../../store/attendanceSlice';
 import EditAttendanceModal from '../../components/attendance/EditAttendanceModal';
 import CreateAttendanceModal from '../../components/attendance/CreateAttendanceModal';
 
 const AttendanceManagementPage: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { allAttendances, allAttendancesLoading, error } = useAppSelector(state => state.attendance);
+  const { allAttendancesLoading, error } = useAppSelector(state => state.attendance);
+  
+  // Sử dụng selector để lấy transformed data
+  const transformedAttendances = useAppSelector(selectTransformedAllAttendances);
   
   const [selectedEmployee, setSelectedEmployee] = useState('all');
   const [fromDate, setFromDate] = useState('2024-01-01');
@@ -39,9 +42,7 @@ const AttendanceManagementPage: React.FC = () => {
     dispatch(fetchAllAttendances({}));
   }, [dispatch]);
 
-  const transformedRecords = useMemo(() => {
-    return allAttendances;
-  }, [allAttendances]);
+  const transformedRecords = transformedAttendances;
 
   // Tạo danh sách unique employees từ API data
   const uniqueEmployees = useMemo(() => {
@@ -314,6 +315,16 @@ const AttendanceManagementPage: React.FC = () => {
     );
   };
 
+  const calculateLateMinutes = (checkInTime: string) => {
+    if (!checkInTime || checkInTime === '--:--') return 0;
+    
+    const [hours, minutes] = checkInTime.split(':').map(Number);
+    const checkInMinutes = hours * 60 + minutes;
+    const standardTime = 8 * 60 + 30; // 8:30 = 510 phút
+    
+    return checkInMinutes - standardTime;
+  };
+
   return (
     <motion.div 
       className="min-h-screen bg-linear-to-br from-blue-50 via-indigo-50 to-purple-50 px-6 py-8 relative overflow-hidden"
@@ -486,7 +497,7 @@ const AttendanceManagementPage: React.FC = () => {
             <div className="flex justify-center items-center py-20">
               <div className="text-red-600 font-semibold">{error}</div>
             </div>
-          ) : allAttendances.length === 0 ? (
+          ) : transformedAttendances.length === 0 ? (
             <div className="flex justify-center items-center py-20">
               <div className="text-gray-500 font-semibold">Không có dữ liệu chấm công</div>
             </div>
@@ -559,9 +570,12 @@ const AttendanceManagementPage: React.FC = () => {
                       <span className={`text-sm font-medium ${record.checkIn === '--:--' ? 'text-red-500' : record.status === 'late' ? 'text-orange-500' : 'text-green-600'}`}>
                         {record.checkIn}
                       </span>
-                      {record.status === 'late' && record.checkIn !== '--:--' && (
-                        <div className="text-xs text-orange-500">Muộn 15 phút</div>
-                      )}
+                      {record.status === 'late' && record.checkIn !== '--:--' && (() => {
+                        const lateMinutes = calculateLateMinutes(record.checkIn);
+                        return lateMinutes > 0 ? (
+                          <div className="text-xs text-orange-500">Muộn {lateMinutes} phút</div>
+                        ) : null;
+                      })()}
                     </td>
                     <td className="px-6 py-4">
                       <span className={`text-sm ${record.checkOut === '--:--' ? 'text-red-500' : 'text-gray-700'}`}>
@@ -654,7 +668,6 @@ const AttendanceManagementPage: React.FC = () => {
       <CreateAttendanceModal
         isOpen={isCreateModalOpen}
         onClose={handleCloseCreateModal}
-        employees={uniqueEmployees}
         formData={createFormData}
         onFormChange={handleCreateFormChange}
         onSave={handleCreateAttendance}

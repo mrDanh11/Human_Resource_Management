@@ -3,8 +3,9 @@
  * Quản lý state cho chấm công với Redux Toolkit
  */
 
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, createSelector } from '@reduxjs/toolkit';
 import { attendanceService, type AttendanceResponseDto, type TimesheetSummaryDto, type AttendanceStatisticsDto, type CreateAttendanceCorrectionRequestDto } from '../services/attendanceService';
+import type { RootState } from './appStore';
 
 // ============================================
 // STATE INTERFACE
@@ -16,8 +17,8 @@ export interface AttendanceState {
   myAttendances: AttendanceResponseDto[];
   myStatistics: AttendanceStatisticsDto | null;
   
-  // HR Management Data (transformed)
-  allAttendances: any[]; // Dữ liệu đã transform
+  // HR Management Data
+  allAttendances: AttendanceResponseDto[];
   allAttendancesLoading: boolean;
   
   // Current selected data for viewing
@@ -57,42 +58,6 @@ const initialState: AttendanceState = {
 // ASYNC THUNKS - EMPLOYEE ACTIONS
 // ============================================
 
-// Helper function để transform attendance data cho employee view
-const transformEmployeeAttendanceData = (attendance: AttendanceResponseDto) => {
-  // Helper để format thời gian từ ISO string (2025-12-28T08:30:00Z -> 08:30)
-  const formatTime = (isoTime: string | null) => {
-    if (!isoTime) return '';
-    if (isoTime.includes('T')) {
-      return isoTime.split('T')[1].substring(0, 5); // Get HH:mm
-    }
-    return '';
-  };
-
-  // Helper để format ngày (2025-12-28 -> 28/12/2025)
-  const formatDate = (dateStr: string) => {
-    if (!dateStr) return '';
-    return dateStr.split('-').reverse().join('/');
-  };
-
-  // Map status từ API sang local status
-  let status: 'Normal' | 'Late' | 'Missing' | 'Overtime' | 'Leave' = 'Normal';
-  if (attendance.status === 'absent') status = 'Missing';
-  else if (attendance.status === 'late' || attendance.isLate) status = 'Late';
-  else if (attendance.overtimeHours && attendance.overtimeHours > 0) status = 'Overtime';
-  else if (attendance.status === 'half_day') status = 'Leave';
-  else if (attendance.status === 'present') status = 'Normal';
-
-  return {
-    id: attendance.id,
-    date: formatDate(attendance.date),
-    checkIn: formatTime(attendance.checkinTime),
-    checkOut: formatTime(attendance.checkoutTime),
-    totalHours: attendance.workHours || '',
-    status,
-    note: attendance.note || ''
-  };
-};
-
 /**
  * Lấy timesheet của nhân viên hiện tại
  */
@@ -101,16 +66,6 @@ export const fetchMyTimesheet = createAsyncThunk(
   async (params: { fromDate?: string; toDate?: string } = {}, { rejectWithValue }) => {
     try {
       const data = await attendanceService.getMyTimesheet(params.fromDate, params.toDate);
-
-      // Transform attendances data
-      if (data.attendances && data.attendances.length > 0) {
-        const transformedAttendances = data.attendances.map(transformEmployeeAttendanceData);
-        return {
-          ...data,
-          attendances: transformedAttendances
-        };
-      }
-
       return data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || 'Không thể tải dữ liệu timesheet');
@@ -182,50 +137,6 @@ export const createCorrectionRequest = createAsyncThunk(
 // ASYNC THUNKS - HR ACTIONS
 // ============================================
 
-// Helper function để chuẩn hóa dữ liệu attendance
-const transformAttendanceData = (attendance: AttendanceResponseDto) => {
-  // Helper để format thời gian từ ISO string (2025-12-28T08:30:00Z -> 08:30)
-  const formatTime = (isoTime: string | null) => {
-    if (!isoTime) return '--:--';
-    // Extract time part from ISO string
-    if (isoTime.includes('T')) {
-      return isoTime.split('T')[1].substring(0, 5); // Get HH:mm
-    }
-    return '--:--';
-  };
-
-  // Helper để format ngày (2025-12-28 -> 28/12/2025)
-  const formatDate = (dateStr: string) => {
-    if (!dateStr) return '';
-    return dateStr.split('-').reverse().join('/');
-  };
-
-  // Map status
-  const statusMap: Record<string, { status: string; text: string }> = {
-    'present': { status: 'normal', text: 'Đúng giờ' },
-    'late': { status: 'late', text: 'Đi muộn' },
-    'absent': { status: 'missing', text: 'Vắng mặt' },
-    'half_day': { status: 'on-leave', text: 'Nửa ngày' },
-    'wfh': { status: 'normal', text: 'WFH' }
-  };
-
-  const statusInfo = statusMap[attendance.status] || { status: 'normal', text: 'Đúng giờ' };
-
-  return {
-    id: attendance.id.toString(),
-    employeeId: attendance.employeeId.toString(),
-    employeeName: attendance.employeeName,
-    department: 'N/A', // API không trả về department
-    avatar: attendance.employeeName.charAt(0).toUpperCase(),
-    date: formatDate(attendance.date),
-    checkIn: formatTime(attendance.checkinTime),
-    checkOut: formatTime(attendance.checkoutTime),
-    status: statusInfo.status as 'normal' | 'late' | 'missing' | 'on-leave',
-    statusText: statusInfo.text,
-    _original: attendance
-  };
-};
-
 /**
  * [HR] Lấy tất cả attendance records với filter
  */
@@ -241,9 +152,7 @@ export const fetchAllAttendances = createAsyncThunk(
   } = {}, { rejectWithValue }) => {
     try {
       const data = await attendanceService.getAllAttendances(params);
-      // Transform data ngay sau khi nhận từ API
-      const transformedData = data.map(transformAttendanceData);
-      return transformedData;
+      return data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || 'Không thể tải danh sách chấm công');
     }
@@ -266,9 +175,7 @@ export const updateAttendanceRecord = createAsyncThunk(
   }, { rejectWithValue }) => {
     try {
       const result = await attendanceService.updateAttendance(payload.id, payload.data);
-      // Transform result
-      const transformed = transformAttendanceData(result);
-      return transformed;
+      return result;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || 'Không thể cập nhật chấm công');
     }
@@ -290,9 +197,7 @@ export const createAttendanceRecord = createAsyncThunk(
   }, { rejectWithValue }) => {
     try {
       const result = await attendanceService.createAttendance(payload);
-      // Transform result
-      const transformed = transformAttendanceData(result);
-      return transformed;
+      return result;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || 'Không thể tạo bản ghi chấm công');
     }
@@ -377,22 +282,6 @@ const attendanceSlice = createSlice({
     // ============================================
     builder.addCase(fetchMyAttendanceByDate.pending, (state) => {
       state.loading = true;
-
-    // ============================================
-    // Fetch All Attendances (HR)
-    // ============================================
-    builder.addCase(fetchAllAttendances.pending, (state) => {
-      state.allAttendancesLoading = true;
-      state.error = null;
-    });
-    builder.addCase(fetchAllAttendances.fulfilled, (state, action) => {
-      state.allAttendancesLoading = false;
-      state.allAttendances = action.payload;
-    });
-    builder.addCase(fetchAllAttendances.rejected, (state, action) => {
-      state.allAttendancesLoading = false;
-      state.error = action.payload as string;
-    });
       state.error = null;
     });
     builder.addCase(fetchMyAttendanceByDate.fulfilled, (state, action) => {
@@ -435,8 +324,165 @@ const attendanceSlice = createSlice({
       state.allAttendancesLoading = false;
       state.error = action.payload as string;
     });
+
+    // ============================================
+    // Update Attendance Record (HR)
+    // ============================================
+    builder.addCase(updateAttendanceRecord.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(updateAttendanceRecord.fulfilled, (state, action) => {
+      state.loading = false;
+      // Update record in allAttendances array
+      const index = state.allAttendances.findIndex(att => att.id === action.payload.id);
+      if (index !== -1) {
+        state.allAttendances[index] = action.payload;
+      }
+    });
+    builder.addCase(updateAttendanceRecord.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload as string;
+    });
+
+    // ============================================
+    // Create Attendance Record (HR)
+    // ============================================
+    builder.addCase(createAttendanceRecord.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(createAttendanceRecord.fulfilled, (state, action) => {
+      state.loading = false;
+      // Add new record to allAttendances array
+      state.allAttendances.unshift(action.payload);
+    });
+    builder.addCase(createAttendanceRecord.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload as string;
+    });
   },
 });
+
+// ============================================
+// SELECTORS
+// ============================================
+
+/**
+ * Selector để transform attendance data cho HR view
+ */
+export const selectTransformedAllAttendances = createSelector(
+  [(state: RootState) => state.attendance.allAttendances],
+  (allAttendances) => {
+    // Helper để format thời gian từ ISO string (2025-12-28T08:30:00Z -> 08:30)
+    const formatTime = (isoTime: string | null) => {
+      if (!isoTime) return '--:--';
+      if (isoTime.includes('T')) {
+        return isoTime.split('T')[1].substring(0, 5); // Get HH:mm
+      }
+      return '--:--';
+    };
+
+    // Helper để format ngày (2025-12-28 -> 28/12/2025)
+    const formatDate = (dateStr: string) => {
+      if (!dateStr) return '';
+      return dateStr.split('-').reverse().join('/');
+    };
+
+    // Map status
+    const statusMap: Record<string, { status: string; text: string }> = {
+      'present': { status: 'normal', text: 'Đúng giờ' },
+      'late': { status: 'late', text: 'Đi muộn' },
+      'absent': { status: 'missing', text: 'Vắng mặt' },
+      'half_day': { status: 'on-leave', text: 'Nửa ngày' },
+      'wfh': { status: 'normal', text: 'WFH' }
+    };
+
+    return allAttendances.map(attendance => {
+      const statusInfo = statusMap[attendance.status] || { status: 'normal', text: 'Đúng giờ' };
+
+      return {
+        id: attendance.id.toString(),
+        employeeId: attendance.employeeId.toString(),
+        employeeName: attendance.employeeName,
+        department: 'N/A',
+        avatar: attendance.employeeName.charAt(0).toUpperCase(),
+        date: formatDate(attendance.date),
+        checkIn: formatTime(attendance.checkinTime),
+        checkOut: formatTime(attendance.checkoutTime),
+        status: statusInfo.status as 'normal' | 'late' | 'missing' | 'on-leave',
+        statusText: statusInfo.text,
+        _original: attendance
+      };
+    });
+  }
+);
+
+/**
+ * Selector để transform attendance data cho employee view
+ */
+export const selectTransformedMyTimesheet = createSelector(
+  [(state: RootState) => state.attendance.myTimesheet],
+  (myTimesheet) => {
+    if (!myTimesheet || !myTimesheet.attendances || myTimesheet.attendances.length === 0) {
+      return {
+        records: [],
+        summary: {
+          totalWorkDays: 0,
+          lateOrEarlyCount: 0,
+          overtimeHours: 0,
+          absenceOrLeaveCount: 0,
+        }
+      };
+    }
+
+    // Helper để format thời gian từ ISO string (2025-12-28T08:30:00Z -> 08:30)
+    const formatTime = (isoTime: string | null) => {
+      if (!isoTime) return '';
+      if (isoTime.includes('T')) {
+        return isoTime.split('T')[1].substring(0, 5); // Get HH:mm
+      }
+      return '';
+    };
+
+    // Helper để format ngày (2025-12-28 -> 28/12/2025)
+    const formatDate = (dateStr: string) => {
+      if (!dateStr) return '';
+      return dateStr.split('-').reverse().join('/');
+    };
+
+    // Map status từ API sang local status
+    const mapStatus = (attendance: AttendanceResponseDto): 'Normal' | 'Late' | 'Missing' | 'Overtime' | 'Leave' => {
+      if (attendance.status === 'absent') return 'Missing';
+      if (attendance.status === 'late' || attendance.isLate) return 'Late';
+      if (attendance.overtimeHours && attendance.overtimeHours > 0) return 'Overtime';
+      if (attendance.status === 'half_day') return 'Leave';
+      if (attendance.status === 'present') return 'Normal';
+      return 'Normal';
+    };
+
+    // Transform attendances
+    const transformedRecords = myTimesheet.attendances.map(attendance => ({
+      id: attendance.id,
+      date: formatDate(attendance.date),
+      checkIn: formatTime(attendance.checkinTime),
+      checkOut: formatTime(attendance.checkoutTime),
+      totalHours: attendance.workHours || '',
+      status: mapStatus(attendance),
+      note: attendance.note || ''
+    }));
+
+    return {
+      records: transformedRecords,
+      summary: {
+        totalWorkDays: myTimesheet.presentDays,
+        lateOrEarlyCount: myTimesheet.lateDays,
+        overtimeHours: myTimesheet.totalOvertimeHours,
+        absenceOrLeaveCount: myTimesheet.absentDays,
+      }
+    };
+  }
+);
 
 // ============================================
 // EXPORTS

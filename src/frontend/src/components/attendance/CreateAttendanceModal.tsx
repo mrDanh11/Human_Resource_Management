@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { X, Save, Plus } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { fetchEmployees } from '../../store/employeeSlice';
 
 interface CreateAttendanceModalProps {
   isOpen: boolean;
   onClose: () => void;
-  employees: Array<{ id: string; name: string }>;
   formData: {
     employeeId: string;
     date: string;
@@ -21,11 +22,20 @@ interface CreateAttendanceModalProps {
 const CreateAttendanceModal: React.FC<CreateAttendanceModalProps> = ({
   isOpen,
   onClose,
-  employees,
   formData,
   onFormChange,
   onSave,
 }) => {
+  const dispatch = useAppDispatch();
+  const { employees, loading: employeesLoading } = useAppSelector((state) => state.employee);
+
+  // Fetch employees khi component mount hoặc khi modal mở
+  useEffect(() => {
+    if (isOpen && employees.length === 0) {
+      dispatch(fetchEmployees({ pageNumber: 1, pageSize: 100 }));
+    }
+  }, [isOpen, dispatch, employees.length]);
+
   if (!isOpen) return null;
 
   return (
@@ -44,7 +54,7 @@ const CreateAttendanceModal: React.FC<CreateAttendanceModalProps> = ({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
-        <div className="bg-linear-to-r from-blue-600 to-purple-600 text-white p-6 rounded-t-2xl flex-shrink-0">
+        <div className="bg-linear-to-r from-blue-600 to-purple-600 text-white p-6 rounded-t-2xl shrink-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
@@ -81,10 +91,13 @@ const CreateAttendanceModal: React.FC<CreateAttendanceModalProps> = ({
                 value={formData.employeeId}
                 onChange={(e) => onFormChange('employeeId', e.target.value)}
                 className="w-full px-4 py-3 border-2 border-purple-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all bg-white"
+                disabled={employeesLoading}
               >
-                <option value="">Chọn nhân viên</option>
+                <option value="">
+                  {employeesLoading ? 'Đang tải...' : 'Chọn nhân viên'}
+                </option>
                 {employees.map(emp => (
-                  <option key={emp.id} value={emp.id}>{emp.name}</option>
+                  <option key={emp.id} value={emp.id}>{emp.fullname}</option>
                 ))}
               </select>
             </div>
@@ -164,7 +177,7 @@ const CreateAttendanceModal: React.FC<CreateAttendanceModalProps> = ({
         </div>
 
         {/* Modal Footer */}
-        <div className="px-6 py-4 bg-gray-50 rounded-b-2xl flex items-center justify-end gap-3 border-t-2 border-purple-100 flex-shrink-0">
+        <div className="px-6 py-4 bg-gray-50 rounded-b-2xl flex items-center justify-end gap-3 border-t-2 border-purple-100 shrink-0">
           <motion.button
             onClick={onClose}
             className="px-6 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-xl font-semibold transition-all"

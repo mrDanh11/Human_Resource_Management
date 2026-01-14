@@ -1,10 +1,9 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Calendar, Clock, Search, Send, AlertCircle, Zap, XCircle, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { workShifts } from '../../data/attendanceData';
 import AttendanceFormModal from '../../components/attendance/AttendanceFormModal';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { fetchMyTimesheet, setSelectedMonth, createCorrectionRequest } from '../../store/attendanceSlice';
+import { fetchMyTimesheet, setSelectedMonth, createCorrectionRequest, selectTransformedMyTimesheet } from '../../store/attendanceSlice';
 
 import type {
     AttendanceStatus
@@ -13,14 +12,15 @@ import type {
 const AttendancePage: React.FC = () => {
   const dispatch = useAppDispatch();
   const { 
-    myTimesheet,
     timesheetLoading,
     loading,
     selectedMonth: storeSelectedMonth 
   } = useAppSelector((state) => state.attendance);
+  
+  // Sử dụng selector để lấy transformed data
+  const transformedTimesheet = useAppSelector(selectTransformedMyTimesheet);
 
   const [selectedMonth, setSelectedMonthLocal] = useState(storeSelectedMonth || 'all');
-  const [selectedShift, setSelectedShift] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
@@ -28,13 +28,12 @@ const AttendancePage: React.FC = () => {
   
   // Form state
   const [formData, setFormData] = useState({
-    employeeId: 1,
     date: '',
     checkinTime: '',
     checkoutTime: '',
-    status: 'present',
     overtimeHours: 0,
-    note: ''
+    reason: '',
+    attachment: null as File | null
   });
 
   // Load data khi component mount hoặc khi tháng thay đổi
@@ -59,35 +58,13 @@ const AttendancePage: React.FC = () => {
     dispatch(setSelectedMonth(selectedMonth));
   }, [selectedMonth, dispatch]);
 
-  // Dữ liệu đã được transform từ Redux
-  const currentAttendance = useMemo(() => {
-    if (!myTimesheet || !myTimesheet.attendances || myTimesheet.attendances.length === 0) {
-      return {
-        month: selectedMonth,
-        records: [],
-        summary: {
-          totalWorkDays: 0,
-          lateOrEarlyCount: 0,
-          overtimeHours: 0,
-          absenceOrLeaveCount: 0,
-        }
-      };
-    }
+  // Dữ liệu đã được transform từ selector
+  const currentAttendance = {
+    month: selectedMonth,
+    ...transformedTimesheet
+  };
 
-    // Data đã được transform trong thunk, chỉ cần map structure
-    return {
-      month: selectedMonth,
-      records: myTimesheet.attendances as any[], // Attendances đã được transform
-      summary: {
-        totalWorkDays: myTimesheet.presentDays,
-        lateOrEarlyCount: myTimesheet.lateDays,
-        overtimeHours: myTimesheet.totalOvertimeHours,
-        absenceOrLeaveCount: myTimesheet.absentDays,
-      }
-    };
-  }, [myTimesheet, selectedMonth]);
-
-  // Lọc dữ liệu theo search và ca làm việc
+  // Lọc dữ liệu theo search
   const filteredRecords = useMemo(() => {
     return currentAttendance.records.filter(record => {
       // Filter theo tìm kiếm (ngày hoặc ghi chú)
@@ -95,55 +72,9 @@ const AttendancePage: React.FC = () => {
         record.date.includes(searchQuery) ||
         record.note.toLowerCase().includes(searchQuery.toLowerCase());
       
-      // Filter theo ca làm việc
-      let matchesShift = true;
-      if (selectedShift !== 'all') {
-        // Define shift time ranges
-        const shiftTimeRanges: { [key: string]: { start: string; end: string } } = {
-          'morning': { start: '07:00', end: '12:00' },
-          'afternoon': { start: '13:00', end: '18:00' },
-          'fullday': { start: '08:00', end: '17:00' },
-          'night': { start: '20:00', end: '05:00' }
-        };
-
-        const shift = shiftTimeRanges[selectedShift];
-        if (shift && record.checkIn && record.checkOut) {
-          // Convert time string to minutes for easier comparison
-          const timeToMinutes = (time: string): number => {
-            const [hours, minutes] = time.split(':').map(Number);
-            return hours * 60 + minutes;
-          };
-
-          const checkInMinutes = timeToMinutes(record.checkIn);
-          const checkOutMinutes = timeToMinutes(record.checkOut);
-          const shiftStartMinutes = timeToMinutes(shift.start);
-          const shiftEndMinutes = timeToMinutes(shift.end);
-          
-          // Tolerance: 1 hour = 60 minutes
-          const tolerance = 60;
-          
-          // Check if checkIn is within ±1 hour of shift start
-          const checkInDiff = Math.abs(checkInMinutes - shiftStartMinutes);
-          
-          // Check if checkOut is within ±1 hour of shift end
-          // For night shift, handle day wrap-around
-          let checkOutDiff: number;
-          if (selectedShift === 'night' && checkOutMinutes < shiftStartMinutes) {
-            // checkOut is next day (e.g., 05:00 is next day)
-            checkOutDiff = Math.abs((checkOutMinutes + 24 * 60) - (shiftEndMinutes + 24 * 60));
-          } else {
-            checkOutDiff = Math.abs(checkOutMinutes - shiftEndMinutes);
-          }
-          
-          matchesShift = checkInDiff <= tolerance && checkOutDiff <= tolerance;
-        } else {
-          matchesShift = false;
-        }
-      }
-      
-      return matchesSearch && matchesShift;
+      return matchesSearch;
     });
-  }, [currentAttendance.records, searchQuery, selectedShift]);
+  }, [currentAttendance.records, searchQuery]);
 
   // Phân trang
   const totalPages = Math.ceil(filteredRecords.length / itemsPerPage);
@@ -186,9 +117,9 @@ const AttendancePage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validate date
-    if (!formData.date) {
-      alert('Vui lòng chọn ngày!');
+    // Validate required fields
+    if (!formData.date || !formData.reason.trim()) {
+      alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
       return;
     }
 
@@ -197,9 +128,9 @@ const AttendancePage: React.FC = () => {
         date: formData.date,
         checkinTime: formData.checkinTime ? `${formData.date}T${formData.checkinTime}:00` : undefined,
         checkoutTime: formData.checkoutTime ? `${formData.date}T${formData.checkoutTime}:00` : undefined,
-        status: formData.status as 'present' | 'absent' | 'late' | 'half_day' | 'wfh',
         overtimeHours: formData.overtimeHours,
-        reason: formData.note
+        reason: formData.reason
+        // TODO: Handle file upload for attachment
       };
       
       await dispatch(createCorrectionRequest(payload)).unwrap();
@@ -222,13 +153,12 @@ const AttendancePage: React.FC = () => {
       
       // Reset form
       setFormData({
-        employeeId: 1,
         date: '',
         checkinTime: '',
         checkoutTime: '',
-        status: 'present',
         overtimeHours: 0,
-        note: ''
+        reason: '',
+        attachment: null
       });
     } catch (error: any) {
       console.error('Error:', error);
@@ -238,11 +168,26 @@ const AttendancePage: React.FC = () => {
 
   // Xử lý thay đổi form
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: name === 'overtimeHours' || name === 'employeeId' ? Number(value) : value
-    }));
+    const { name, value, type } = e.target;
+    
+    if (type === 'file') {
+      const fileInput = e.target as HTMLInputElement;
+      const file = fileInput.files?.[0] || null;
+      
+      // Validate file size (max 5MB)
+      if (file && file.size > 5 * 1024 * 1024) {
+        alert('File quá lớn! Vui lòng chọn file nhỏ hơn 5MB.');
+        fileInput.value = '';
+        return;
+      }
+      
+      setFormData(prev => ({ ...prev, attachment: file }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: name === 'overtimeHours' ? Number(value) : value
+      }));
+    }
   };
 
   return (
@@ -289,7 +234,7 @@ const AttendancePage: React.FC = () => {
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2 }}
         >
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Tháng/Năm */}
             <motion.div
               initial={{ x: -20, opacity: 0 }}
@@ -324,34 +269,11 @@ const AttendancePage: React.FC = () => {
               </select>
             </motion.div>
 
-            {/* Ca làm việc */}
-            <motion.div
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.35 }}
-            >
-              <label className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                <Clock className="w-4 h-4 text-indigo-600" />
-                Ca làm việc
-              </label>
-              <select
-                value={selectedShift}
-                onChange={(e) => setSelectedShift(e.target.value)}
-                className="w-full px-4 py-2.5 border-2 border-purple-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all bg-white hover:border-purple-300"
-              >
-                {workShifts.map(shift => (
-                  <option key={shift.id} value={shift.id}>
-                    {shift.name}
-                  </option>
-                ))}
-              </select>
-            </motion.div>
-
             {/* Tìm kiếm */}
             <motion.div
               initial={{ x: -20, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.4 }}
+              transition={{ delay: 0.35 }}
             >
               <label className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
                 <Search className="w-4 h-4 text-purple-600" />
@@ -371,7 +293,7 @@ const AttendancePage: React.FC = () => {
               className="flex items-end"
               initial={{ x: -20, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.45 }}
+              transition={{ delay: 0.4 }}
             >
               <motion.button 
                 onClick={() => setIsModalOpen(true)}

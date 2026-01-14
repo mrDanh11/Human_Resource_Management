@@ -1,14 +1,13 @@
 import React, { useEffect } from 'react';
-import { X, User, Calendar, LogIn, LogOut, CheckCircle, Timer, FileText } from 'lucide-react';
+import { X, Calendar, LogIn, LogOut, Timer, FileText, Upload } from 'lucide-react';
 
 interface AttendanceFormData {
-  employeeId: number;
   date: string;
   checkinTime: string;
   checkoutTime: string;
-  status: string;
   overtimeHours: number;
-  note: string;
+  reason: string;
+  attachment: File | null;
 }
 
 interface AttendanceFormModalProps {
@@ -71,22 +70,6 @@ const AttendanceFormModal: React.FC<AttendanceFormModalProps> = ({
         {/* Modal Body - Form */}
         <form onSubmit={onSubmit} className="flex flex-col flex-1 overflow-hidden">
           <div className="p-6 space-y-4 overflow-y-auto flex-1">
-            {/* Employee ID */}
-            <div>
-              <label className="flex items-center gap-2 text-base font-medium text-blue-700 mb-2">
-                <User className="w-4 h-4" />
-                ID Nhân viên <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="number"
-                name="employeeId"
-                value={formData.employeeId}
-                onChange={onInputChange}
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-
             {/* Date */}
             <div>
               <label className="flex items-center gap-2 text-base font-medium text-blue-700 mb-2">
@@ -133,27 +116,6 @@ const AttendanceFormModal: React.FC<AttendanceFormModalProps> = ({
               </div>
             </div>
 
-            {/* Status */}
-            <div>
-              <label className="flex items-center gap-2 text-base font-medium text-blue-700 mb-2">
-                <CheckCircle className="w-4 h-4" />
-                Trạng thái <span className="text-red-500">*</span>
-              </label>
-              <select
-                name="status"
-                value={formData.status}
-                onChange={onInputChange}
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="present">Present (Có mặt)</option>
-                <option value="absent">Absent (Vắng mặt)</option>
-                <option value="late">Late (Đi trễ)</option>
-                <option value="half_day">Half Day (Nửa ngày)</option>
-                <option value="wfh">WFH (Làm từ xa)</option>
-              </select>
-            </div>
-
             {/* Overtime Hours */}
             <div>
               <label className="flex items-center gap-2 text-base font-medium text-blue-700 mb-2">
@@ -171,31 +133,55 @@ const AttendanceFormModal: React.FC<AttendanceFormModalProps> = ({
               />
             </div>
 
-            {/* Note */}
+            {/* Nguyên nhân */}
             <div>
               <label className="flex items-center gap-2 text-base font-medium text-blue-700 mb-2">
                 <FileText className="w-4 h-4" />
-                Ghi chú
+                Nguyên nhân <span className="text-red-500">*</span>
               </label>
               <textarea
-                name="note"
-                value={formData.note}
+                name="reason"
+                value={formData.reason}
                 onChange={onInputChange}
                 rows={3}
                 maxLength={500}
-                placeholder="Nhập ghi chú (tối đa 500 ký tự)"
+                required
+                placeholder="Nhập nguyên nhân yêu cầu cập nhật (tối đa 500 ký tự)"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
               />
               <p className="text-xs text-gray-500 mt-1">
-                {formData.note.length}/500 ký tự
+                {formData.reason.length}/500 ký tự
               </p>
+            </div>
+
+            {/* Attachment */}
+            <div>
+              <label className="flex items-center gap-2 text-base font-medium text-blue-700 mb-2">
+                <Upload className="w-4 h-4" />
+                Đính kèm file (nếu có)
+              </label>
+              <input
+                type="file"
+                name="attachment"
+                onChange={onInputChange}
+                accept="image/*,.pdf,.doc,.docx"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Định dạng hỗ trợ: ảnh, PDF, Word (tối đa 5MB)
+              </p>
+              {formData.attachment && (
+                <p className="text-sm text-green-600 mt-2">
+                  ✓ Đã chọn: {formData.attachment.name}
+                </p>
+              )}
             </div>
 
             {/* Info box */}
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <p className="text-sm text-blue-800">
-                <strong>Lưu ý:</strong> Số giờ làm việc sẽ được tự động tính từ giờ vào và giờ ra. 
-                Thời gian tạo và cập nhật sẽ được hệ thống tự động xử lý.
+                <strong>Lưu ý:</strong> Yêu cầu sẽ được gửi đến HR để xem xét và phê duyệt. 
+                Vui lòng mô tả rõ nguyên nhân và đính kèm tài liệu chứng minh (nếu có).
               </p>
             </div>
           </div>

@@ -35,14 +35,14 @@ const EditAttendanceModal: React.FC<EditAttendanceModalProps> = ({
       onClick={onClose}
     >
       <motion.div
-        className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col"
+        className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex col"
         initial={{ scale: 0.9, y: 20 }}
         animate={{ scale: 1, y: 0 }}
         exit={{ scale: 0.9, y: 20 }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
-        <div className="bg-linear-to-r from-blue-600 to-purple-600 text-white p-6 rounded-t-2xl flex-shrink-0">
+        <div className="bg-linear-to-r from-blue-600 to-purple-600 text-white p-6 rounded-t-2xl shrink-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
@@ -67,9 +67,9 @@ const EditAttendanceModal: React.FC<EditAttendanceModalProps> = ({
         </div>
 
         {/* Modal Body - Scrollable */}
-        <div className="p-6 overflow-y-auto flex-1 custom-scrollbar">
+        <div className="p-6 overflow-y-auto 1 custom-scrollbar">
           {/* Thông tin nhân viên */}
-          <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-4 mb-6 border-2 border-purple-100">
+          <div className="bg-linear-to-r from-purple-50 to-blue-50 rounded-xl p-4 mb-6 border-2 border-purple-100">
             <div className="grid grid-cols-1 gap-4 text-sm">
               <div>
                 <span className="text-gray-600">Ngày làm việc:</span>
@@ -140,7 +140,7 @@ const EditAttendanceModal: React.FC<EditAttendanceModalProps> = ({
         </div>
 
         {/* Modal Footer */}
-        <div className="px-6 py-4 bg-gray-50 rounded-b-2xl flex items-center justify-end gap-3 border-t-2 border-purple-100 flex-shrink-0">
+        <div className="px-6 py-4 bg-gray-50 rounded-b-2xl flex items-center justify-end gap-3 border-t-2 border-purple-100 shrink-0">
           <motion.button
             onClick={onClose}
             className="px-6 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-xl font-semibold transition-all"
