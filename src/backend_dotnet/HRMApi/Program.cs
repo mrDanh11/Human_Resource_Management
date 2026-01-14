@@ -45,9 +45,13 @@ builder.Services.AddScoped<IActivityRepository, ActivityRepository>();
 builder.Services.AddScoped<IActivityService, ActivityService>();
 builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
 builder.Services.AddScoped<IAttendanceService, AttendanceService>();
-builder.Services.AddAutoMapper(typeof(Program).Assembly);
+builder.Services.AddScoped<IRequestRepository, RequestRepository>();
+builder.Services.AddScoped<IRequestService, RequestService>();
 builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
 builder.Services.AddScoped<IAttendanceService, AttendanceService>();
+
+builder.Services.AddAutoMapper(typeof(Program).Assembly);
+
 
 // Register Background Services
 builder.Services.AddHostedService<MonthlyPointAllocationWorker>();
@@ -138,7 +142,25 @@ builder.Services.AddAuthorization(options =>
         "participate:list",
         "participate:view",
         "participate:update",
-        "participate:attendance"
+        "participate:attendance",
+
+        // Attendance permissions
+        "attendance:view-own",           // Employee xem attendance của mình
+        "attendance:view",               // HR/Manager xem attendance của người khác
+        "attendance:list",               // HR/Manager xem danh sách
+        "attendance:create",             // HR tạo attendance thủ công
+        "attendance:update",             // HR chỉnh sửa attendance
+        "attendance:delete",             // HR xóa attendance
+        "attendance:request-correction", // Employee gửi yêu cầu chỉnh sửa
+        "attendance:sync",               // System đồng bộ từ máy chấm công
+
+        // Request permissions
+        "request:view-own",              // Employee xem requests của mình
+        "request:view",                  // Employee/HR xem chi tiết request
+        "request:list",                  // HR/Manager xem tất cả requests
+        "request:approve",               // HR/Manager phê duyệt requests
+        "request:delete",                // HR/Admin xóa requests
+        "request:statistics",            // HR/Admin xem thống kê requests
     };
 
     foreach (var permission in permissions)
