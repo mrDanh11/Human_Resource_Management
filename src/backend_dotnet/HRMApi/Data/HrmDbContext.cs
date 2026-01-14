@@ -115,7 +115,7 @@ public class HrmDbContext : DbContext
             entity.Property(e => e.BankAccount).HasColumnName("bank_account");
             entity.Property(e => e.JoinDate).HasColumnName("join_date");
             entity.Property(e => e.Status).HasColumnName("status");
-            entity.Property(e => e.AnnualLeaveBalance).HasDefaultValue(12.0);
+            entity.Property(e => e.AnnualLeaveBalance).HasColumnName("annual_leave_balance").HasDefaultValue(12.0);
             entity.Property(e => e.Birthday).HasColumnName("birthday");
             entity.Property(e => e.Gender).HasColumnName("gender");
             entity.Property(e => e.Email).HasColumnName("email");
@@ -288,9 +288,9 @@ public class HrmDbContext : DbContext
             entity.Property(e => e.Status).HasColumnName("status");
             entity.Property(e => e.CreatedAt).HasColumnName("created_at");
             entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
-            entity.Property(e => e.Duration).IsRequired(false);
-            entity.Property(e => e.LeaveMode).HasMaxLength(20);
-            entity.Property(e => e.Session).HasMaxLength(20);
+            entity.Property(e => e.Duration).HasColumnName("duration").IsRequired(false);
+            entity.Property(e => e.LeaveMode).HasColumnName("leave_mode").HasMaxLength(20);
+            entity.Property(e => e.Session).HasColumnName("session").HasMaxLength(20);
         });
 
         // ApprovalHistory
