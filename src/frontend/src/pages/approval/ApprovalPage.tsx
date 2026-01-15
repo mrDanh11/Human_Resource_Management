@@ -2,19 +2,20 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Search, Calendar, Check, X, Eye, RefreshCw, Sparkles, CheckCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { fetchAllRequests, processRequest, clearError } from '../../store/approvalSlice';
+import { fetchAllRequests, batchProcessRequests, clearError } from '../../store/approvalSlice';
 import type { RequestResponseDto } from '../../services/requestForAttendanceService';
 import { 
   getRequestTypeDisplay, 
   getRequestStatusDisplay,
   formatRequestDateRange 
 } from '../../services/requestForAttendanceService';
+import RequestDetailModal from '../../components/RequestDetailModal';
 
 
 
 const ApprovalPage: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { requests, loading, error, processingIds } = useAppSelector(state => state.approval);
+  const { requests, loading, error } = useAppSelector(state => state.approval);
   
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatus, setSelectedStatus] = useState<string>('Tất cả trạng thái');
@@ -22,12 +23,26 @@ const ApprovalPage: React.FC = () => {
   const [dateRange, setDateRange] = useState('');
   const [selectedRequests, setSelectedRequests] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedRequest, setSelectedRequest] = useState<RequestResponseDto | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const itemsPerPage = 5;
 
   // Fetch requests on component mount
   useEffect(() => {
-    dispatch(fetchAllRequests({}));
+    dispatch(fetchAllRequests({ type: 'attendance_correction' }));
   }, [dispatch]);
+
+  // Disable body scroll when modal is open
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isModalOpen]);
 
   // Show error alert
   useEffect(() => {
@@ -96,10 +111,13 @@ const ApprovalPage: React.FC = () => {
     setCurrentPage(1);
   }, [searchQuery, selectedStatus, selectedType]);
 
-  // Handle select all
+  // Handle select all (only pending requests)
   const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
-      setSelectedRequests(paginatedRequests.map(req => req.id));
+      const selectableRequests = paginatedRequests
+        .filter(req => req.status === 'pending')
+        .map(req => req.id);
+      setSelectedRequests(selectableRequests);
     } else {
       setSelectedRequests([]);
     }
@@ -126,18 +144,15 @@ const ApprovalPage: React.FC = () => {
     }
 
     try {
-      for (const id of selectedRequests) {
-        await dispatch(processRequest({ 
-          id, 
-          data: { 
-            status: 'approved',
-            autoUpdateAttendance: true 
-          } 
-        })).unwrap();
-      }
+      await dispatch(batchProcessRequests({
+        requestIds: selectedRequests,
+        status: 'approved',
+        autoUpdateAttendance: true
+      })).unwrap();
+      
       alert('Đã phê duyệt các yêu cầu thành công');
       setSelectedRequests([]);
-      dispatch(fetchAllRequests({}));
+      dispatch(fetchAllRequests({ type: 'attendance_correction' }));
     } catch (error: any) {
       alert(error || 'Không thể phê duyệt một số yêu cầu');
     }
@@ -155,18 +170,15 @@ const ApprovalPage: React.FC = () => {
     }
 
     try {
-      for (const id of selectedRequests) {
-        await dispatch(processRequest({ 
-          id, 
-          data: { 
-            status: 'rejected',
-            note: 'Yêu cầu không được chấp nhận'
-          } 
-        })).unwrap();
-      }
+      await dispatch(batchProcessRequests({
+        requestIds: selectedRequests,
+        status: 'rejected',
+        note: 'Yêu cầu không được chấp nhận'
+      })).unwrap();
+      
       alert('Đã từ chối các yêu cầu');
       setSelectedRequests([]);
-      dispatch(fetchAllRequests({}));
+      dispatch(fetchAllRequests({ type: 'attendance_correction' }));
     } catch (error: any) {
       alert(error || 'Không thể từ chối một số yêu cầu');
     }
@@ -194,6 +206,35 @@ const ApprovalPage: React.FC = () => {
     };
     return styles[type] || 'bg-gray-50 text-gray-700';
   };
+
+  // Handle view detail
+  const handleViewDetail = (request: RequestResponseDto) => {
+    setSelectedRequest(request);
+    setIsModalOpen(true);
+  };
+
+  // Handle close modal
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setTimeout(() => setSelectedRequest(null), 300);
+  };
+
+  // Check if request is selectable
+  const isRequestSelectable = (request: RequestResponseDto) => {
+    return request.status === 'pending';
+  };
+
+  // Get count of selectable requests on current page
+  const selectableRequestsCount = useMemo(() => {
+    return paginatedRequests.filter(req => isRequestSelectable(req)).length;
+  }, [paginatedRequests]);
+
+  // Get count of selected selectable requests on current page
+  const selectedSelectableCount = useMemo(() => {
+    return paginatedRequests.filter(req => 
+      isRequestSelectable(req) && selectedRequests.includes(req.id)
+    ).length;
+  }, [paginatedRequests, selectedRequests]);
 
   return (
     <motion.div 
@@ -332,10 +373,10 @@ const ApprovalPage: React.FC = () => {
           {selectedRequests.length > 0 && (
             <motion.div 
               className="bg-white/90 backdrop-blur-sm rounded-xl shadow-lg border-2 border-purple-100 p-4 mb-6"
-              initial={{ y: -20, opacity: 0, height: 0 }}
-              animate={{ y: 0, opacity: 1, height: 'auto' }}
-              exit={{ y: -20, opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -384,8 +425,9 @@ const ApprovalPage: React.FC = () => {
                     <input
                       type="checkbox"
                       onChange={handleSelectAll}
-                      checked={selectedRequests.length === paginatedRequests.length && paginatedRequests.length > 0}
-                      className="w-4 h-4 text-purple-600 rounded border-purple-300 focus:ring-purple-500"
+                      checked={selectableRequestsCount > 0 && selectedSelectableCount === selectableRequestsCount}
+                      disabled={selectableRequestsCount === 0}
+                      className="w-4 h-4 text-purple-600 rounded border-purple-300 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
                     />
                   </th>
                   <th className="px-4 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
@@ -436,7 +478,8 @@ const ApprovalPage: React.FC = () => {
                           type="checkbox"
                           checked={selectedRequests.includes(request.id)}
                           onChange={() => handleSelectRequest(request.id)}
-                          className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                          disabled={!isRequestSelectable(request)}
+                          className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                         />
                       </td>
                       <td className="px-4 py-4">
@@ -475,6 +518,7 @@ const ApprovalPage: React.FC = () => {
                       <td className="px-4 py-4">
                         <div className="flex items-center justify-center">
                           <motion.button 
+                            onClick={() => handleViewDetail(request)}
                             className="p-2 bg-linear-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-xl transition-all shadow-md group relative"
                             whileHover={{ scale: 1.1, y: -2 }}
                             whileTap={{ scale: 0.95 }}
@@ -550,6 +594,13 @@ const ApprovalPage: React.FC = () => {
           )}
         </motion.div>
       </div>
+
+      {/* Request Detail Modal */}
+      <RequestDetailModal
+        request={selectedRequest}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+      />
     </motion.div>
   );
 };

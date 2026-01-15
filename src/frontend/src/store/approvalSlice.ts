@@ -33,7 +33,12 @@ export const fetchAllRequests = createAsyncThunk(
   'approval/fetchAllRequests',
   async (params: RequestFilterParams, { rejectWithValue }) => {
     try {
-      const response = await requestService.getAllRequests(params);
+      // Always filter for attendance_correction type
+      const filterParams = {
+        ...params,
+        type: 'attendance_correction' as const
+      };
+      const response = await requestService.getAllRequests(filterParams);
       return response;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || 'Failed to fetch approval requests');

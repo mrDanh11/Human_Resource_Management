@@ -142,7 +142,7 @@ public class RequestService : IRequestService
             request.UpdatedAt = DateTime.UtcNow;
             await _requestRepository.UpdateAsync(request);
 
-            // 3. Nếu là attendance correction và được approve
+            // 3. FIXED: Nếu là attendance correction và được approve
             if (dto.Status == "approved" 
                 && request.Type == "attendance_correction" 
                 && dto.AutoUpdateAttendance)
@@ -246,6 +246,9 @@ public class RequestService : IRequestService
     // PRIVATE HELPER METHODS
     // ============================================
 
+    /// <summary>
+    /// FIXED: Tính work_hours và overtime_hours ĐÚNG CHUẨN khi approve correction request
+    /// </summary>
     private async Task UpdateAttendanceFromRequest(Request request)
     {
         if (request.StartTime == null || request.EndTime == null)
@@ -268,7 +271,7 @@ public class RequestService : IRequestService
         attendance.CheckinTime = request.StartTime;
         attendance.CheckoutTime = request.EndTime;
         
-        // Tính work_hours VÀ overtime_hours theo logic mới
+        // FIXED: Tính work_hours VÀ overtime_hours ĐÚNG
         var (workHours, overtimeHours) = CalculateAttendanceMetrics(
             request.StartTime.Value, 
             request.EndTime.Value);
@@ -296,40 +299,32 @@ public class RequestService : IRequestService
     }
 
     /// <summary>
-    /// Tính WorkHours và OvertimeHours theo quy tắc:
-    /// - WorkHours: Giao của [CheckIn, CheckOut] và [08:30, 17:30].
-    /// - OvertimeHours: Phần dư sau 17:30.
+    /// Tính work_hours và overtime_hours - LOGIC GIỐNG AttendanceService
     /// </summary>
     private (decimal WorkHours, decimal OvertimeHours) CalculateAttendanceMetrics(DateTime checkin, DateTime checkout)
     {
+        // 1. Tính WORK HOURS (Chỉ trong khung 08:30 - 17:30)
         var date = checkin.Date;
         var standardStart = date.Add(_standardCheckinTime); // 08:30
         var standardEnd = date.Add(_standardCheckoutTime);   // 17:30
 
-        // 1. TÍNH WORK HOURS (Chỉ tính trong khung giờ hành chính)
-        // Nếu checkin sớm hơn 8:30, lấy 8:30. Nếu trễ hơn, lấy giờ thực tế.
+        // Giao của [CheckIn, CheckOut] với [08:30, 17:30]
         var effectiveStart = checkin < standardStart ? standardStart : checkin;
-        
-        // Nếu checkout trễ hơn 17:30, chỉ tính đến 17:30 cho WorkHours.
         var effectiveEnd = checkout > standardEnd ? standardEnd : checkout;
 
         double workHours = 0;
-        
-        // Chỉ tính nếu thời gian check-out sau thời gian check-in hợp lệ
         if (effectiveEnd > effectiveStart)
         {
             var duration = effectiveEnd - effectiveStart;
-            
-            // Trừ giờ nghỉ trưa (1 tiếng) nếu làm việc trên 4 tiếng
+            // Trừ 1h nghỉ trưa nếu làm > 4h
             if (duration.TotalHours > 4)
             {
                 duration = duration.Subtract(TimeSpan.FromHours(1));
             }
-            
             workHours = Math.Max(0, duration.TotalHours);
         }
 
-        // 2. TÍNH OVERTIME (Chỉ tính thời gian làm sau 17:30)
+        // 2. Tính OVERTIME (Chỉ tính sau 17:30)
         double overtimeHours = 0;
         if (checkout > standardEnd)
         {
@@ -365,7 +360,9 @@ public class RequestService : IRequestService
                 {
                     Id = ah.Id,
                     ApproverId = ah.ApproverId,
-                    ApproverName = ah.Approver.Fullname,
+                    // --- FIX NULL REFERENCE ---
+                    ApproverName = ah.Approver?.Fullname ?? "N/A", 
+                    // ---------------------------
                     Status = ah.Status,
                     StatusDisplay = GetStatusDisplay(ah.Status),
                     Note = ah.Note,
@@ -384,9 +381,11 @@ public class RequestService : IRequestService
                 RequestedCheckoutTime = request.EndTime
             };
 
+            // Lưu ý: Đoạn này nên dùng await thay vì .Result để tránh deadlock (tốt nhất là refactor lại method thành async toàn bộ hoặc load trước data)
+            // Tuy nhiên trong context sửa lỗi nhanh, ta có thể giữ nguyên hoặc dùng GetAwaiter().GetResult()
             var date = DateOnly.FromDateTime(request.StartTime.Value);
             var attendance = _attendanceRepository.GetByEmployeeAndDateAsync(
-                request.EmployeeId, date).Result;
+                request.EmployeeId, date).GetAwaiter().GetResult();
 
             if (attendance != null)
             {

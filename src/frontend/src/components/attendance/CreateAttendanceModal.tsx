@@ -29,12 +29,49 @@ const CreateAttendanceModal: React.FC<CreateAttendanceModalProps> = ({
   const dispatch = useAppDispatch();
   const { employees, loading: employeesLoading } = useAppSelector((state) => state.employee);
 
+  // Validation states
+  const [dateError, setDateError] = React.useState<string>('');
+  const [timeError, setTimeError] = React.useState<string>('');
+
   // Fetch employees khi component mount hoặc khi modal mở
   useEffect(() => {
     if (isOpen && employees.length === 0) {
       dispatch(fetchEmployees({ pageNumber: 1, pageSize: 100 }));
     }
   }, [isOpen, dispatch, employees.length]);
+
+  // Validate date
+  useEffect(() => {
+    if (formData.date) {
+      const selectedDate = new Date(formData.date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      if (selectedDate > today) {
+        setDateError('Ngày làm việc không được lớn hơn ngày hiện tại!');
+      } else {
+        setDateError('');
+      }
+    } else {
+      setDateError('');
+    }
+  }, [formData.date]);
+
+  // Validate time
+  useEffect(() => {
+    if (formData.checkIn && formData.checkOut) {
+      const checkinMinutes = parseInt(formData.checkIn.split(':')[0]) * 60 + parseInt(formData.checkIn.split(':')[1]);
+      const checkoutMinutes = parseInt(formData.checkOut.split(':')[0]) * 60 + parseInt(formData.checkOut.split(':')[1]);
+      
+      if (checkoutMinutes <= checkinMinutes) {
+        setTimeError('Giờ ra phải lớn hơn giờ vào!');
+      } else {
+        setTimeError('');
+      }
+    } else {
+      setTimeError('');
+    }
+  }, [formData.checkIn, formData.checkOut]);
 
   if (!isOpen) return null;
 
@@ -111,8 +148,15 @@ const CreateAttendanceModal: React.FC<CreateAttendanceModalProps> = ({
                 type="date"
                 value={formData.date}
                 onChange={(e) => onFormChange('date', e.target.value)}
-                className="w-full px-4 py-3 border-2 border-purple-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all bg-white"
+                className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-4 transition-all bg-white ${
+                  dateError ? 'border-red-300 focus:ring-red-100 focus:border-red-500' : 'border-purple-200 focus:ring-purple-100 focus:border-purple-500'
+                }`}
               />
+              {dateError && (
+                <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
+                  <span>⚠️</span> {dateError}
+                </p>
+              )}
             </div>
 
             {/* Giờ vào */}
@@ -137,8 +181,15 @@ const CreateAttendanceModal: React.FC<CreateAttendanceModalProps> = ({
                 type="time"
                 value={formData.checkOut}
                 onChange={(e) => onFormChange('checkOut', e.target.value)}
-                className="w-full px-4 py-3 border-2 border-purple-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all bg-white"
+                className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-4 transition-all bg-white ${
+                  timeError ? 'border-red-300 focus:ring-red-100 focus:border-red-500' : 'border-purple-200 focus:ring-purple-100 focus:border-purple-500'
+                }`}
               />
+              {timeError && (
+                <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
+                  <span>⚠️</span> {timeError}
+                </p>
+              )}
             </div>
 
             {/* Trạng thái */}
@@ -188,9 +239,10 @@ const CreateAttendanceModal: React.FC<CreateAttendanceModalProps> = ({
           </motion.button>
           <motion.button
             onClick={onSave}
-            className="px-6 py-2.5 bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl font-semibold transition-all flex items-center gap-2 shadow-lg"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            disabled={!!(dateError || timeError)}
+            className="px-6 py-2.5 bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl font-semibold transition-all flex items-center gap-2 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-blue-600 disabled:hover:to-purple-600"
+            whileHover={!(dateError || timeError) ? { scale: 1.05 } : {}}
+            whileTap={!(dateError || timeError) ? { scale: 0.95 } : {}}
           >
             <Save className="w-4 h-4" />
             Thêm bản ghi

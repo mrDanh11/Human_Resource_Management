@@ -12,12 +12,7 @@ import {
   ChevronLeft,
   ClipboardList,
   BarChart,
-  Plus,
-  XCircle,
   CheckCircle,
-  UserCheck,
-  Users,
-  TrendingUp,
   ArrowLeftRight,
   DollarSign,
   Calendar as CalendarIcon
@@ -47,21 +42,45 @@ const BaseSidebar: React.FC = () => {
     // Trang chủ - Tất cả đều có
     items.push({ label: "Trang chủ", icon: Home, to: "/landing" });
 
-    // Dashboard - Admin và HR có
-    if (userRole === 'admin' || userRole === 'hr') {
+    // Dashboard - Admin, HR và Manager có
+    if (userRole === 'admin') {
       items.push({ 
         label: "Dashboard", 
         icon: LayoutDashboard, 
-        to: `/${userRole}/dashboard` 
+        to: "/admin/dashboard" 
+      });
+    } else if (userRole === 'hr') {
+      items.push({ 
+        label: "Dashboard", 
+        icon: LayoutDashboard, 
+        to: "/hr/dashboard" 
+      });
+    } else if (userRole === 'manager') {
+      items.push({ 
+        label: "Dashboard", 
+        icon: LayoutDashboard, 
+        to: "/manager/dashboard" 
       });
     }
 
     // Thông tin cá nhân - Tất cả đều có
-    if (userRole === 'admin' || userRole === 'hr') {
+    if (userRole === 'admin') {
       items.push({ 
         label: "Hồ sơ cá nhân", 
         icon: User, 
-        to: `/${userRole}/employee/profile/${userId}` 
+        to: `/admin/employee/profile/${userId}` 
+      });
+    } else if (userRole === 'hr') {
+      items.push({ 
+        label: "Hồ sơ cá nhân", 
+        icon: User, 
+        to: `/hr/employee/profile/${userId}` 
+      });
+    } else if (userRole === 'manager') {
+      items.push({ 
+        label: "Hồ sơ cá nhân", 
+        icon: User, 
+        to: `/manager/employee/profile/${userId}` 
       });
     } else {
       items.push({ 
@@ -71,7 +90,7 @@ const BaseSidebar: React.FC = () => {
       });
     }
 
-    // Bảng công - Employee và HR có, Admin không
+    // Bảng công - Employee, HR và Manager có, Admin không
     if (userRole === 'hr') {
       items.push({
         label: "Bảng công",
@@ -82,6 +101,12 @@ const BaseSidebar: React.FC = () => {
           { label: "Quản lý Timesheet", to: "/hr/timesheet/manage" },
         ]
       });
+    } else if (userRole === 'manager') {
+      items.push({ 
+        label: "Bảng công", 
+        icon: ClipboardList, 
+        to: "/manager/attendance" 
+      });
     } else if (userRole === 'employee') {
       items.push({ 
         label: "Bảng công", 
@@ -90,7 +115,7 @@ const BaseSidebar: React.FC = () => {
       });
     }
 
-    // Quản lý nhân viên - Chỉ HR có
+    // Quản lý nhân viên - HR và Manager có
     if (userRole === 'hr') {
       items.push({
         label: "Quản lý nhân viên",
@@ -101,9 +126,18 @@ const BaseSidebar: React.FC = () => {
           { label: "Thêm nhân viên", to: "/hr/employee/create" },
         ]
       });
+    } else if (userRole === 'manager') {
+      items.push({
+        label: "Quản lý nhân viên",
+        icon: UserRoundCog,
+        key: "employees",
+        submenu: [
+          { label: "Danh sách", to: "/manager/employee/list" },
+        ]
+      });
     }
 
-    // Yêu cầu - HR và Employee có, Admin không có
+    // Yêu cầu - HR, Manager và Employee có, Admin không có
     if (userRole === 'hr') {
       items.push({
         label: "Yêu cầu",
@@ -112,6 +146,19 @@ const BaseSidebar: React.FC = () => {
         submenu: [
           { label: "Tạo yêu cầu mới", to: "/hr/requests/create" },
           { label: "Yêu cầu của tôi", to: "/hr/requests/my-requests" },
+          { label: "Danh sách yêu cầu", to: "/hr/requests" },
+        ]
+      });
+    } else if (userRole === 'manager') {
+      items.push({
+        label: "Yêu cầu",
+        icon: FileText,
+        key: "requests",
+        submenu: [
+          { label: "Tạo yêu cầu mới", to: "/manager/requests/create" },
+          { label: "Yêu cầu của tôi", to: "/manager/requests/my-requests" },
+          { label: "Danh sách yêu cầu", to: "/manager/requests" },
+          { label: "Duyệt yêu cầu", to: "/manager/approval" },
         ]
       });
     } else if (userRole === 'employee') {
@@ -124,56 +171,56 @@ const BaseSidebar: React.FC = () => {
           { label: "Yêu cầu của tôi", to: "/requests/my-requests" },
         ]
       });
-    } else if (userRole === 'manager') {
-      items.push({
-        label: "Yêu cầu",
-        icon: FileText,
-        key: "requests",
-        submenu: [
-          { label: "Danh sách yêu cầu", to: "manager/requests" },
-        ]
-      });
     }
 
     // Hoạt động
     if (userRole === 'admin') {
-      // Admin: Có "Quản lý điểm danh" và các chức năng quản lý
       items.push({
-        label: "Quản lý Hoạt động",
+        label: "Hoạt động",
         icon: Activity,
         key: "activities",
         submenu: [
-          { label: "Danh sách hoạt động", to: "/admin/activities", icon: ClipboardList },
-          { label: "Thống kê hoạt động", to: "/admin/activities/statistics", icon: BarChart },
-          { label: "Thêm hoạt động", to: "/admin/activities/create", icon: Plus },
-          { label: "Hủy hoạt động", to: "/admin/activities/cancel", icon: XCircle },
-           { label: "Quản lý điểm danh", to: "/admin/activities/attendance", icon: UserCheck },
-          { label: "Ghi nhận kết quả", to: "/admin/activities/record-result", icon: CheckCircle },
+          { label: "Danh sách hoạt động", to: "/admin/activities" },
+          { label: "Thống kê hoạt động", to: "/admin/activities/statistics" },
+          { label: "Đã đăng ký", to: "/admin/activities/history" },
+          { label: "Kết quả", to: "/admin/activities/result" },
         ]
       });
     } else if (userRole === 'hr') {
-      // HR: Có hết
       items.push({
         label: "Hoạt động",
         icon: Activity,
         key: "activities",
         submenu: [
-          { label: "Có thể đăng ký", to: "/hr/activities" },
-          { label: "Chỉnh sửa", to: "/hr/activities/manage" },
+          { label: "Danh sách hoạt động", to: "/hr/activities" },
+          { label: "Quản lý hoạt động", to: "/hr/activities/manage" },
           { label: "Tạo hoạt động", to: "/hr/activities/create" },
           { label: "Hủy hoạt động", to: "/hr/activities/cancel" },
+          { label: "Thống kê hoạt động", to: "/hr/activities/statistics" },
           { label: "Đã đăng ký", to: "/hr/activities/history" },
-          { label: "Kết quả", to: "/hr/activities/result" }
+          { label: "Kết quả", to: "/hr/activities/result" },
+          { label: "Quản lý điểm danh", to: "/hr/activities/attendance" },
+          { label: "Ghi nhận kết quả", to: "/hr/activities/record-result" }
+        ]
+      });
+    } else if (userRole === 'manager') {
+      items.push({
+        label: "Hoạt động",
+        icon: Activity,
+        key: "activities",
+        submenu: [
+          { label: "Danh sách hoạt động", to: "/manager/activities" },
+          { label: "Đã đăng ký", to: "/manager/activities/history" },
+          { label: "Kết quả", to: "/manager/activities/result" }
         ]
       });
     } else {
-      // Employee: Có nhưng không có "Tạo", "Hủy" và "Chỉnh sửa"
       items.push({
         label: "Hoạt động",
         icon: Activity,
         key: "activities",
         submenu: [
-          { label: "Có thể đăng ký", to: "/activities" },
+          { label: "Danh sách hoạt động", to: "/activities" },
           { label: "Đã đăng ký", to: "/activities/history" },
           { label: "Kết quả", to: "/activities/result" }
         ]
@@ -182,35 +229,44 @@ const BaseSidebar: React.FC = () => {
 
     // Điểm thưởng
     if (userRole === 'admin') {
-      // Admin: Tất cả các tab quản lý điểm thưởng
       items.push({
         label: "Quản lý điểm thưởng",
         icon: Award,
         key: "rewards",
         submenu: [
-          { label: "Vai trò & định mức", to: "/admin/point/roles", icon: Users },
-          { label: "Danh sách nhân viên", to: "/admin/point/employees", icon: TrendingUp },
-          { label: "Bảng quy đổi", to: "/admin/point/conversion", icon: ArrowLeftRight },
-          { label: "Duyệt yêu cầu", to: "/admin/point/requests", icon: CheckCircle },
-          { label: "Lịch sử đổi điểm", to: "/admin/point/conversion-history", icon: DollarSign },
-          { label: "Lịch sử giao dịch", to: "/admin/point/history", icon: CalendarIcon },
+          { label: "Bảng quy đổi", to: "/admin/point/conversion" },
+          { label: "Lịch sử quy đổi", to: "/admin/point/conversion-history" },
+          { label: "Duyệt yêu cầu", to: "/admin/point/requests" },
+          { label: "Quản lý vai trò", to: "/admin/point/roles" },
+          { label: "Lịch sử điểm", to: "/admin/point/history" },
         ]
       });
     } else if (userRole === 'hr') {
-      // HR: Có hết
       items.push({
         label: "Điểm thưởng",
         icon: Award,
         key: "rewards",
         submenu: [
           { label: "Tổng quan", to: "/hr/rewards/points" },
-          { label: "Thưởng điểm HR", to: "/hr/rewards/hr-reward" },
+          { label: "Thưởng Điểm", to: "/hr/rewards/hr-reward" },
           { label: "Lịch sử giao dịch", to: "/hr/rewards/history" },
           { label: "Đổi thưởng", to: "/hr/rewards/exchange" },
         ]
       });
+    } else if (userRole === 'manager') {
+      items.push({
+        label: "Điểm thưởng",
+        icon: Award,
+        key: "rewards",
+        submenu: [
+          { label: "Tổng quan", to: "/manager/rewards/points" },
+          { label: "Thưởng Điểm", to: "/manager/rewards/hr-reward" },
+          { label: "Quản lý nhân viên", to: "/manager/rewards/employees" },
+          { label: "Lịch sử giao dịch", to: "/manager/rewards/history" },
+          { label: "Đổi thưởng", to: "/manager/rewards/exchange" },
+        ]
+      });
     } else {
-      // Employee: Có hết (không có Thưởng điểm HR)
       items.push({
         label: "Điểm thưởng",
         icon: Award,
@@ -275,11 +331,11 @@ const BaseSidebar: React.FC = () => {
                   <div
                     className={`overflow-hidden transition-all duration-300 ease-in-out ${
                       openDropdown === item.key
-                        ? "max-h-60 opacity-100 mt-2"
+                        ? "max-h-96 opacity-100 mt-2"
                         : "max-h-0 opacity-0"
                     }`}
                   >
-                    <div className={`${collapsed ? 'ml-0' : 'ml-4'} space-y-1`}>
+                    <div className={`${collapsed ? 'ml-0' : 'ml-4'} space-y-1 max-h-40 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100`}>
                       {item.submenu.map((subItem: any, j: number) => (
                         <button
                           key={j}

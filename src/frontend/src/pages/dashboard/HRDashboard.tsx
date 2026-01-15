@@ -47,7 +47,7 @@ const HRDashboard: React.FC = () => {
 
         {/* Stats Cards */}
         <motion.div 
-          className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12"
+          className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12"
           initial="hidden"
           animate="visible"
           variants={{
@@ -129,36 +129,6 @@ const HRDashboard: React.FC = () => {
               </div>
             </div>
           </motion.div>
-
-          {/* Card 3: Yêu cầu chờ xử lý */}
-          <motion.div 
-            className="bg-white rounded-2xl shadow-xl border-2 border-gray-100 overflow-hidden hover:shadow-2xl transition-all duration-300 group"
-            variants={{
-              hidden: { opacity: 0, y: 20 },
-              visible: { opacity: 1, y: 0 }
-            }}
-            whileHover={{ y: -8, boxShadow: "0 25px 50px -12px rgba(249, 115, 22, 0.25)" }}
-          >
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="w-14 h-14 bg-linear-to-br from-orange-500 to-orange-700 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                  <FileText className="text-white w-7 h-7" />
-                </div>
-                <div className="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-xs font-bold">
-                  PENDING
-                </div>
-              </div>
-              <div className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">
-                Yêu cầu chờ xử lý
-              </div>
-              <div className="text-5xl font-bold bg-linear-to-r from-orange-600 to-orange-800 bg-clip-text text-transparent">
-                8
-              </div>
-              <div className="mt-3 text-xs text-gray-600 font-medium">
-                ⏳ Yêu cầu cần duyệt
-              </div>
-            </div>
-          </motion.div>
         </motion.div>
 
         {/* Quick Actions Section */}
@@ -176,7 +146,7 @@ const HRDashboard: React.FC = () => {
           </div>
 
           <motion.div 
-            className="grid grid-cols-1 md:grid-cols-2 gap-6"
+            className="grid grid-cols-1 md:grid-cols-3 gap-6"
             initial="hidden"
             animate="visible"
             variants={{
@@ -254,30 +224,6 @@ const HRDashboard: React.FC = () => {
                 <div className="flex-1">
                   <div className="text-lg font-bold mb-1">Hủy hoạt động</div>
                   <div className="text-sm text-orange-100">Hủy sự kiện đã tạo</div>
-                </div>
-              </div>
-            </Link>
-            </motion.div>
-
-            <motion.div
-              variants={{
-                hidden: { opacity: 0, y: 20 },
-                visible: { opacity: 1, y: 0 }
-              }}
-              whileHover={{ y: -4, scale: 1.02 }}
-            >
-              <Link
-                to="/hr/requests"
-              className="block group relative bg-linear-to-r from-purple-600 to-purple-700 text-white p-6 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden"
-            >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16"></div>
-              <div className="relative z-10 flex items-center gap-4">
-                <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Calendar className="w-6 h-6" />
-                </div>
-                <div className="flex-1">
-                  <div className="text-lg font-bold mb-1">Xem yêu cầu nghỉ phép</div>
-                  <div className="text-sm text-purple-100">Duyệt đơn nghỉ phép</div>
                 </div>
               </div>
             </Link>

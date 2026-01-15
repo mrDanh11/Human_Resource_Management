@@ -122,7 +122,7 @@ export default function RewardHistory() {
                     transition={{ delay: i * 0.1 }}
                   >
                     <motion.div
-                      className="h-full w-full bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200"
+                      className="h-full w-full bg-linear-to-r from-slate-200 via-slate-300 to-slate-200"
                       animate={{ x: ["-100%", "100%"] }}
                       transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
                     />
@@ -145,7 +145,6 @@ export default function RewardHistory() {
                   <StatCard
                   title="Điểm hiện có"
                   value={summary.current}
-                  subtitle={`≈ ${(summary.current * summary.conversionRate).toLocaleString('vi-VN')} VND`}
                   variant="primary"
                   icon={<Award size={24} />}
                   />

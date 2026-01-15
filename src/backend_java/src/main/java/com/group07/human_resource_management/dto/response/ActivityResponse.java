@@ -25,4 +25,5 @@ public class ActivityResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Integer currentParticipants;
+    private boolean isDeleted;
 }

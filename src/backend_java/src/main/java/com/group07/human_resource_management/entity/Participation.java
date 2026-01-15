@@ -1,5 +1,6 @@
 package com.group07.human_resource_management.entity;
-
+import org.hibernate.annotations.JdbcTypeCode; // <-- Thêm
+import org.hibernate.type.SqlTypes;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -36,6 +37,7 @@ public class Participation {
     private String status;
 
     @Column(name = "result", columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
     private String result;
 
     @Column(name = "created_at")

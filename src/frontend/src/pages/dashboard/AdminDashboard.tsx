@@ -50,7 +50,7 @@ const AdminDashboard: React.FC = () => {
 
         {/* Stats Cards */}
         <motion.div 
-          className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12"
+          className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12"
           initial="hidden"
           animate="visible"
           variants={{
@@ -93,36 +93,6 @@ const AdminDashboard: React.FC = () => {
               )}
               <div className="mt-3 text-xs text-gray-600 font-medium">
                 👥 Tổng số nhân viên hệ thống
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Card 2: Yêu cầu nghỉ phép */}
-          <motion.div 
-            className="bg-white rounded-2xl shadow-xl border-2 border-gray-100 overflow-hidden hover:shadow-2xl transition-all duration-300 group"
-            variants={{
-              hidden: { opacity: 0, y: 20 },
-              visible: { opacity: 1, y: 0 }
-            }}
-            whileHover={{ y: -8, boxShadow: "0 25px 50px -12px rgba(249, 115, 22, 0.25)" }}
-          >
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="w-14 h-14 bg-linear-to-br from-orange-500 to-orange-700 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                  <FileText className="text-white w-7 h-7" />
-                </div>
-                <div className="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-xs font-bold">
-                  PENDING
-                </div>
-              </div>
-              <div className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">
-                Yêu cầu nghỉ phép chờ duyệt
-              </div>
-              <div className="text-5xl font-bold bg-linear-to-r from-orange-600 to-orange-800 bg-clip-text text-transparent">
-                8
-              </div>
-              <div className="mt-3 text-xs text-gray-600 font-medium">
-                ⏳ Đơn cần xem xét
               </div>
             </div>
           </motion.div>
@@ -278,57 +248,6 @@ const AdminDashboard: React.FC = () => {
               </div>
             )}
           </motion.div>
-        </motion.div>
-
-        {/* Quick Actions */}
-        <motion.div 
-          className="bg-white rounded-2xl shadow-xl border-2 border-gray-100 p-8"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-        >
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
-              Thao tác nhanh
-            </h2>
-            <p className="text-gray-600">Truy cập nhanh các chức năng quản trị</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
-            <motion.button
-              onClick={() => navigate("/admin/employee/create")}
-              className="group relative bg-linear-to-r from-blue-600 to-blue-700 text-white p-6 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden"
-              whileHover={{ scale: 1.05, y: -4 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16"></div>
-              <div className="relative z-10 flex items-center gap-4">
-                <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <UserPlus className="w-6 h-6" />
-                </div>
-                <div className="flex-1 text-left">
-                  <div className="text-lg font-bold mb-1">Thêm nhân viên mới</div>
-                  <div className="text-sm text-blue-100">Tạo tài khoản nhân viên</div>
-                </div>
-              </div>
-            </motion.button>
-
-            <motion.button
-              onClick={() => navigate("/admin/activities/create")}
-              className="group relative bg-linear-to-r from-green-600 to-green-700 text-white p-6 rounded-2xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 overflow-hidden"
-            >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16"></div>
-              <div className="relative z-10 flex items-center gap-4">
-                <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Plus className="w-6 h-6" />
-                </div>
-                <div className="flex-1 text-left">
-                  <div className="text-lg font-bold mb-1">Tạo hoạt động mới</div>
-                  <div className="text-sm text-green-100">Tạo sự kiện, cuộc thi</div>
-                </div>
-              </div>
-            </motion.button>
-          </div>
         </motion.div>
       </div>
     </div>

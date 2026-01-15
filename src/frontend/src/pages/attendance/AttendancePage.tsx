@@ -113,11 +113,10 @@ const AttendancePage: React.FC = () => {
   };
 
   // Xử lý submit form
-// Xử lý submit form
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validate required fields
+    // Validate required fields only
     if (!formData.date || !formData.reason.trim()) {
       alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
       return;
@@ -586,6 +585,7 @@ const AttendancePage: React.FC = () => {
           formData={formData}
           onInputChange={handleInputChange}
           onSubmit={handleSubmit}
+          validDates={currentAttendance.records.map(record => record.date)}
         />
       </div>
     </motion.div>
