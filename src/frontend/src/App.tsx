@@ -70,7 +70,6 @@ const App = () => {
                 <Route path="on-leave" element={<CreateOnLeaveRequest />} />
               </Route>
               <Route path="my-requests" element={<MyRequestsPage />} />
-              <Route path="" element={<LeaveRequestPage />} />
             </Route>
 
             <Route path="activities">
@@ -109,7 +108,6 @@ const App = () => {
                 <Route path="points" element={<RewardDashboard />} />
                 <Route path="hr-reward" element={<RewardPointHR />} />
                 <Route path="employees" element={<PointEmployees />} />
-                <Route path="roles" element={<PointsAdmin />} />
               </Route>
 
               <Route path="activities">
@@ -180,8 +178,9 @@ const App = () => {
               
               <Route path="point">
                 <Route path="conversion" element={<PointConversion />} />
-                <Route path="requests" element={<PointRequests />} />
                 <Route path="conversion-history" element={<PointConversionHistory />} />
+                <Route path="requests" element={<PointRequests />} />
+                <Route path="roles" element={<PointsAdmin />} />
                 <Route path="history" element={<PointHistory />} />
               </Route>
 

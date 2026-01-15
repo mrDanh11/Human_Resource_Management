@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Search, Filter, Calendar } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import ActivityListCard from '../../components/activities/ActivityListCard';
 import ActivityDetailModal from '../../components/activities/ActivityDetailModal';
 import ConfirmRegistrationModal from '../../components/activities/ConfirmRegistrationModal';
@@ -9,6 +9,7 @@ import type { Activity } from '../../types/activity';
 
 export default function ActivityListPage() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [selectedType, setSelectedType] = useState<Activity['activityType'] | 'all'>('all');
   const [selectedStatus, setSelectedStatus] = useState<'all' | 'open' | 'closed'>('all');
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
@@ -36,6 +37,15 @@ export default function ActivityListPage() {
       };
     }, [isModalOpen, isConfirmModalOpen]);
   
+  // Debounce search query
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
   useEffect(() => {
     fetchActivities();
     fetchMyParticipations();
@@ -130,39 +140,52 @@ export default function ActivityListPage() {
 
 
 
-  // Filter activities
-  const filteredActivities = activities.filter(activity => {
-    // Search filter
-    const matchesSearch = activity.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      activity.description.toLowerCase().includes(searchQuery.toLowerCase());
+  // Memoize filtered activities để tránh tính toán lại không cần thiết
+  const filteredActivities = useMemo(() => {
+    return activities.filter(activity => {
+      // Filter out deleted activities
+      if (activity.isDeleted === true) {
+        return false;
+      }
 
-    // Type filter
-    const matchesType = selectedType === 'all' || activity.activityType === selectedType;
+      // Search filter - sử dụng debounced search
+      const matchesSearch = activity.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+        activity.description.toLowerCase().includes(debouncedSearch.toLowerCase());
 
-    // Status filter
-    let matchesStatus = true;
-    if (selectedStatus !== 'all') {
-      const now = new Date();
-      const regStart = new Date(activity.registrationStartDate);
-      const regEnd = new Date(activity.registrationEndDate);
-      const isOpen = now >= regStart && now <= regEnd;
+      // Type filter
+      const matchesType = selectedType === 'all' || activity.activityType === selectedType;
 
-      matchesStatus = selectedStatus === 'open' ? isOpen : !isOpen;
-    }
+      // Status filter
+      let matchesStatus = true;
+      if (selectedStatus !== 'all') {
+        const now = new Date();
+        const regStart = new Date(activity.registrationStartDate);
+        const regEnd = new Date(activity.registrationEndDate);
+        const isOpen = now >= regStart && now <= regEnd;
 
-    return matchesSearch && matchesType && matchesStatus;
-  });
+        matchesStatus = selectedStatus === 'open' ? isOpen : !isOpen;
+      }
+
+      return matchesSearch && matchesType && matchesStatus;
+    });
+  }, [activities, debouncedSearch, selectedType, selectedStatus]);
 
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, selectedType, selectedStatus]);
+  }, [debouncedSearch, selectedType, selectedStatus]);
 
-  // Pagination logic
-  const totalPages = Math.ceil(filteredActivities.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentActivities = filteredActivities.slice(startIndex, endIndex);
+  // Memoize pagination calculations
+  const paginationData = useMemo(() => {
+    const totalPages = Math.ceil(filteredActivities.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const currentActivities = filteredActivities.slice(startIndex, endIndex);
+    
+    return { totalPages, startIndex, endIndex, currentActivities };
+  }, [filteredActivities, currentPage, itemsPerPage]);
+
+  const { totalPages, startIndex, endIndex, currentActivities } = paginationData;
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -299,40 +322,38 @@ export default function ActivityListPage() {
             
             {filteredActivities.length > 0 ? (
               <>
-              <motion.div 
-                key={currentPage}
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-                initial="hidden"
-                animate="visible"
-                variants={{
-                  visible: {
-                    transition: {
-                      staggerChildren: 0.05
-                    }
-                  }
-                }}
-              >
-                {currentActivities.map((activity, index) => (
-                  <motion.div
-                    key={`${activity.id}-${currentPage}`}
-                    variants={{
-                      hidden: { opacity: 0, y: 20 },
-                      visible: { opacity: 1, y: 0 }
-                    }}
-                    transition={{ duration: 0.3 }}
-                    whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                  >
-                    <ActivityListCard
-                      activity={activity}
-                      onViewDetails={handleViewDetails}
-                      onRegister={handleRegister}
-                      onUnregister={handleUnregister}
-                      isRegistered={myParticipations.includes(Number(activity.id))}
-                      userRole="EMPLOYEE"
-                    />
-                  </motion.div>
-                ))}
-              </motion.div>
+              <AnimatePresence mode="wait">
+                <motion.div 
+                  key={`${currentPage}-${debouncedSearch}-${selectedType}-${selectedStatus}`}
+                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {currentActivities.map((activity, index) => (
+                    <motion.div
+                      key={activity.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ 
+                        duration: 0.3,
+                        delay: index * 0.05
+                      }}
+                      whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                    >
+                      <ActivityListCard
+                        activity={activity}
+                        onViewDetails={handleViewDetails}
+                        onRegister={handleRegister}
+                        onUnregister={handleUnregister}
+                        isRegistered={myParticipations.includes(Number(activity.id))}
+                        userRole="EMPLOYEE"
+                      />
+                    </motion.div>
+                  ))}
+                </motion.div>
+              </AnimatePresence>
               
               {/* Pagination Controls */}
               {totalPages > 1 && (

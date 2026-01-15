@@ -22,6 +22,7 @@ public class EmployeeMappingProfile : Profile
         CreateMap<CreateEmployeeDto, Employee>()
             .ForMember(dest => dest.Id, opt => opt.Ignore())
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => "active"))
+            .ForMember(dest => dest.AnnualLeaveBalance, opt => opt.MapFrom(src => 12.0))
             .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
             .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
             .ForMember(dest => dest.Role, opt => opt.Ignore())

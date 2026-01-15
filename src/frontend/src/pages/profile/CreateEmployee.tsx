@@ -171,8 +171,6 @@ const CreateEmployee = () => {
             alert('Vui lòng sửa các lỗi trước khi lưu!');
             return;
         }
-
-        console.log('Submitting form data:', formData);
         
         try {
             const result = await dispatch(createEmployee({

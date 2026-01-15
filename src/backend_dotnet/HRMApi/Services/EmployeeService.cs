@@ -131,6 +131,7 @@ public class EmployeeService : IEmployeeService
             // Map DTO to Entity
             var employee = _mapper.Map<Employee>(dto);
             employee.Status = "active";
+            employee.AnnualLeaveBalance = 12.0; // Set default annual leave balance
             employee.CreatedAt = DateTime.UtcNow;
             employee.UpdatedAt = DateTime.UtcNow;
 
