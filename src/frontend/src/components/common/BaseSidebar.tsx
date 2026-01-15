@@ -122,6 +122,7 @@ const BaseSidebar: React.FC = () => {
         submenu: [
           { label: "Tạo yêu cầu mới", to: "/hr/requests/create" },
           { label: "Yêu cầu của tôi", to: "/hr/requests/my-requests" },
+          { label: "Danh sách nghỉ phép", to: "/hr/requests" },
         ]
       });
     } else if (userRole === 'manager') {
@@ -133,6 +134,7 @@ const BaseSidebar: React.FC = () => {
           { label: "Tạo yêu cầu mới", to: "/manager/requests/create" },
           { label: "Yêu cầu của tôi", to: "/manager/requests/my-requests" },
           { label: "Duyệt yêu cầu", to: "/manager/approval" },
+          { label: "Danh sách nghỉ phép", to: "/manager/requests" },
         ]
       });
     } else if (userRole === 'employee') {
@@ -143,6 +145,7 @@ const BaseSidebar: React.FC = () => {
         submenu: [
           { label: "Tạo yêu cầu mới", to: "/requests/create" },
           { label: "Yêu cầu của tôi", to: "/requests/my-requests" },
+          { label: "Danh sách nghỉ phép", to: "/requests" },
         ]
       });
     }
@@ -155,8 +158,10 @@ const BaseSidebar: React.FC = () => {
         icon: Activity,
         key: "activities",
         submenu: [
-          { label: "Danh sách hoạt động", to: "/admin/activities", icon: ClipboardList },
-          { label: "Thống kê hoạt động", to: "/admin/activities/statistics", icon: BarChart },
+          { label: "Thống kê hoạt động", to: "/admin/activities/statistics" },
+          { label: "Có thể đăng ký", to: "/admin/activities" },
+          { label: "Đã đăng ký", to: "/admin/activities/history" },
+          { label: "Kết quả", to: "/admin/activities/result" },
         ]
       });
     } else if (userRole === 'hr') {
@@ -175,6 +180,18 @@ const BaseSidebar: React.FC = () => {
           { label: "Thống kê hoạt động", to: "/hr/activities/statistics" },
           { label: "Quản lý điểm danh", to: "/hr/activities/attendance" },
           { label: "Ghi nhận kết quả", to: "/hr/activities/record-result" }
+        ]
+      });
+    } else if (userRole === 'manager') {
+      // Manager: Có nhưng không có "Tạo", "Hủy" và "Chỉnh sửa"
+      items.push({
+        label: "Hoạt động",
+        icon: Activity,
+        key: "activities",
+        submenu: [
+          { label: "Có thể đăng ký", to: "/manager/activities" },
+          { label: "Đã đăng ký", to: "/manager/activities/history" },
+          { label: "Kết quả", to: "/manager/activities/result" }
         ]
       });
     } else {
@@ -199,10 +216,10 @@ const BaseSidebar: React.FC = () => {
         icon: Award,
         key: "rewards",
         submenu: [
-          { label: "Bảng quy đổi", to: "/admin/point/conversion", icon: ArrowLeftRight },
-          { label: "Duyệt yêu cầu", to: "/admin/point/requests", icon: CheckCircle },
-          { label: "Lịch sử đổi điểm", to: "/admin/point/conversion-history", icon: DollarSign },
-          { label: "Lịch sử giao dịch", to: "/admin/point/history", icon: CalendarIcon },
+          { label: "Bảng quy đổi", to: "/admin/point/conversion" },
+          { label: "Duyệt yêu cầu", to: "/admin/point/requests" },
+          { label: "Lịch sử đổi điểm", to: "/admin/point/conversion-history" },
+          { label: "Lịch sử giao dịch", to: "/admin/point/history" },
         ]
       });
     } else if (userRole === 'hr') {
@@ -299,11 +316,11 @@ const BaseSidebar: React.FC = () => {
                   <div
                     className={`overflow-hidden transition-all duration-300 ease-in-out ${
                       openDropdown === item.key
-                        ? "max-h-60 opacity-100 mt-2"
+                        ? "max-h-96 opacity-100 mt-2"
                         : "max-h-0 opacity-0"
                     }`}
                   >
-                    <div className={`${collapsed ? 'ml-0' : 'ml-4'} space-y-1`}>
+                    <div className={`${collapsed ? 'ml-0' : 'ml-4'} space-y-1 max-h-40 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100`}>
                       {item.submenu.map((subItem: any, j: number) => (
                         <button
                           key={j}
