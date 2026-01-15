@@ -111,6 +111,12 @@ const App = () => {
                 <Route path="employees" element={<PointEmployees />} />
                 <Route path="roles" element={<PointsAdmin />} />
               </Route>
+
+              <Route path="activities">
+                <Route path="" element={<ActivityListPage />} />
+                <Route path="history" element={<HistoryActivitiesPage />} />
+                <Route path="result" element={<ActivityPrivateResultPage />} />
+              </Route>
               
               <Route path="approval" element={<ApprovalPage />} />
 
@@ -182,6 +188,8 @@ const App = () => {
               <Route path="activities">
                 <Route index element={<ActivityListPage />} />
                 <Route path="statistics" element={<AnalysisActivityListPage />} />
+                <Route path="history" element={<HistoryActivitiesPage />} />
+                <Route path="result" element={<ActivityPrivateResultPage />} />
               </Route>
             </Route>
           </Route>
