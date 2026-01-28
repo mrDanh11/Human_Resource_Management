@@ -1,153 +1,185 @@
-# Human Resource Management System
+# 🏢 Modern Human Resource Management System (HRMS)
 
-## 📖 Giới thiệu
-Hệ thống quản lý nhân sự (Human Resource Management System) là một ứng dụng web toàn diện được thiết kế để quản lý các hoạt động nhân sự trong doanh nghiệp. Hệ thống cung cấp các tính năng quản lý thông tin nhân viên, xử lý yêu cầu, theo dõi hoạt động và hệ thống khen thưởng.
+<div align="center">
+  <img src="https://img.shields.io/badge/Status-Active-success?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Version-1.0.0-blue?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Course-Service--Oriented-orange?style=for-the-badge" />
+</div>
 
-## 🏗️ Kiến trúc hệ thống
-- **Backend**: Java Spring Boot MVC với RESTful API
-- **Frontend**: ReactJS với TypeScript
-- **Database**: PostgreSQL với JPA/Hibernate
-- **Authentication**: Spring Security
+<br />
 
-## ✨ Tính năng chính
+<p align="center">
+  <strong>An enterprise-grade HRM solution streamlining organizational workflows with precision and efficiency.</strong>
+</p>
 
-### 1. 👤 Quản lý Profile Nhân viên
-- Quản lý thông tin cơ bản của nhân viên:
-  - Họ tên, căn cước công dân
-  - Mã số thuế
-  - Địa chỉ liên lạc
-  - Số điện thoại
-  - Thông tin tài khoản ngân hàng
-  - Các thông tin khác liên quan
+<p align="center">
+  <a href="#-key-features">Key Features</a> •
+  <a href="#-tech-stack">Tech Stack</a> •
+  <a href="#-installation">Installation</a> •
+  <a href="#-architecture">Architecture</a> •
+  <a href="#-team">Team</a>
+</p>
 
-### 2. 📋 Quản lý Yêu cầu Nhân viên
-- **Các loại yêu cầu được hỗ trợ:**
-  - Xin nghỉ phép (Leave)
-  - Cập nhật bảng chấm công (Update time-sheet)
-  - Check-in/Check-out
-  - Làm việc từ xa (Work from home - WFH)
+---
 
-- **Quy trình xử lý:**
-  - Nhân viên tạo yêu cầu
-  - Quản lý phê duyệt/từ chối
-  - Theo dõi trạng thái yêu cầu
+## 🌟 Project Highlights
 
-### 3. 🏃‍♂️ Quản lý Hoạt động Nhân viên
-- **Các hoạt động công ty:**
-  - Tham gia chiến dịch chạy bộ
-  - Theo dõi số km chạy được
-  - Ghi nhận thời gian chạy
-  - Tổng kết thành tích từ lúc bắt đầu đến khi kết thúc cuộc thi
-  - Bảng xếp hạng hoạt động
+> [!IMPORTANT]
+> This project demonstrates a hybrid backend architecture using both **Java Spring Boot** and **.NET Core**, showcasing advanced integration of service-oriented architectures.
 
-### 4. 🏆 Hệ thống Khen thưởng
-- **Quản lý điểm thưởng:**
-  - Nhân viên nhận điểm thưởng hàng tháng
-  - Quản lý có thể tặng điểm từ tài khoản cá nhân
-  - Quy đổi điểm thành tiền mặt theo quy tắc định sẵn
-  - Lịch sử giao dịch điểm thưởng
+- **Dual-Stack Backend**: Seamlessly swap or integrate Java and .NET services.
+- **Real-time Analytics**: Dynamic dashboards for managers and HR professionals.
+- **Gamified Rewards**: Boost employee engagement through a token-based reward system.
+- **Fully Containerized**: Ready for cloud deployment with Docker.
 
-## 🛠️ Công nghệ sử dụng
+---
 
-### Backend
-- **Framework**: Spring Boot 3.5.6
-- **Java Version**: 17
-- **Dependencies**:
-  - Spring Boot Starter Web
-  - Spring Boot Starter Data JPA
-  - Spring Boot Starter Security
-  - Spring Boot Starter Validation
-- **Build Tool**: Maven
+## 🚀 Key Features
 
-### Frontend
-- **Framework**: React 19.1.1
-- **Language**: TypeScript 5.9.3
-- **Build Tool**: Vite 7.1.7
-- **Styling**: Tailwind CSS
-- **State Management**: Zustand (App Store)
+### 👤 Core HR & Profile Management
+- **Employee Self-Service (ESS)**: Securely view and update personal information (Address, Phone, Bank Account).
+- **Comprehensive HR Dashboard**: HR professionals can monitor, add, and update employee lifecycle records and statuses.
+- **Profile Auditing**: Detailed views of employee data to ensure information accuracy across the organization.
 
-## 📁 Cấu trúc Project
+### 📅 Advanced Attendance & Leave System
+- **Intelligent Timesheet**: Automated synchronization with timekeeping hardware to track work hours, overtime, and early/late arrivals.
+- **Flexible Leave Requests**: Support for various leave types (Day, Half-day, Hourly) with balance tracking and progress monitoring.
+- **Remote Work & Business Trips**: Specialized workflows for Work From Home (WFH) and Business Trip (Work Trip) approvals to ensure accurate attendance.
+- **Attendance Correction**: Employee-driven correction requests for clock-in/out discrepancies with HR manual override capabilities.
+- **Shift Management**: Peer-to-peer shift swap requests with managerial oversight.
 
+### ⚖️ Approval Workflow & Delegation
+- **Multi-Level Approvals**: Streamlined processing for leave, OT, WFH, and timesheet adjustments.
+- **Audit Trails**: Complete history for every request including reasons, attachments, and detailed approval logs.
+- **Authority Delegation**: Managers can delegate approval rights during absences to ensure zero disruption in workflows.
+
+### 🏆 Points & Rewards Ecosystem
+- **Automated Distribution**: Rule-based monthly point allocation based on employee roles.
+- **Manager Recognition**: Direct "Spot Awards" where managers can gift points to high-performing team members.
+- **Reward Monetization**: Flexible rule engine for converting accumulated points into cash or physical rewards.
+- **Transparent Ledger**: Full visibility into point transaction history for both employees and administrators.
+
+### 🏃 Corporate Activities & Engagement
+- **Campaign Management**: HR can create, manage, and report on corporate events and wellness campaigns.
+- **Participation Tracking**: Easy discovery and registration for company activities with real-time participation records.
+- **Performance Analytics**: Comprehensive reporting on campaign success, including top participants and engagement metrics.
+
+---
+
+## 🛠️ Tech Stack
+
+<table align="center">
+  <tr>
+    <td align="center" width="96">
+      <img src="https://skillicons.dev/icons?i=react" width="48" height="48" alt="React" />
+      <br />React 19
+    </td>
+    <td align="center" width="96">
+      <img src="https://skillicons.dev/icons?i=ts" width="48" height="48" alt="TypeScript" />
+      <br />TypeScript
+    </td>
+    <td align="center" width="96">
+      <img src="https://skillicons.dev/icons?i=tailwind" width="48" height="48" alt="Tailwind" />
+      <br />Tailwind
+    </td>
+    <td align="center" width="96">
+      <img src="https://skillicons.dev/icons?i=spring" width="48" height="48" alt="Spring" />
+      <br />Spring Boot
+    </td>
+    <td align="center" width="96">
+      <img src="https://skillicons.dev/icons?i=dotnet" width="48" height="48" alt="Dotnet" />
+      <br />.NET 8
+    </td>
+    <td align="center" width="96">
+      <img src="https://skillicons.dev/icons?i=postgres" width="48" height="48" alt="PostgreSQL" />
+      <br />PostgreSQL
+    </td>
+    <td align="center" width="96">
+      <img src="https://skillicons.dev/icons?i=docker" width="48" height="48" alt="Docker" />
+      <br />Docker
+    </td>
+  </tr>
+</table>
+
+### **Frontend Details**
+- **State Engine:** Zustand for lightweight, high-performance state management.
+- **UI Components:** Customized Headless UI + Lucide Icons.
+- **Animations:** Framer Motion for premium UX transitions.
+
+### **Backend Details**
+- **Java Stack:** Spring Boot 3.5.6, Spring Security, JPA Hibernate.
+- **.NET Stack:** ASP.NET Core 8.0, Entity Framework Core, Npgsql.
+- **Security:** JWT (JSON Web Tokens) with refresh token rotation.
+
+---
+
+## 🏗️ Architecture Design
+
+The system follows a Clean Architecture pattern, ensuring separation of concerns and testability.
+
+```mermaid
+graph TD
+    A[React Dashboard] --> C[Java Auth Service]
+    A --> D[.NET Core Core-HR Service]
+    C --> E[(PostgreSQL DB)]
+    D --> E
 ```
-Human_Resource_Management/
-├── docs/                           # Tài liệu dự án
-├── src/
-│   ├── backend/                    # Spring Boot API
-│   │   ├── src/main/java/com/group07/human_resource_management/
-│   │   ├── src/main/resources/
-│   │   └── pom.xml
-│   └── frontend/                   # React Application
-│       ├── src/
-│       │   ├── components/         # React Components
-│       │   │   ├── activities/     # Quản lý hoạt động
-│       │   │   ├── common/         # Components chung
-│       │   │   ├── profile/        # Quản lý profile
-│       │   │   ├── requests/       # Quản lý yêu cầu
-│       │   │   └── rewards/        # Hệ thống khen thưởng
-│       │   ├── pages/              # Các trang chính
-│       │   ├── services/           # API Services
-│       │   ├── store/              # State Management
-│       │   ├── types/              # TypeScript Definitions
-│       │   └── utils/              # Utilities
-│       └── package.json
-└── README.md
-```
 
-## 🚀 Cài đặt và Chạy ứng dụng
+---
 
-### Yêu cầu hệ thống
-- Java 17+
-- Node.js 18+
-- Maven 3.6+
-- PostgreSQL 12+
+## 📦 Installation & Setup
 
-### Backend Setup
+<details>
+<summary><b>Step 1: Database Setup</b></summary>
+
 ```bash
-cd src/backend
-./mvnw clean install
-./mvnw spring-boot:run
+docker-compose up -d
+```
+</details>
+
+<details>
+<summary><b>Step 2: Backend Launch</b></summary>
+
+Choose your preferred stack or run both:
+
+**Java Option:**
+```bash
+cd src/backend_java && ./mvnw spring-boot:run
 ```
 
-Backend sẽ chạy trên: `http://localhost:8080`
+**.NET Option:**
+```bash
+cd src/backend_dotnet/HRMApi && dotnet run
+```
+</details>
 
-### Frontend Setup
+<details>
+<summary><b>Step 3: Frontend Launch</b></summary>
+
 ```bash
 cd src/frontend
 npm install
 npm run dev
 ```
-
-Frontend sẽ chạy trên: `http://localhost:5173`
-
-## 📊 API Documentation
-Chi tiết API có thể tìm thấy trong file `src/backend/API_README.md`
-
-## 🔐 Authentication & Authorization
-Hệ thống sử dụng Spring Security với các role:
-- **EMPLOYEE**: Nhân viên thường
-- **MANAGER**: Quản lý
-- **ADMIN**: Quản trị viên
-
-## 🤝 Đóng góp
-Dự án được phát triển bởi Group 07 - HCMUS
-
-### Thành viên nhóm:
-| STT | MSSV     | Họ và Tên              |
-|-----|----------|------------------------|
-| 1   | 22120048 | Nguyễn Chí Danh        |
-| 2   | 22120100 | Phạm Trần Trung Hậu    |
-| 3   | 22120121 | Lê Viết Hưng           |
-| 4   | 22120289 | Hồ Ngọc Trung Quân     |
-| 5   | 22120402 | Trương Dương Anh Tú    |
-
-## 📝 License
-Dự án này được phát triển cho mục đích học tập tại Trường Đại học Khoa học Tự nhiên - ĐHQG-HCM
-
-## 📞 Liên hệ
-Nếu có thắc mắc về dự án, vui lòng liên hệ qua repository GitHub.
+</details>
 
 ---
 
-*Phát triển bởi Group 07 - Môn Phát triển ứng dụng hướng dịch vụ - HCMUS*
+## 👥 The Elite Team (Group 07 - HCMUS)
+
+| Avatar | Member | Role |
+| :---: | :--- | :--- |
+| <img src="https://ui-avatars.com/api/?name=N+C+Danh&background=random" width="40"/> | **Nguyễn Chí Danh** | Project Manager, Backend Developer |
+| <img src="https://ui-avatars.com/api/?name=P+T+T+Hậu&background=random" width="40"/> | **Phạm Trần Trung Hậu** | Frontend Developer |
+| <img src="https://ui-avatars.com/api/?name=L+V+Hưng&background=random" width="40"/> | **Lê Viết Hưng** | Backend Developer |
+| <img src="https://ui-avatars.com/api/?name=H+N+T+Quân&background=random" width="40"/> | **Hồ Ngọc Trung Quân** | Frontend Developer |
+| <img src="https://ui-avatars.com/api/?name=T+D+A+Tú&background=random" width="40"/> | **Trương Dương Anh Tú** | Frontend Developer |
+
+---
+
+<div align="center">
+  <p><i>Developed with ❤️ for Academic Excellence @ VNU-HCMUS</i></p>
+</div>
+
 
 
