@@ -190,3 +190,23 @@ INSERT INTO refresh_tokens VALUES (5, 6, 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlbXAxI
 INSERT INTO refresh_tokens VALUES (6, 11, 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkZXYxIiwiaWF0IjoxNzY3NDM2NTk4LCJleHAiOjE3NjgwNDEzOTh9.RCYDMzY_AHxdI_DLAucFt5j4KPN-QgvsRIFzRjZB3Oc', '2026-01-10 17:36:38.187017', '2026-01-03 17:36:38.187017', false, NULL, 'Unknown', '192.168.1.10');
 INSERT INTO refresh_tokens VALUES (7, 1, 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2NzQ0NzcyOCwiZXhwIjoxNzY4MDUyNTI4fQ.Z3XriRXHbgFfr91f481wIrR2j3ZoSoiEm-DKJdCtIts', '2026-01-10 20:42:08.905902', '2026-01-03 20:42:08.905902', false, NULL, 'Unknown', '192.168.1.10');
 
+DO $$
+DECLARE
+    r RECORD;
+    max_val INTEGER;
+BEGIN
+    FOR r IN 
+        SELECT table_name, column_name
+        FROM information_schema.columns
+        WHERE column_default LIKE 'nextval%'
+          AND table_schema = 'public'
+    LOOP
+        EXECUTE format('SELECT COALESCE(MAX(%I), 0) FROM %I', 
+                      r.column_name, r.table_name) INTO max_val;
+        
+        EXECUTE format('SELECT setval(pg_get_serial_sequence(%L, %L), %s)', 
+                      r.table_name, r.column_name, GREATEST(max_val, 1));
+        
+        RAISE NOTICE 'Reset sequence for %.% to %', r.table_name, r.column_name, max_val;
+    END LOOP;
+END $$;

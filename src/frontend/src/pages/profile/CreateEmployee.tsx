@@ -10,6 +10,7 @@ import CSVImportModal from '../../components/profile/CSVImportModal';
 const CreateEmployee = () => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
+    const role = localStorage.getItem("role");
 
     // decode token 
     useEffect(() => {
@@ -170,8 +171,6 @@ const CreateEmployee = () => {
             alert('Vui lòng sửa các lỗi trước khi lưu!');
             return;
         }
-
-        console.log('Submitting form data:', formData);
         
         try {
             const result = await dispatch(createEmployee({
@@ -195,7 +194,7 @@ const CreateEmployee = () => {
             }
             // ...existing code xử lý thành công...
             alert('Tạo hồ sơ nhân viên thành công!');
-            navigate('/employee/list');
+            navigate(`/${role}/employee/list`);
         } catch (error: any) {
             const errorMessage = error.message ? error.message : 'Có lỗi xảy ra khi tạo hồ sơ nhân viên!';
             alert(errorMessage);

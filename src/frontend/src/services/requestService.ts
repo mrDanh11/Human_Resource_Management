@@ -149,7 +149,7 @@ export async function getEmployeeRequests(
   try {
     const params = status ? { status } : {};
     const response = await apiSpring.get<RequestResponse[]>(
-      `/api/v1/requests/employee/${employeeId}`,
+      `requests/employee/${employeeId}`,
       { params }
     );
     return response.data;
@@ -164,7 +164,7 @@ export async function getEmployeeRequests(
  */
 export async function getRequestById(id: number): Promise<RequestResponse> {
   try {
-    const response = await apiSpring.get<RequestResponse>(`/api/v1/requests/${id}`);
+    const response = await apiSpring.get<RequestResponse>(`/requests/${id}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching request:", error);
@@ -177,7 +177,7 @@ export async function getRequestById(id: number): Promise<RequestResponse> {
  */
 export async function approveRequest(id: number, note?: string): Promise<void> {
   try {
-    await apiSpring.post(`/api/v1/requests/${id}/approve`, { note });
+    await apiSpring.post(`/requests/${id}/approve`, { note });
   } catch (error) {
     console.error("Error approving request:", error);
     throw error;
@@ -189,7 +189,7 @@ export async function approveRequest(id: number, note?: string): Promise<void> {
  */
 export async function rejectRequest(id: number, note?: string): Promise<void> {
   try {
-    await apiSpring.post(`/api/v1/requests/${id}/reject`, { note });
+    await apiSpring.post(`/requests/${id}/reject`, { note });
   } catch (error) {
     console.error("Error rejecting request:", error);
     throw error;
@@ -201,7 +201,7 @@ export async function rejectRequest(id: number, note?: string): Promise<void> {
  */
 export async function cancelRequest(id: number, reason: string): Promise<void> {
   try {
-    await apiSpring.post(`/api/v1/requests/${id}/cancel`, { reason });
+    await apiSpring.put(`/requests/${id}/cancel`, { reason });
   } catch (error) {
     console.error("Error canceling request:", error);
     throw error;
@@ -238,7 +238,7 @@ export async function getMyRequests(
   try {
     console.log("getMyRequests called with params:", params);
     const response = await apiSpring.get<any>(
-      `/api/v1/requests/my-requests`,
+      `/requests/my-requests`,
       { params }
     );
     console.log("getMyRequests raw response:", response.data);

@@ -63,7 +63,9 @@ export function usePointSummary(employeeId: number): UsePointSummaryReturn {
         ]);
         
         // Calculate conversion rate from backend rule
-        const conversionRate = conversionRule.moneyValue / conversionRule.pointValue;
+        const conversionRate = conversionRule?.moneyValue && conversionRule?.pointValue
+          ? conversionRule.moneyValue / conversionRule.pointValue
+          : 50000; // Default fallback rate
         
         setSummary({
           current: pointData.pointTotal || 0,

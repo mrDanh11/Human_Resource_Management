@@ -14,6 +14,7 @@ interface CSVImportModalProps {
 const CSVImportModal = ({ isOpen, onClose }: CSVImportModalProps) => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
+    const role = localStorage.getItem('role') || 'hr';
     
     const [csvData, setCsvData] = useState<any[]>([]);
     const [validRows, setValidRows] = useState<any[]>([]);
@@ -163,13 +164,13 @@ const CSVImportModal = ({ isOpen, onClose }: CSVImportModalProps) => {
             if (failCount === 0) {
                 alert(`Tạo thành công ${successCount} nhân viên!`);
                 onClose();
-                navigate('/employee/list');
+                navigate(`/${role}/employee/list`);
             } else {
                 const message = `Tạo thành công ${successCount}/${validRows.length} nhân viên hợp lệ.\n\nLỗi (${failCount}):\n${errors.join('\n')}`;
                 alert(message);
                 if (successCount > 0) {
                     onClose();
-                    navigate('/employee/list');
+                    navigate(`/${role}/employee/list`);
                 }
             }
         } catch (error) {

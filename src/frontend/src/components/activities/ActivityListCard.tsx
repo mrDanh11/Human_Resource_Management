@@ -112,7 +112,7 @@ export default function ActivityListCard({
         </div>
 
         {/* Description */}
-        <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+        <p className="text-gray-600 text-sm mb-4 line-clamp-2" style={{ minHeight: '2.5rem', lineHeight: '1.25rem' }}>
           {activity.description}
         </p>
 
